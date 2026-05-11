@@ -1,0 +1,310 @@
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+{{!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ --}}
+<section class="hero">
+    <div class="hero-l">
+        <span class="h-tag">
+            <span class="h-tag-line"></span>
+            <span id="hTag">// Season 2026 Drop</span>
+        </span>
+        <h1 class="h-title" id="hTitle">
+            <span class="ht-dim">NEXT</span><br />
+            <span class="ht-orange">LEVEL</span><br />
+            <span class="ht-yellow">GEAR</span>
+        </h1>
+        <p class="h-sub" id="hSub">
+            Built for champions. From pro peripherals to precision tools — equipment engineered to keep you at the top of your game.
+        </p>
+        <div class="h-cta">
+            <a href="/Categories" class="btn-p">Shop Now</a>
+            <button class="btn-g" id="btn2Txt">Explore Builds</button>
+        </div>
+        <div class="h-stats">
+            <div>
+                <div class="stat-n"><em>4.8K</em>+</div>
+                <div class="stat-l">Products</div>
+            </div>
+            <div>
+                <div class="stat-n"><em>98</em>%</div>
+                <div class="stat-l">Satisfaction</div>
+            </div>
+            <div>
+                <div class="stat-n"><em>120</em>+</div>
+                <div class="stat-l">Brands</div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-r">
+        <span class="hero-emoji">🎧</span>
+        <div class="h-chip ca">
+            <div class="chip-lbl">Featured Drop</div>
+            <div class="chip-val">$349</div>
+            <div class="chip-sub">Sony WH-1000XM6</div>
+        </div>
+        <div class="h-chip cb">
+            <div class="chip-lbl">Rating</div>
+            <div class="chip-val">★ 4.9</div>
+            <div class="chip-sub">2,100+ Reviews</div>
+        </div>
+    </div>
+</section>
+
+{{!-- ══════════════════════════════════════════════
+     TICKER
+══════════════════════════════════════════════ --}}
+<div class="ticker">
+    <div class="tick-track">
+        <span class="tick-item">Free Shipping Over $75<span class="tick-dot"></span></span>
+        <span class="tick-item">New: Apple MagSafe Duo<span class="tick-dot"></span></span>
+        <span class="tick-item">30-Day No-Hassle Returns<span class="tick-dot"></span></span>
+        <span class="tick-item">Flash Sale — 40% Off Gaming<span class="tick-dot"></span></span>
+        <span class="tick-item">Loyalty Points Every Order<span class="tick-dot"></span></span>
+        <span class="tick-item">Free Shipping Over $75<span class="tick-dot"></span></span>
+        <span class="tick-item">New: Apple MagSafe Duo<span class="tick-dot"></span></span>
+        <span class="tick-item">30-Day No-Hassle Returns<span class="tick-dot"></span></span>
+        <span class="tick-item">Flash Sale — 40% Off Gaming<span class="tick-dot"></span></span>
+        <span class="tick-item">Loyalty Points Every Order<span class="tick-dot"></span></span>
+    </div>
+</div>
+
+{{!-- ══════════════════════════════════════════════
+     SHOP BY CATEGORY
+══════════════════════════════════════════════ --}}
+<section class="sec sec-alt">
+    <div class="sec-hd">
+        <div>
+            <p class="sec-eye">Browse by Category</p>
+            <h2 class="sec-ttl">SHOP<br />BY TYPE</h2>
+        </div>
+        <a href="/Categories" class="sec-more">All Categories →</a>
+    </div>
+    <div class="cat-grid reveal">
+        <div class="cat-card">
+            <div class="cat-fig">🎧</div>
+            <div class="cat-info">
+                <div class="cat-cnt">128 Items</div>
+                <div class="cat-nm">Audio</div>
+                <div class="cat-arr">→</div>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-fig">⚡</div>
+            <div class="cat-info">
+                <div class="cat-cnt">94 Items</div>
+                <div class="cat-nm">Charging</div>
+                <div class="cat-arr">→</div>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-fig">🎮</div>
+            <div class="cat-info">
+                <div class="cat-cnt">76 Items</div>
+                <div class="cat-nm">Gaming</div>
+                <div class="cat-arr">→</div>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-fig" style="gap:16px;font-size:56px">💻 ⌨️</div>
+            <div class="cat-info">
+                <div class="cat-cnt">298 Items</div>
+                <div class="cat-nm">Workspace</div>
+                <div class="cat-arr">→</div>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-fig">📱</div>
+            <div class="cat-info">
+                <div class="cat-cnt">155 Items</div>
+                <div class="cat-nm">Mobile</div>
+                <div class="cat-arr">→</div>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-fig">📷</div>
+            <div class="cat-info">
+                <div class="cat-cnt">62 Items</div>
+                <div class="cat-nm">Camera</div>
+                <div class="cat-arr">→</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{!-- ══════════════════════════════════════════════
+     FEATURED PRODUCTS
+══════════════════════════════════════════════ --}}
+<section class="sec">
+    <div class="sec-hd">
+        <div>
+            <p class="sec-eye">Handpicked For You</p>
+            <h2 class="sec-ttl">FEATURED<br />PRODUCTS</h2>
+        </div>
+        <a href="#" class="sec-more">All Products →</a>
+    </div>
+    <div class="prod-grid reveal">
+        <div class="prod-card">
+            <div class="prod-thumb"><span>🎧</span><span class="p-badge badge-new">New</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Sony</p>
+                <p class="p-name">WH-1000XM6 Wireless Noise Cancelling</p>
+                <p class="p-stars">★★★★★ <span class="p-rc">(412)</span></p>
+                <div class="p-foot"><span class="p-price">$349</span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>⌨️</span><span class="p-badge badge-hot">Hot</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Keychron</p>
+                <p class="p-name">Q3 Max QMK Wireless Mechanical Keyboard</p>
+                <p class="p-stars">★★★★☆ <span class="p-rc">(238)</span></p>
+                <div class="p-foot"><span class="p-price">$199</span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>🖱️</span><span class="p-badge badge-sale">−30%</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Logitech</p>
+                <p class="p-name">MX Master 3S Performance Wireless Mouse</p>
+                <p class="p-stars">★★★★★ <span class="p-rc">(1.2K)</span></p>
+                <div class="p-foot"><span class="p-price">$69<span class="p-old">$99</span></span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>⚡</span><span class="p-badge badge-new">New</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Anker</p>
+                <p class="p-name">Prime 240W GaN Desktop Charger</p>
+                <p class="p-stars">★★★★★ <span class="p-rc">(89)</span></p>
+                <div class="p-foot"><span class="p-price">$89</span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>🎮</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Razer</p>
+                <p class="p-name">DeathAdder V3 HyperSpeed Gaming Mouse</p>
+                <p class="p-stars">★★★★★ <span class="p-rc">(674)</span></p>
+                <div class="p-foot"><span class="p-price">$99</span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>🖥️</span><span class="p-badge badge-sale">−20%</span></div>
+            <div class="prod-body">
+                <p class="p-brand">BenQ</p>
+                <p class="p-name">ScreenBar Halo Monitor Light + Backlight</p>
+                <p class="p-stars">★★★★☆ <span class="p-rc">(307)</span></p>
+                <div class="p-foot"><span class="p-price">$159<span class="p-old">$199</span></span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>📱</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Apple</p>
+                <p class="p-name">MagSafe Duo Charger 15W</p>
+                <p class="p-stars">★★★★★ <span class="p-rc">(2.1K)</span></p>
+                <div class="p-foot"><span class="p-price">$129</span><button class="p-add">+</button></div>
+            </div>
+        </div>
+        <div class="prod-card">
+            <div class="prod-thumb"><span>🎙️</span><span class="p-badge badge-hot">Hot</span></div>
+            <div class="prod-body">
+                <p class="p-brand">Blue</p>
+                <p class="p-name">Yeti X Professional USB Microphone</p>
+                <p class="p-stars">★★★★★ <span class="p-rc">(881)</span></p>
+                <div class="p-foot"><span class="p-price">$149</span><button class="p-add">+</button></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{!-- ══════════════════════════════════════════════
+     FLASH SALE BANNER
+══════════════════════════════════════════════ --}}
+<div class="banner-wrap reveal">
+    <div class="banner">
+        <div>
+            <p class="b-eye">Limited Time Offer</p>
+            <h2 class="b-ttl" id="bTtl">FLASH SALE<br />GAMING GEAR</h2>
+            <p class="b-sub">Up to 40% off select gaming peripherals. Level up before the deal expires.</p>
+            <div class="b-count">
+                <div class="c-blk"><span class="c-num" id="ch">08</span><span class="c-lbl">Hours</span></div>
+                <span class="c-colon">:</span>
+                <div class="c-blk"><span class="c-num" id="cm">42</span><span class="c-lbl">Mins</span></div>
+                <span class="c-colon">:</span>
+                <div class="c-blk"><span class="c-num" id="cs">17</span><span class="c-lbl">Secs</span></div>
+            </div>
+        </div>
+        <button class="b-btn">Shop the Sale →</button>
+    </div>
+</div>
+
+{{!-- ══════════════════════════════════════════════
+     BRAND PARTNERS
+══════════════════════════════════════════════ --}}
+<div class="brands-sec reveal">
+    <p class="brands-lbl">Official Partners &amp; Retailers</p>
+    <div class="brands-row">
+        <span class="brand-nm">Apple</span>
+        <span class="brand-nm">Sony</span>
+        <span class="brand-nm">Logitech</span>
+        <span class="brand-nm">Razer</span>
+        <span class="brand-nm">Samsung</span>
+        <span class="brand-nm">Anker</span>
+        <span class="brand-nm">Bose</span>
+        <span class="brand-nm">Keychron</span>
+    </div>
+</div>
+
+{{!-- ══════════════════════════════════════════════
+     FEATURES / TRUST SIGNALS
+══════════════════════════════════════════════ --}}
+<section class="sec sec-alt">
+    <div class="feat-grid reveal">
+        <div class="feat-card">
+            <div class="feat-ico">🚚</div>
+            <div class="feat-nm">Free Shipping</div>
+            <p class="feat-txt">On all orders over $75. Same-day delivery available in select cities.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-ico">🔄</div>
+            <div class="feat-nm">30-Day Returns</div>
+            <p class="feat-txt">Full refund, no questions asked. Easy label printing from your account.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-ico">🔒</div>
+            <div class="feat-nm">Secure Checkout</div>
+            <p class="feat-txt">256-bit SSL. Card, Apple Pay, and PayPal accepted securely.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-ico">💬</div>
+            <div class="feat-nm">24/7 Support</div>
+            <p class="feat-txt">Real humans, any time. Chat, email, or call around the clock.</p>
+        </div>
+    </div>
+</section>
+
+{{!-- ══════════════════════════════════════════════
+     NEWSLETTER
+══════════════════════════════════════════════ --}}
+<div class="nl-sec reveal">
+    <p class="nl-eye">Stay in the Loop</p>
+    <h2 class="nl-ttl" id="nlTtl">JOIN THE VOLTEX COMMUNITY</h2>
+    <p class="nl-sub">Early access to drops, exclusive deals, and gear guides straight to your inbox.</p>
+    <div class="nl-form">
+        <input class="nl-in" type="email" placeholder="your@email.com" />
+        <button class="nl-go">Subscribe</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/home.js" asp-append-version="true"></script>
+}
