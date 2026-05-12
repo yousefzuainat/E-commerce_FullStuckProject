@@ -30,6 +30,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(users);
         }
 
+        // id string = ASP.NET Core Identity
         public async Task<IActionResult> EditUser(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();
@@ -38,7 +39,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(user);
         }
 
-        [HttpPost]
+        [HttpPost] //عشان يستقبل البيانات من الفورم لي ببعثو 
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(AppliactionUser model)
         {
@@ -55,7 +56,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 TempData["info"] = "User updated successfully!";
                 return RedirectToAction(nameof(Users));
             }
-
             TempData["error"] = "Error updating user";
             return View(user);
         }

@@ -27,13 +27,11 @@ namespace ecommerce_system
 
             var app = builder.Build();
 
-            // --- SEEDING ROLES AND ADMIN USER ---
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
-                    // Call the seeding logic here
                     await SeedAdminUserAsync(services);
                 }
                 catch (Exception ex)
@@ -62,7 +60,6 @@ namespace ecommerce_system
 
             app.MapStaticAssets();
 
-            // Admin Area Route
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
@@ -76,13 +73,11 @@ namespace ecommerce_system
             app.Run();
         }
 
-        // Helper Method for Seeding
         private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<AppliactionUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // 1. Create Roles if they don't exist
             string[] roles = { "Admin", "User" };
             foreach (var role in roles)
             {
@@ -92,7 +87,6 @@ namespace ecommerce_system
                 }
             }
 
-            // 2. Create the Admin User
             var adminEmail = "Admin@gmail.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -114,7 +108,6 @@ namespace ecommerce_system
             }
             else
             {
-                // User exists — make sure they have the Admin role
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
