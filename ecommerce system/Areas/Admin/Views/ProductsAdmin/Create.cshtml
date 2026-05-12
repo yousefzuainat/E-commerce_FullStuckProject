@@ -1,0 +1,161 @@
+@model ecommerce_system.ViewModel.ProudectCreateViewModel
+@{
+    ViewData["Title"] = "Create Product";
+    Layout = "_AdminLayout";
+}
+
+<!-- Page Header -->
+<div class="flex items-center gap-4 mb-8">
+    <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div>
+        <h1 class="text-3xl font-black text-white">Create Product</h1>
+        <p class="text-gray-400 text-sm mt-0.5">Add a new product to your catalog</p>
+    </div>
+</div>
+
+<form asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Main Column -->
+        <div class="xl:col-span-2 space-y-6">
+            <!-- Basic Info -->
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">info</span>
+                    Basic Information
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label asp-for="Name" class="admin-label"></label>
+                        <input asp-for="Name" class="admin-input" placeholder="Enter product name..." />
+                        <span asp-validation-for="Name" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Description" class="admin-label"></label>
+                        <textarea asp-for="Description" rows="5" class="admin-input resize-none" placeholder="Describe the product..."></textarea>
+                        <span asp-validation-for="Description" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">photo_library</span>
+                    Product Images
+                </h2>
+                <div id="drop-zone" class="border-2 border-dashed border-white/20 rounded-2xl p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/3 transition-all">
+                    <input asp-for="Uploads" type="file" id="image-input" class="hidden" multiple accept="image/*" onchange="previewImages(this)" />
+                    <label for="image-input" class="cursor-pointer flex flex-col items-center gap-3">
+                        <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold">Click or drag to upload images</p>
+                            <p class="text-gray-500 text-sm mt-1">JPG, PNG, GIF, WEBP up to 10MB each</p>
+                        </div>
+                    </label>
+                </div>
+                <div id="image-preview" class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4 hidden"></div>
+                <span asp-validation-for="Uploads" class="text-red-400 text-xs mt-2 block"></span>
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="space-y-6">
+            <!-- Pricing & Category -->
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-admin-accent text-lg">payments</span>
+                    Pricing & Category
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label asp-for="Price" class="admin-label"></label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <input asp-for="Price" type="number" step="0.01" min="0.01" class="admin-input pl-8" placeholder="0.00" />
+                        </div>
+                        <span asp-validation-for="Price" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                    <div>
+                        <label asp-for="CategoryId" class="admin-label"></label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="admin-input">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discount -->
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-green-400 text-lg">local_offer</span>
+                    Discount (Optional)
+                </h2>
+                <div>
+                    <label asp-for="DiscountPercent" class="admin-label"></label>
+                    <div class="relative">
+                        <input asp-for="DiscountPercent" type="number" step="0.01" min="0" max="100" class="admin-input pr-10" placeholder="0" />
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
+                    </div>
+                    <span asp-validation-for="DiscountPercent" class="text-red-400 text-xs mt-1 block"></span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="admin-card rounded-2xl p-6">
+                <button type="submit" class="admin-btn-primary w-full justify-center py-3">
+                    <span class="material-symbols-outlined">save</span>
+                    Create Product
+                </button>
+                <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="admin-btn-secondary w-full justify-center py-3 mt-3">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function previewImages(input) {
+            const previewContainer = document.getElementById('image-preview');
+            previewContainer.innerHTML = '';
+            if (input.files.length > 0) {
+                previewContainer.classList.remove('hidden');
+                Array.from(input.files).forEach((file, i) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.className = 'relative aspect-square rounded-xl overflow-hidden border border-white/10 group';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-full object-cover" />
+                            ${i === 0 ? '<span class="absolute top-1 left-1 bg-primary text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase">Main</span>' : ''}
+                        `;
+                        previewContainer.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewContainer.classList.add('hidden');
+            }
+        }
+
+        // Drag and drop
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('image-input');
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-primary', 'bg-primary/5'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-primary', 'bg-primary/5'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary', 'bg-primary/5');
+            fileInput.files = e.dataTransfer.files;
+            previewImages(fileInput);
+        });
+    </script>
+}

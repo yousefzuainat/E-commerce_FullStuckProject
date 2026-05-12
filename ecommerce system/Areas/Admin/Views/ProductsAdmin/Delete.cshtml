@@ -1,0 +1,77 @@
+@model ecommerce_system.Models.Proudect
+@{
+    ViewData["Title"] = "Delete Product";
+    Layout = "_AdminLayout";
+}
+
+<div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-4 mb-8">
+        <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div>
+            <h1 class="text-3xl font-black text-white">Delete Product</h1>
+            <p class="text-red-400 text-sm mt-0.5">This action cannot be undone</p>
+        </div>
+    </div>
+
+    <!-- Warning Card -->
+    <div class="admin-card rounded-2xl border border-red-500/30 bg-red-500/5 p-6 mb-6">
+        <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-red-400 text-2xl">warning</span>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-white">Confirm Deletion</h2>
+                <p class="text-gray-400 text-sm">Are you sure you want to permanently delete this product?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Preview -->
+    <div class="admin-card rounded-2xl p-6 mb-6">
+        <div class="flex items-center gap-5">
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                <img src="@Model.Images.First().ImageUrl" alt="@Model.Name" class="w-20 h-20 rounded-2xl object-cover border border-white/10 shrink-0" />
+            }
+            else if (!string.IsNullOrEmpty(Model.Img))
+            {
+                <img src="@Model.Img" alt="@Model.Name" class="w-20 h-20 rounded-2xl object-cover border border-white/10 shrink-0" />
+            }
+            else
+            {
+                <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-3xl text-gray-600">image</span>
+                </div>
+            }
+            <div>
+                <h3 class="text-xl font-bold text-white">@Model.Name</h3>
+                <p class="text-gray-400 text-sm mt-1">@Model.Description</p>
+                <div class="flex items-center gap-4 mt-3">
+                    <span class="text-primary font-bold">$@Model.Price.ToString("0.00")</span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded-full border border-primary/20">
+                        <span class="material-symbols-outlined text-xs">category</span>
+                        @(Model.Category?.Name ?? "No Category")
+                    </span>
+                    <span class="text-xs text-gray-500">@(Model.Images?.Count ?? 0) images</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-3">
+        <form asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Delete" method="post" class="flex-1">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="admin-btn-danger w-full justify-center py-3 text-base">
+                <span class="material-symbols-outlined">delete_forever</span>
+                Yes, Delete Product
+            </button>
+        </form>
+        <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="admin-btn-secondary flex-1 justify-center py-3 text-base">
+            <span class="material-symbols-outlined">close</span>
+            Cancel
+        </a>
+    </div>
+</div>

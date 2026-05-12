@@ -13,7 +13,7 @@ namespace ecommerce_system
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120)));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -61,6 +61,12 @@ namespace ecommerce_system
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
+            // Admin Area Route
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
@@ -97,13 +103,21 @@ namespace ecommerce_system
                     UserName = adminEmail,
                     Email = adminEmail,
                     FullName = "System Manager",
-                    EmailConfirmed = true // Good practice for seeded accounts
+                    EmailConfirmed = true
                 };
 
                 var createPowerUser = await userManager.CreateAsync(newAdmin, "Admin@123");
                 if (createPowerUser.Succeeded)
                 {
                     await userManager.AddToRoleAsync(newAdmin, "Admin");
+                }
+            }
+            else
+            {
+                // User exists — make sure they have the Admin role
+                if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
         }

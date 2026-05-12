@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Panel | Nexus Commerce</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        "surface-container": "#192029",
+                        "inverse-primary": "#005ac2",
+                        "surface-bright": "#333a44",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#4d8eff",
+                        "admin-bg": "#0a0f1a",
+                        "admin-sidebar": "#0f1829",
+                        "admin-card": "#131d2e",
+                        "admin-accent": "#f59e0b",
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @@layer utilities {
+            .glass-panel { @@apply bg-admin-card/80 backdrop-blur-md border border-white/10; }
+            .admin-nav-item { @@apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 font-medium; }
+            .admin-nav-active { @@apply text-admin-accent bg-admin-accent/10 border border-admin-accent/30 font-semibold; }
+            .admin-btn-primary { @@apply inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg shadow-primary/20; }
+            .admin-btn-danger { @@apply inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-all duration-200; }
+            .admin-btn-secondary { @@apply inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-gray-300 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200 border border-white/10; }
+            .admin-card { @@apply bg-admin-card border border-white/10 rounded-2xl; }
+            .admin-input { @@apply w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all; }
+            .admin-label { @@apply block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2; }
+        }
+        body {
+            @@apply bg-admin-bg text-gray-100 font-sans antialiased min-h-screen flex flex-col overflow-x-hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0f1a; }
+        ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4d8eff; }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <!-- Top Admin Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-admin-sidebar/95 backdrop-blur-md border-b border-white/10 h-16 flex items-center">
+        <div class="flex items-center justify-between w-full px-6">
+            <!-- Logo + Brand -->
+            <div class="flex items-center gap-4">
+                <button id="sidebar-toggle" class="lg:hidden w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white bg-white/5 rounded-lg transition-all">
+                    <span class="material-symbols-outlined text-xl">menu</span>
+                </button>
+                <a asp-area="Admin" asp-controller="Admin" asp-action="Index" class="flex items-center gap-3 group">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-admin-accent to-orange-600 flex items-center justify-center shadow-lg shadow-admin-accent/20">
+                        <span class="material-symbols-outlined text-white text-lg">shield</span>
+                    </div>
+                    <div class="hidden sm:block">
+                        <p class="text-xs text-admin-accent font-black uppercase tracking-[0.2em]">Admin Panel</p>
+                        <p class="text-sm font-bold text-white leading-none">Nexus Commerce</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Right Side -->
+            <div class="flex items-center gap-3">
+                <partial name="~/Views/Shared/_LoginPartial.cshtml" />
+            </div>
+        </div>
+    </header>
+
+    <div class="flex pt-16 min-h-screen">
+        <!-- Sidebar -->
+        <aside id="admin-sidebar" class="fixed top-16 left-0 bottom-0 z-40 w-64 bg-admin-sidebar border-r border-white/10 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+            <nav class="flex-1 p-4 space-y-1">
+                <!-- Dashboard -->
+                <a asp-area="Admin" asp-controller="Admin" asp-action="Index"
+                   class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "admin-nav-active" : "")">
+                    <span class="material-symbols-outlined text-xl">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Products -->
+                <div class="pt-4 pb-1 px-4">
+                    <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">Catalog</p>
+                </div>
+                <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index"
+                   class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "ProductsAdmin" ? "admin-nav-active" : "")">
+                    <span class="material-symbols-outlined text-xl">inventory_2</span>
+                    <span>Products</span>
+                    <span class="ml-auto bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full font-bold">Manage</span>
+                </a>
+                <a asp-area="Admin" asp-controller="CategoryAdmin" asp-action="Index"
+                   class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryAdmin" ? "admin-nav-active" : "")">
+                    <span class="material-symbols-outlined text-xl">category</span>
+                    <span>Categories</span>
+                </a>
+
+                <!-- Users -->
+                <div class="pt-4 pb-1 px-4">
+                    <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">Management</p>
+                </div>
+                <a asp-area="Admin" asp-controller="Admin" asp-action="Users"
+                   class="admin-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "admin-nav-active" : "")">
+                    <span class="material-symbols-outlined text-xl">group</span>
+                    <span>Users</span>
+                </a>
+                <a href="#" class="admin-nav-item opacity-50 cursor-not-allowed">
+                    <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                    <span>Orders</span>
+                    <span class="ml-auto text-[9px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded font-bold">Soon</span>
+                </a>
+            </nav>
+
+            <!-- System Health -->
+            <div class="p-4 border-t border-white/5">
+                <div class="bg-gradient-to-br from-admin-accent/10 to-orange-800/10 rounded-2xl p-4 border border-admin-accent/20">
+                    <p class="text-[10px] font-black text-admin-accent uppercase tracking-[0.2em] mb-2">System Status</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-xs text-gray-400 font-medium">All systems active</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden" onclick="closeSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 w-full lg:ml-64 min-h-[calc(100vh-64px)] bg-admin-bg">
+            <!-- Breadcrumb Bar -->
+            <div class="bg-admin-sidebar/50 border-b border-white/5 px-6 py-3">
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                    <a asp-area="Admin" asp-controller="Admin" asp-action="Index" class="hover:text-admin-accent transition-colors">Admin</a>
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    <span class="text-gray-300">@ViewData["Title"]</span>
+                </div>
+            </div>
+
+            <div class="p-6 lg:p-8">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Sidebar toggle for mobile
+        const sidebar = document.getElementById('admin-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+
+        // Toast Notifications
+        const Toast = Swal.mixin({
+            toast: true, position: 'top-end', showConfirmButton: false,
+            timer: 3500, timerProgressBar: true,
+            background: '#0f1829', color: '#fff',
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        @if (TempData["success"] != null)
+        {
+            <text>Toast.fire({ icon: 'success', title: '@Html.Raw(TempData["success"])' });</text>
+        }
+        @if (TempData["info"] != null)
+        {
+            <text>Toast.fire({ icon: 'info', title: '@Html.Raw(TempData["info"])' });</text>
+        }
+        @if (TempData["error"] != null)
+        {
+            <text>Toast.fire({ icon: 'error', title: '@Html.Raw(TempData["error"])' });</text>
+        }
+    </script>
+</body>
+</html>

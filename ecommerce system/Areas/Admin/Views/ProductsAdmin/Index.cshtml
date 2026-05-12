@@ -1,0 +1,201 @@
+@model IEnumerable<ecommerce_system.Models.Proudect>
+@{
+    ViewData["Title"] = "Products Management";
+    Layout = "_AdminLayout";
+}
+
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+    <div>
+        <h1 class="text-3xl font-black text-white">Products</h1>
+        <p class="text-gray-400 text-sm mt-1">Manage your store's product catalog</p>
+    </div>
+    <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Create" class="admin-btn-primary">
+        <span class="material-symbols-outlined text-base">add</span>
+        Add New Product
+    </a>
+</div>
+
+<!-- Stats Bar -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+    <div class="admin-card p-4 rounded-2xl">
+        <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Total Products</p>
+        <p class="text-3xl font-black text-white mt-1">@ViewBag.TotalProducts</p>
+    </div>
+    <div class="admin-card p-4 rounded-2xl">
+        <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Showing</p>
+        <p class="text-3xl font-black text-primary mt-1">@Model.Count()</p>
+    </div>
+    <div class="admin-card p-4 rounded-2xl">
+        <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Categories</p>
+        <p class="text-3xl font-black text-admin-accent mt-1">@Model.Select(p => p.CategoryId).Distinct().Count()</p>
+    </div>
+    <div class="admin-card p-4 rounded-2xl">
+        <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">With Discounts</p>
+        <p class="text-3xl font-black text-green-400 mt-1">@Model.Count(p => p.Discounts != null && p.Discounts.Any(d => d.Active))</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="admin-card rounded-2xl p-5 mb-6">
+    <form method="get" asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
+            <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" placeholder="Search products..."
+                   class="admin-input pl-10" />
+        </div>
+        <select name="categoryId" class="admin-input sm:w-56">
+            <option value="">All Categories</option>
+            @{
+                var categories = (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Categories;
+                foreach (var item in categories)
+                {
+                    if (item.Selected)
+                    {
+                        <option value="@item.Value" selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                }
+            }
+        </select>
+        <button type="submit" class="admin-btn-primary whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">filter_list</span>
+            Filter
+        </button>
+        @if (!string.IsNullOrEmpty(ViewBag.SearchTerm?.ToString()) || ViewBag.SelectedCategoryId != null)
+        {
+            <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="admin-btn-secondary whitespace-nowrap">
+                <span class="material-symbols-outlined text-base">close</span>
+                Clear
+            </a>
+        }
+    </form>
+</div>
+
+<!-- Products Table -->
+<div class="admin-card rounded-2xl overflow-hidden">
+    @if (!Model.Any())
+    {
+        <div class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-4xl text-gray-600">inventory_2</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-400">No products found</h3>
+            <p class="text-gray-600 text-sm mt-1">Try adjusting your search or add a new product</p>
+            <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Create" class="admin-btn-primary mt-6">
+                <span class="material-symbols-outlined text-base">add</span>
+                Add First Product
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-white/10 bg-white/2">
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-6 py-4">Product</th>
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-4 py-4 hidden sm:table-cell">Category</th>
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-4 py-4">Price</th>
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-4 py-4 hidden md:table-cell">Images</th>
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-4 py-4 hidden lg:table-cell">Discount</th>
+                        <th class="text-right text-xs font-black text-gray-500 uppercase tracking-widest px-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    @foreach (var item in Model)
+                    {
+                        var activeDiscount = item.Discounts?.FirstOrDefault(d => d.Active);
+                        var discountedPrice = activeDiscount != null ? item.Price * (1 - activeDiscount.DiscountPercent / 100) : item.Price;
+                        <tr class="hover:bg-white/3 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    @if (item.Images != null && item.Images.Any())
+                                    {
+                                        <img src="@item.Images.First().ImageUrl" alt="@item.Name"
+                                             class="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0" />
+                                    }
+                                    else if (!string.IsNullOrEmpty(item.Img))
+                                    {
+                                        <img src="@item.Img" alt="@item.Name"
+                                             class="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-gray-600 text-xl">image</span>
+                                        </div>
+                                    }
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-white text-sm truncate max-w-[180px]">@item.Name</p>
+                                        <p class="text-xs text-gray-500 truncate max-w-[180px]">ID: #@item.Id</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 hidden sm:table-cell">
+                                <span class="inline-flex items-center gap-1.5 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full font-semibold border border-primary/20">
+                                    <span class="material-symbols-outlined text-xs">category</span>
+                                    @(item.Category?.Name ?? "—")
+                                </span>
+                            </td>
+                            <td class="px-4 py-4">
+                                <div>
+                                    @if (activeDiscount != null)
+                                    {
+                                        <p class="text-gray-400 line-through text-xs">$@item.Price.ToString("0.00")</p>
+                                        <p class="text-green-400 font-bold text-sm">$@discountedPrice.ToString("0.00")</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-white font-bold text-sm">$@item.Price.ToString("0.00")</p>
+                                    }
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 hidden md:table-cell">
+                                <span class="inline-flex items-center gap-1.5 text-xs bg-white/5 text-gray-300 px-3 py-1.5 rounded-full font-semibold">
+                                    <span class="material-symbols-outlined text-xs">photo_library</span>
+                                    @(item.Images?.Count ?? 0) photos
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 hidden lg:table-cell">
+                                @if (activeDiscount != null)
+                                {
+                                    <span class="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full font-bold border border-green-500/20">
+                                        <span class="material-symbols-outlined text-xs">local_offer</span>
+                                        @activeDiscount.DiscountPercent%
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-xs text-gray-600">—</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Details" asp-route-id="@item.Id"
+                                       class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-primary/20 hover:text-primary text-gray-400 transition-all" title="Details">
+                                        <span class="material-symbols-outlined text-base">visibility</span>
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Edit" asp-route-id="@item.Id"
+                                       class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-admin-accent/20 hover:text-admin-accent text-gray-400 transition-all" title="Edit">
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Delete" asp-route-id="@item.Id"
+                                       class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-gray-400 transition-all" title="Delete">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-white/5 flex items-center justify-between">
+            <p class="text-xs text-gray-500">Showing <span class="text-white font-semibold">@Model.Count()</span> of <span class="text-white font-semibold">@ViewBag.TotalProducts</span> products</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,73 @@
+@model IEnumerable<ecommerce_system.Models.AppliactionUser>
+@{
+    ViewData["Title"] = "Users Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+    <div>
+        <h1 class="text-3xl font-black text-white">Users</h1>
+        <p class="text-gray-400 text-sm mt-1">Manage customer accounts</p>
+    </div>
+    <span class="inline-flex items-center gap-2 text-sm bg-white/5 text-gray-300 px-4 py-2 rounded-xl border border-white/10 font-semibold">
+        <span class="material-symbols-outlined text-base">group</span>
+        @Model.Count() Users
+    </span>
+</div>
+
+<div class="admin-card rounded-2xl overflow-hidden">
+    @if (!Model.Any())
+    {
+        <div class="flex flex-col items-center justify-center py-20 text-center">
+            <span class="material-symbols-outlined text-5xl text-gray-600 mb-3">group</span>
+            <p class="text-gray-400 font-semibold">No users found</p>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-white/10">
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-6 py-4">User</th>
+                        <th class="text-left text-xs font-black text-gray-500 uppercase tracking-widest px-4 py-4 hidden sm:table-cell">Email</th>
+                        <th class="text-right text-xs font-black text-gray-500 uppercase tracking-widest px-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    @foreach (var user in Model)
+                    {
+                        <tr class="hover:bg-white/3 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center font-bold text-white shrink-0">
+                                        @(user.FullName?.Length > 0 ? user.FullName[0].ToString().ToUpper() : "U")
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-white text-sm">@(user.FullName ?? "No Name")</p>
+                                        <p class="text-xs text-gray-500 sm:hidden">@user.Email</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 hidden sm:table-cell">
+                                <span class="text-sm text-gray-300">@user.Email</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a asp-area="Admin" asp-controller="Admin" asp-action="EditUser" asp-route-id="@user.Id"
+                                       class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-admin-accent/20 hover:text-admin-accent text-gray-400 transition-all" title="Edit">
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Admin" asp-action="DeleteUser" asp-route-id="@user.Id"
+                                       class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-gray-400 transition-all" title="Delete">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,64 @@
+@model ecommerce_system.Models.AppliactionUser
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_AdminLayout";
+}
+
+<div class="max-w-2xl">
+    <div class="flex items-center gap-4 mb-8">
+        <a asp-area="Admin" asp-controller="Admin" asp-action="Users"
+           class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div>
+            <h1 class="text-3xl font-black text-white">Edit User</h1>
+            <p class="text-gray-400 text-sm mt-0.5">ID: @Model.Id</p>
+        </div>
+    </div>
+
+    <form asp-area="Admin" asp-controller="Admin" asp-action="EditUser" method="post">
+        <input asp-for="Id" type="hidden" />
+
+        <div class="space-y-5">
+            <div class="admin-card rounded-2xl p-6">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center font-bold text-white text-xl shrink-0">
+                        @(Model.FullName?.Length > 0 ? Model.FullName[0].ToString().ToUpper() : "U")
+                    </div>
+                    <div>
+                        <p class="font-bold text-white">@(Model.FullName ?? "No Name")</p>
+                        <p class="text-sm text-gray-400">@Model.Email</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label asp-for="FullName" class="admin-label">Full Name</label>
+                        <input asp-for="FullName" class="admin-input" placeholder="Full name" />
+                        <span asp-validation-for="FullName" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Email" class="admin-label">Email</label>
+                        <input asp-for="Email" class="admin-input" type="email" placeholder="Email address" />
+                        <span asp-validation-for="Email" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button type="submit" class="admin-btn-primary flex-1 justify-center py-3">
+                    <span class="material-symbols-outlined">save</span>
+                    Save Changes
+                </button>
+                <a asp-area="Admin" asp-controller="Admin" asp-action="Users" class="admin-btn-secondary flex-1 justify-center py-3">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

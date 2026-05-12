@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<!-- Welcome Header -->
+<div class="mb-10">
+    <h1 class="text-4xl font-black text-white">Welcome back, Admin 👋</h1>
+    <p class="text-gray-400 mt-2">Here's what's happening in your store today.</p>
+</div>
+
+<!-- Quick Nav Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+    <!-- Products Card -->
+    <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index"
+       class="admin-card rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <span class="material-symbols-outlined text-primary text-2xl">inventory_2</span>
+            </div>
+            <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-lg">Manage</span>
+        </div>
+        <h2 class="text-xl font-black text-white group-hover:text-primary transition-colors">Products</h2>
+        <p class="text-gray-400 text-sm mt-1">Add, edit, and manage your product catalog</p>
+        <div class="flex items-center gap-1.5 mt-4 text-primary text-sm font-semibold">
+            <span>Go to Products</span>
+            <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+    </a>
+
+    <!-- Categories Card -->
+    <a asp-area="Admin" asp-controller="CategoryAdmin" asp-action="Index"
+       class="admin-card rounded-2xl p-6 hover:border-admin-accent/40 hover:shadow-lg hover:shadow-admin-accent/5 transition-all duration-300 group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-admin-accent/10 flex items-center justify-center group-hover:bg-admin-accent/20 transition-colors">
+                <span class="material-symbols-outlined text-admin-accent text-2xl">category</span>
+            </div>
+            <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-lg">Manage</span>
+        </div>
+        <h2 class="text-xl font-black text-white group-hover:text-admin-accent transition-colors">Categories</h2>
+        <p class="text-gray-400 text-sm mt-1">Organize products into structured categories</p>
+        <div class="flex items-center gap-1.5 mt-4 text-admin-accent text-sm font-semibold">
+            <span>Go to Categories</span>
+            <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+    </a>
+
+    <!-- Users Card -->
+    <a asp-area="Admin" asp-controller="Admin" asp-action="Users"
+       class="admin-card rounded-2xl p-6 hover:border-purple-500/40 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300 group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
+                <span class="material-symbols-outlined text-purple-400 text-2xl">group</span>
+            </div>
+            <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-lg">Manage</span>
+        </div>
+        <h2 class="text-xl font-black text-white group-hover:text-purple-400 transition-colors">Users</h2>
+        <p class="text-gray-400 text-sm mt-1">Manage customer accounts and permissions</p>
+        <div class="flex items-center gap-1.5 mt-4 text-purple-400 text-sm font-semibold">
+            <span>Go to Users</span>
+            <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+    </a>
+</div>
+
+<!-- Quick Actions -->
+<div class="admin-card rounded-2xl p-6">
+    <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-lg">bolt</span>
+        Quick Actions
+    </h2>
+    <div class="flex flex-wrap gap-3">
+        <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Create" class="admin-btn-primary">
+            <span class="material-symbols-outlined text-base">add</span>
+            New Product
+        </a>
+        <a asp-area="Admin" asp-controller="CategoryAdmin" asp-action="Create" class="admin-btn-secondary">
+            <span class="material-symbols-outlined text-base">add</span>
+            New Category
+        </a>
+       
+    </div>
+</div>

@@ -1,0 +1,96 @@
+@model ecommerce_system.Models.Category
+@{
+    ViewData["Title"] = "Create Category";
+    Layout = "_AdminLayout";
+}
+
+<div class="flex items-center gap-4 mb-8">
+    <a asp-area="Admin" asp-controller="CategoryAdmin" asp-action="Index" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div>
+        <h1 class="text-3xl font-black text-white">Create Category</h1>
+        <p class="text-gray-400 text-sm mt-0.5">Add a new product category</p>
+    </div>
+</div>
+
+<div class="max-w-2xl">
+    <form asp-area="Admin" asp-controller="CategoryAdmin" asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="space-y-5">
+            <!-- Name -->
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">category</span>
+                    Category Details
+                </h2>
+                <div>
+                    <label asp-for="Name" class="admin-label"></label>
+                    <input asp-for="Name" class="admin-input" placeholder="e.g., Electronics, Clothing, Books..." />
+                    <span asp-validation-for="Name" class="text-red-400 text-xs mt-1 block"></span>
+                </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">image</span>
+                    Category Image <span class="text-gray-600 font-normal normal-case tracking-normal">(optional)</span>
+                </h2>
+                <div class="flex flex-col sm:flex-row gap-5 items-start">
+                    <!-- Preview -->
+                    <div id="preview-container" class="w-36 h-36 rounded-2xl overflow-hidden border-2 border-dashed border-white/20 flex items-center justify-center bg-white/3 shrink-0">
+                        <div id="preview-placeholder" class="text-center">
+                            <span class="material-symbols-outlined text-3xl text-gray-600 block">image</span>
+                            <p class="text-xs text-gray-600 mt-1">Preview</p>
+                        </div>
+                        <img id="img-preview" class="hidden w-full h-full object-cover" />
+                    </div>
+
+                    <!-- Upload Input -->
+                    <div class="flex-1 w-full">
+                        <label for="imageFile" class="admin-label">Upload Image</label>
+                        <div class="border-2 border-dashed border-white/20 rounded-xl p-5 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/3 transition-all">
+                            <input type="file" name="imageFile" id="imageFile" class="hidden" accept="image/*" onchange="previewImage(this)" />
+                            <label for="imageFile" class="cursor-pointer flex flex-col items-center gap-2">
+                                <span class="material-symbols-outlined text-2xl text-primary">cloud_upload</span>
+                                <p class="text-white text-sm font-semibold">Click to upload</p>
+                                <p class="text-gray-500 text-xs">JPG, PNG, GIF, WEBP</p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <button type="submit" class="admin-btn-primary flex-1 justify-center py-3">
+                    <span class="material-symbols-outlined">save</span>
+                    Create Category
+                </button>
+                <a asp-area="Admin" asp-controller="CategoryAdmin" asp-action="Index" class="admin-btn-secondary flex-1 justify-center py-3">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('img-preview');
+            const placeholder = document.getElementById('preview-placeholder');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}
