@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — VOLTEX</title>
+
+    @* {{!-- Google Fonts --}} *@
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500&family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+    @* {{!-- Shared theme CSS --}} *@
+    <link rel="stylesheet" href="~/css/voltex.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+
+    @* {{!-- ── Search overlay ── --}} *@
+    <div class="s-ov" id="sOv">
+        <div class="s-box">
+            <input class="s-in" id="sIn" type="text" placeholder="Search…" />
+            <p class="s-hint">ESC to close</p>
+        </div>
+        <button class="s-cls" onclick="closeS()">✕</button>
+    </div>
+
+    @*{{!-- ── Navbar ── --}}*@
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-mark">
+                <svg viewBox="0 0 14 14"><polygon points="7,1 13,4 13,10 7,13 1,10 1,4" /></svg>
+            </div>
+            <span id="logoTxt">VOLTEX</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">Home</a></li>
+            <li><a href="/Categories" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" ? "active" : "")">Categories</a></li>
+            <li><a href="/Proudects" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Proudects" ? "active" : "")">Products</a></li>
+            <li><a href="#">Deals</a></li>
+        </ul>
+
+        <div class="nav-r">
+            <button class="icon-btn" onclick="openS()" aria-label="Search">⌕</button>
+            <label class="tog" aria-label="Toggle theme">
+                <input type="checkbox" id="togIn" onchange="setTheme(this.checked ? 'light' : 'dark')" />
+                <div class="tog-track">
+                    <div class="tog-icons"><span>🌙</span><span>☀</span></div>
+                </div>
+                <div class="tog-thumb"></div>
+            </label>
+            <button class="cart-btn"><span id="cLbl">CART</span><span class="cart-n">0</span></button>
+        </div>
+    </nav>
+
+    @* {{!-- ── Page content ── --}} *@
+    <div class="page-content">
+        @RenderBody()
+    </div>
+
+    @* {{!-- ── Footer ── --}} *@
+    <footer>
+        <div class="foot-grid">
+            <div>
+                <div class="foot-brand">VOLT<em>EX</em></div>
+                <p class="foot-tag">Premium tech accessories for creators, professionals, and enthusiasts who demand the best.</p>
+                <div class="foot-soc">
+                    <a href="#" class="soc-a">𝕏</a>
+                    <a href="#" class="soc-a">in</a>
+                    <a href="#" class="soc-a">ig</a>
+                    <a href="#" class="soc-a">yt</a>
+                </div>
+            </div>
+            <div class="foot-col">
+                <div class="foot-col-t">Shop</div>
+                <ul>
+                    <li><a href="#">New Arrivals</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">Sale Items</a></li>
+                    <li><a href="#">Gift Cards</a></li>
+                    <li><a href="#">Bundles</a></li>
+                </ul>
+            </div>
+            <div class="foot-col">
+                <div class="foot-col-t">Support</div>
+                <ul>
+                    <li><a href="#">Track Order</a></li>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">Warranty</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="foot-col">
+                <div class="foot-col-t">Company</div>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Partners</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="foot-btm">
+            <p class="foot-copy">© 2026 VOLTEX. All rights reserved.</p>
+            <div class="foot-leg">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </footer>
+
+    @* {{!-- ── Shared JS ── --}} *@
+    <script src="~/js/voltex.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

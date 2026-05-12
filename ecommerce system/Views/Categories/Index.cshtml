@@ -1,0 +1,127 @@
+@model IEnumerable<ecommerce_system.Models.Category>
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/categories.css" asp-append-version="true" />
+}
+
+<div class="page-wrap">
+@* {{!-- ── Top bar ── --}} *@
+<div class="cat-page-bar reveal">
+    <div class="cat-page-bar-inner">
+        <div>
+            <p class="sec-eye">Manage Store</p>
+            <h1 class="sec-ttl">ALL<br />CATEGORIES</h1>
+        </div>
+        <a asp-action="Create" class="btn-p btn-add-cat">
+            <span>+</span> Add Category
+        </a>
+    </div>
+</div>
+
+@* {{!-- ── Stats row ── --}} *@
+<div class="cat-stats reveal">
+    <div class="cat-stat-card">
+        <div class="csc-num">@Model.Count()</div>
+        <div class="csc-lbl">Total Categories</div>
+    </div>
+    <div class="cat-stat-card">
+        <div class="csc-num accent2">@Model.Sum(c => c.Proudects?.Count ?? 0)</div>
+        <div class="csc-lbl">Total Products</div>
+    </div>
+    <div class="cat-stat-card">
+        <div class="csc-num accent3">
+            @(Model.Any() ? Model.Max(c => c.Proudects?.Count ?? 0) : 0)
+        </div>
+        <div class="csc-lbl">Largest Category</div>
+    </div>
+</div>
+
+@* {{!-- ── Search / filter bar ── --}} *@
+<div class="cat-filter-bar reveal">
+    <div class="cat-search-wrap">
+        <span class="cs-icon">⌕</span>
+        <input type="text" id="catSearch" placeholder="Search categories…" class="cat-search-input" />
+    </div>
+    <div class="cat-sort-wrap">
+        <select id="catSort" class="cat-sort-select">
+            <option value="name">Sort: Name A–Z</option>
+            <option value="name-desc">Sort: Name Z–A</option>
+            <option value="count">Sort: Most Products</option>
+        </select>
+    </div>
+</div>
+
+@* {{!-- ── Grid ── --}} *@
+@if (!Model.Any())
+{
+    <div class="cat-empty reveal">
+        <div class="cat-empty-ico">📦</div>
+        <div class="cat-empty-ttl">No categories yet</div>
+        <p class="cat-empty-sub">Create your first category to get started.</p>
+        <a asp-action="Create" class="btn-p">+ Add Category</a>
+    </div>
+}
+else
+{
+    <div class="cat-admin-grid reveal" id="catGrid">
+        @foreach (var cat in Model)
+        {
+            <div class="cag-card" data-name="@cat.Name.ToLower()" data-count="@(cat.Proudects?.Count ?? 0)">
+
+                <div class="cag-fig">
+                    @if (!string.IsNullOrEmpty(cat.Img))
+                    {
+                        @* Ensure the path starts at the wwwroot folder using the ~/ operator *@
+                        <img src="~/images/Categories/@cat.Img"
+                             alt="@cat.Name"
+                             class="cag-img"
+                             asp-append-version="true" />
+                    }
+                    else
+                    {
+                        <div class="cag-img-placeholder">
+                            <span class="cag-emoji">🗂️</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="cag-body">
+                    <div class="cag-meta">
+                        <span class="cag-count">@(cat.Proudects?.Count ?? 0) products</span>
+                        <span class="cag-id">#@cat.Id</span>
+                    </div>
+                    <h3 class="cag-name">@cat.Name</h3>
+                </div>
+
+                <div class="cag-actions">
+                    <a asp-action="Details" asp-route-id="@cat.Id" class="cag-btn cag-btn-ghost" title="View">
+                        👁 View
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@cat.Id" class="cag-btn cag-btn-ghost" title="Edit">
+                        ✏ Edit
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@cat.Id" class="cag-btn cag-btn-danger" title="Delete">
+                        ✕ Delete
+                    </a>
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <div class="cat-no-results" id="catNoResults" style="display:none;">
+        <div class="cat-empty-ico">🔍</div>
+        <p class="cat-empty-ttl">No results found</p>
+    </div>
+}
+
+<div style="padding:40px"></div>
+
+
+@section Scripts {
+    <script src="~/js/categories.js" asp-append-version="true"></script>
+}

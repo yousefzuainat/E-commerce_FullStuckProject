@@ -1,0 +1,193 @@
+@model ecommerce_system.ViewModel.ProudectEditViewModel
+
+@{
+    ViewData["Title"] = "edit product";
+}
+
+<div class="container py-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                <form asp-action="Edit" enctype="multipart/form-data">
+                <div class="row g-0">
+                    <!-- Form Side -->
+                    <div class="col-md-7 p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold" style="color: #2c3e50;">edit product</h2>
+                            <p class="text-muted">update the details of the product</p>
+                        </div>
+                        
+                        <form asp-action="Edit" enctype="multipart/form-data">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                            
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="ExistingImg" id="existingImg" />
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Name" class="form-control" placeholder="product name" />
+                                <label asp-for="Name">product name</label>
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Description" class="form-control" placeholder="description" />
+                                    <label asp-for="Description">description</label>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Price" class="form-control" placeholder="price" />
+                                <label asp-for="Price">price</label>
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="CategoryId" class="form-label text-muted fw-bold">category</label>
+                                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+
+                            <!--Img-->
+                            <div class="form-group mb-4">
+                                <label class="form-label text-muted fw-bold">product image (leave empty to keep current)</label>
+                                <input type="file" asp-for="Uploads" class="form-control" id="imageInput" accept="image/*" />
+                                <span id="imageError" class="text-danger d-block mt-1" style="display:none; font-size: 0.875em;"></span>
+                                <span asp-validation-for="Uploads" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 10px;">
+                                    <i class="fas fa-save me-2"></i> save changes
+                                </button>
+                                <a asp-action="Index" class="btn btn-light" style="border-radius: 10px;">
+                                    back to list
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="col-md-5 d-none d-md-flex bg-light flex-column justify-content-center align-items-center p-4">
+                        <h5 class="text-muted mb-4 fw-bold">image preview</h5>
+                        <div class="preview-container text-center shadow-sm" style="width: 100%; max-width: 320px; height: 320px; border: 2px dashed #adb5bd; border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #ffffff; transition: all 0.3s ease;">
+                            <img id="imagePreview" src="#" alt="image preview" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
+                            <div id="placeholderText" class="text-muted">
+                                <i class="fas fa-cloud-upload-alt fa-4x mb-3 text-secondary"></i>
+                                <p class="m-0 fs-5">select new image</p>
+                                <small class="text-black-50">preview will be displayed here</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <hr class="border-secondary mt-4" />
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-controller="Proudects" asp-action="Index"
+                       class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-1"></i>Save Changes
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/voltex.js"></script>
+<script>
+    initImagePreview('imageInput', 'imagePreview', 'placeholderText', 'existingImg');
+
+    document.getElementById('imageInput').addEventListener('change', function () {
+        const name = this.files[0] ? this.files[0].name : 'Choose new image...';
+        document.getElementById('fileLabel').textContent = name;
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const existingImg = document.getElementById('existingImg').value;
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('placeholderText');
+            const previewContainer = document.querySelector('.preview-container');
+
+            // Show existing image if available on load
+            if (existingImg && existingImg.trim() !== '') {
+                preview.src = existingImg;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                previewContainer.style.borderStyle = 'solid';
+                previewContainer.style.borderColor = '#0d6efd';
+            }
+        });
+
+        document.getElementById('imageInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('placeholderText');
+            const previewContainer = document.querySelector('.preview-container');
+            const errorSpan = document.getElementById('imageError'); 
+            const existingImg = document.getElementById('existingImg').value;
+
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    errorSpan.textContent = 'please select a valid image file (like jpg, png, jpeg).';
+                    errorSpan.style.display = 'block'; 
+                    event.target.value = ''; 
+                    
+                    if (existingImg && existingImg.trim() !== '') {
+                        preview.src = existingImg;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        previewContainer.style.borderStyle = 'solid';
+                        previewContainer.style.borderColor = '#0d6efd';
+                    } else {
+                        preview.src = '#';
+                        preview.style.display = 'none';
+                        placeholder.style.display = 'block';
+                        previewContainer.style.borderStyle = 'dashed';
+                        previewContainer.style.borderColor = '#dc3545'; 
+                    }
+                    return; 
+                } 
+                else {
+                    errorSpan.style.display = 'none';
+                    errorSpan.textContent = '';
+                }
+
+                const reader = new FileReader();  
+                reader.onload = function (e) {  
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none'; 
+                    previewContainer.style.borderStyle = 'solid';
+                    previewContainer.style.borderColor = '#0d6efd'; 
+                } 
+                reader.readAsDataURL(file); 
+            } else {
+                errorSpan.style.display = 'none';
+                
+                if (existingImg && existingImg.trim() !== '') {
+                    preview.src = existingImg;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    previewContainer.style.borderStyle = 'solid';
+                    previewContainer.style.borderColor = '#0d6efd';
+                } else {
+                    preview.src = '#';
+                    preview.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    previewContainer.style.borderStyle = 'dashed';
+                    previewContainer.style.borderColor = '#adb5bd';
+                }
+            }
+        });
+    </script>
+}

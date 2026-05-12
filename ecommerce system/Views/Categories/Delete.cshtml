@@ -1,0 +1,64 @@
+@model ecommerce_system.Models.Category
+@{
+    ViewData["Title"] = "Delete Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/categories.css" asp-append-version="true" />
+
+<div class="cat-form-page">
+
+    <div class="cat-form-bar reveal">
+        <div>
+            <p class="sec-eye" style="color:var(--accent);">Danger Zone</p>
+            <h1 class="sec-ttl">DELETE<br>CATEGORY</h1>
+        </div>
+        <a asp-action="Index" class="btn-g btn-back">← Back to List</a>
+    </div>
+
+    <div class="cat-delete-wrap reveal">
+
+        <div class="cat-delete-card">
+            <div class="cd-warning-badge">⚠ This action cannot be undone</div>
+
+            <div class="cd-preview">
+                @if (!string.IsNullOrEmpty(Model.Img))
+                {
+                    <img src="@Model.Img" alt="@Model.Name" class="cd-preview-img" />
+                }
+                else
+                {
+                    <div class="cd-preview-emoji">🗂️</div>
+                }
+            </div>
+
+            <h2 class="cd-name">@Model.Name</h2>
+
+            <div class="cd-meta-row">
+                <div class="cd-meta-item">
+                    <span class="cd-meta-label">Category ID</span>
+                    <span class="cd-meta-val">#@Model.Id</span>
+                </div>
+                <div class="cd-meta-item">
+                    <span class="cd-meta-label">Products linked</span>
+                    <span class="cd-meta-val">@(Model.Proudects?.Count ?? 0)</span>
+                </div>
+            </div>
+
+            @if ((Model.Proudects?.Count ?? 0) > 0)
+            {
+                <div class="cd-linked-warning">
+                    ⚠ This category has <strong>@Model.Proudects!.Count product(s)</strong> linked to it.
+                    Deleting it may affect those products.
+                </div>
+            }
+
+            <form asp-action="Delete" method="post" class="cd-actions">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn-p cf-submit cd-confirm-btn">✕ Confirm Delete</button>
+                <a asp-action="Index" class="btn-g cf-cancel">Cancel</a>
+            </form>
+        </div>
+
+    </div>
+</div>

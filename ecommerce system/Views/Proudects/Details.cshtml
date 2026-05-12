@@ -1,0 +1,324 @@
+@model ecommerce_system.Models.Proudect
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int reviewCount = Model.Reviews?.Count ?? 0;
+
+    // Related products from the same category, excluding this one
+    var related = Model.Category?.Proudects?
+        .Where(p => p.Id != Model.Id)
+        .Take(4)
+        .ToList();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
+
+<div class="pd-page">
+
+    @* {{!-- ── Breadcrumb ── --}} *@
+    <nav class="pd-crumb reveal">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span class="pd-crumb-sep">›</span>
+        <a asp-action="Index">Products</a>
+        @if (Model.Category != null)
+        {
+            <span class="pd-crumb-sep">›</span>
+            <a asp-controller="Categories" asp-action="Details" asp-route-id="@Model.Category.Id">
+                @Model.Category.Name
+            </a>
+        }
+        <span class="pd-crumb-sep">›</span>
+        <span class="pd-crumb-cur">@Model.Name</span>
+    </nav>
+
+    @* {{!-- ── Admin action bar ── --}} *@
+    <div class="pd-admin-bar reveal">
+        <span class="pd-admin-bar-label">Admin Actions</span>
+        <a asp-action="Edit"   asp-route-id="@Model.Id" class="btn-g" style="padding:10px 24px;">✏ Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-g"
+           style="padding:10px 24px; border-color:var(--accent); color:var(--accent);">✕ Delete</a>
+        <a asp-action="Index" class="btn-g" style="padding:10px 24px;">← All Products</a>
+    </div>
+
+    @* {{!-- ══════════════════════════════════
+         MAIN: Gallery + Info
+    ══════════════════════════════════ --}} *@
+    <div class="pd-layout reveal">
+
+        @* {{!-- ── Left: Gallery ── --}} *@
+        <div class="pd-gallery">
+            <div class="pd-main-img" id="pdMainMedia">
+                @if (!string.IsNullOrEmpty(Model.Img))
+                {
+                    <img src="@Model.Img" alt="@Model.Name" />
+                }
+                else
+                {
+                    <span class="pd-main-emoji">🛍️</span>
+                }
+
+                @if (reviewCount > 0)
+                {
+                    <span class="pd-badge-main badge-new">@reviewCount Reviews</span>
+                }
+            </div>
+
+            @* {{!-- Thumbnail strip --}} *@
+            <div class="pd-thumbs">
+                <div class="pd-thumb-item active"
+                     data-src="@Model.Img"
+                     data-emoji="@(string.IsNullOrEmpty(Model.Img) ? "🛍️" : "")">
+                    @if (!string.IsNullOrEmpty(Model.Img))
+                    {
+                        <img src="@Model.Img" alt="main"
+                             style="width:100%;height:100%;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <span>🛍️</span>
+                    }
+                </div>
+                <div class="pd-thumb-item" data-emoji="📦"><span>📦</span></div>
+                <div class="pd-thumb-item" data-emoji="🔍"><span>🔍</span></div>
+                <div class="pd-thumb-item" data-emoji="✨"><span>✨</span></div>
+            </div>
+        </div>
+
+        @* {{!-- ── Right: Info ── --}} *@
+        <div class="pd-info">
+
+            @* {{!-- Category tag ── --}} *@
+            @if (Model.Category != null)
+            {
+                <div class="pd-eyebrow">
+                    <span class="pd-category-tag">@Model.Category.Name</span>
+                    @if (reviewCount > 0)
+                    {
+                        <span class="pd-stock-badge in-stock">
+                            <span class="pd-stock-dot"></span>
+                            @reviewCount Review@(reviewCount == 1 ? "" : "s")
+                        </span>
+                    }
+                </div>
+            }
+
+            <h1 class="pd-name">@Model.Name</h1>
+
+            @* {{!-- Price ── --}} *@
+            <div class="pd-price-block">
+                <span class="pd-price">$@Model.Price.ToString("0.00")</span>
+            </div>
+
+            @* {{!-- Description ── --}} *@
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <p class="pd-desc">@Model.Description</p>
+            }
+
+            @* {{!-- Quick info grid ── --}} *@
+            <div class="pd-specs-mini">
+                <div class="pd-spec-item">
+                    <div class="pd-spec-lbl">SKU</div>
+                    <div class="pd-spec-val">#@Model.Id.ToString("D6")</div>
+                </div>
+                @if (Model.Category != null)
+                {
+                    <div class="pd-spec-item">
+                        <div class="pd-spec-lbl">Category</div>
+                        <div class="pd-spec-val">@Model.Category.Name</div>
+                    </div>
+                }
+                <div class="pd-spec-item">
+                    <div class="pd-spec-lbl">Reviews</div>
+                    <div class="pd-spec-val">@reviewCount</div>
+                </div>
+                <div class="pd-spec-item">
+                    <div class="pd-spec-lbl">Price</div>
+                    <div class="pd-spec-val">$@Model.Price.ToString("0.00")</div>
+                </div>
+            </div>
+
+            @* {{!-- Quantity + CTA ── --}} *@
+            <div class="pd-qty-row">
+                <span class="pd-qty-label">Qty</span>
+                <div class="pd-qty-ctrl">
+                    <button class="pd-qty-btn" id="pdQtyMinus" type="button">−</button>
+                    <input  class="pd-qty-num" id="pdQty" type="number" value="1" min="1" />
+                    <button class="pd-qty-btn" id="pdQtyPlus"  type="button">+</button>
+                </div>
+            </div>
+
+            <div class="pd-cta-row">
+                <button class="btn-p pd-btn-cart">🛒 Add to Cart</button>
+                <button class="pd-btn-wish" id="pdWish" type="button" title="Wishlist">♡</button>
+            </div>
+
+            @* {{!-- Trust pills ── --}} *@
+            <div class="pd-trust">
+                <span class="pd-trust-item"><span class="pd-trust-ico">🚚</span> Free shipping over $75</span>
+                <span class="pd-trust-item"><span class="pd-trust-ico">🔄</span> 30-day returns</span>
+                <span class="pd-trust-item"><span class="pd-trust-ico">🔒</span> Secure checkout</span>
+            </div>
+
+        </div>
+    </div>
+
+    @* {{!-- ══════════════════════════════════
+         BOTTOM: Specs table + Reviews
+    ══════════════════════════════════ --}} *@
+    <div class="pd-bottom reveal">
+
+        @* {{!-- Specifications ── --}} *@
+        <div>
+            <div class="pd-section-ttl">Specifications</div>
+            <div class="pd-specs-table">
+                <div class="pd-spec-row">
+                    <span class="pd-spec-k">Product Name</span>
+                    <span class="pd-spec-v">@Model.Name</span>
+                </div>
+                @if (Model.Category != null)
+                {
+                    <div class="pd-spec-row">
+                        <span class="pd-spec-k">Category</span>
+                        <span class="pd-spec-v">@Model.Category.Name</span>
+                    </div>
+                }
+                <div class="pd-spec-row">
+                    <span class="pd-spec-k">Price</span>
+                    <span class="pd-spec-v">$@Model.Price.ToString("0.00")</span>
+                </div>
+                <div class="pd-spec-row">
+                    <span class="pd-spec-k">SKU</span>
+                    <span class="pd-spec-v">#@Model.Id.ToString("D6")</span>
+                </div>
+                <div class="pd-spec-row">
+                    <span class="pd-spec-k">Reviews</span>
+                    <span class="pd-spec-v">@reviewCount review@(reviewCount == 1 ? "" : "s")</span>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Img))
+                {
+                    <div class="pd-spec-row">
+                        <span class="pd-spec-k">Image</span>
+                        <span class="pd-spec-v" style="word-break:break-all;font-size:12px;">@Model.Img</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* {{!-- Reviews ── --}} *@
+        <div>
+            <div class="pd-section-ttl">
+                Customer Reviews
+                @if (reviewCount > 0)
+                {
+                    <span style="font-family:var(--body);font-size:13px;color:var(--accent);margin-left:10px;letter-spacing:1px;">
+                        (@reviewCount)
+                    </span>
+                }
+            </div>
+            <div class="pd-reviews">
+                @if (Model.Reviews != null && Model.Reviews.Any())
+                {
+                    @foreach (var rv in Model.Reviews)
+                    {
+                        <div class="pd-review-card">
+                            <div class="pdr-head">
+                                <div>
+                                    @* {{!-- Adjust property names below to match your Review model --}} *@
+                                    <div class="pdr-author">@(rv.User.FullName ?? rv.User?.UserName ?? "Anonymous")</div>
+                                    @if (rv.Rating != 0)
+                                    {
+                                        <div class="pdr-stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                @(i <= rv.Rating ? "★" : "☆")
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                @if (rv.CreatedAt != null)
+                                {
+                                    <span class="pdr-date">@rv.CreatedAt.ToString("MMM yyyy")</span>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(rv.comment))
+                            {
+                                <p class="pdr-text">@rv.comment</p>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="pd-review-card" style="text-align:center;padding:40px;">
+                        <div style="font-size:40px;margin-bottom:12px;opacity:.4;">💬</div>
+                        <div class="pdr-author" style="color:var(--text-dim);">No reviews yet</div>
+                        <p class="pdr-text" style="margin-top:6px;">Be the first to review this product.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    @* {{!-- ══════════════════════════════════
+         RELATED PRODUCTS
+    ══════════════════════════════════ --}} *@
+    @if (related != null && related.Any())
+    {
+        <div class="pd-related reveal">
+            <div class="sec-hd" style="margin-bottom:0;">
+                <div>
+                    <p class="sec-eye">From the same category</p>
+                    <h2 class="sec-ttl">RELATED<br />PRODUCTS</h2>
+                </div>
+                <a asp-action="Index" class="sec-more">All Products →</a>
+            </div>
+            <div class="pd-related-grid">
+                @foreach (var rp in related)
+                {
+                    int rpReviews = rp.Reviews?.Count ?? 0;
+                    <div class="pag-card">
+                        <div class="pag-thumb">
+                            @if (!string.IsNullOrEmpty(rp.Img))
+                            {
+                                <img src="@rp.Img" alt="@rp.Name" class="pag-thumb-img" />
+                            }
+                            else
+                            {
+                                <span class="pag-thumb-emoji">🛍️</span>
+                            }
+                            @if (rpReviews > 0)
+                            {
+                                <span class="pag-badge badge-new">@rpReviews ★</span>
+                            }
+                        </div>
+                        <div class="pag-body">
+                            @if (rp.Category != null)
+                            {
+                                <div class="pag-cat">@rp.Category.Name</div>
+                            }
+                            <div class="pag-name">@rp.Name</div>
+                            <div class="pag-foot">
+                                <span class="pag-price">$@rp.Price.ToString("0.00")</span>
+                            </div>
+                        </div>
+                        <div class="pag-actions">
+                            <a asp-action="Details" asp-route-id="@rp.Id" class="pag-btn pag-btn-primary">
+                                View →
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <script src="~/js/products-details.js" asp-append-version="true"></script>
+}
