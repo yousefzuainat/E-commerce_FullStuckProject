@@ -17,7 +17,7 @@
 </div>
 
 <!-- Stats Bar -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
     <div class="admin-card p-4 rounded-2xl">
         <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Total Products</p>
         <p class="text-3xl font-black text-white mt-1">@ViewBag.TotalProducts</p>
@@ -30,10 +30,7 @@
         <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Categories</p>
         <p class="text-3xl font-black text-admin-accent mt-1">@Model.Select(p => p.CategoryId).Distinct().Count()</p>
     </div>
-    <div class="admin-card p-4 rounded-2xl">
-        <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">With Discounts</p>
-        <p class="text-3xl font-black text-green-400 mt-1">@Model.Count(p => p.Discounts != null && p.Discounts.Any(d => d.Active))</p>
-    </div>
+  
 </div>
 
 <!-- Filters -->

@@ -20,7 +20,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/ProductsAdmin
         public async Task<IActionResult> Index(int? categoryId, string? searchTerm)
         {
             IQueryable<Proudect> query = _context.proudects
@@ -28,7 +27,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 .Include(p => p.Images)
                 .Include(p => p.Discounts);
 
-            if (categoryId.HasValue)
+            if (categoryId.HasValue) //  اعمل فلتر 
             {
                 query = query.Where(p => p.CategoryId == categoryId);
             }
@@ -38,7 +37,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 query = query.Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm));
             }
 
-            ViewBag.Categories = new SelectList(_context.categories, "Id", "Name", categoryId);
+            ViewBag.Categories = new SelectList(_context.categories, dataValueField: "Id", "Name", categoryId); // Dropdown 
             ViewBag.SelectedCategoryId = categoryId;
             ViewBag.SearchTerm = searchTerm;
             ViewBag.TotalProducts = await _context.proudects.CountAsync();
@@ -46,7 +45,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(await query.ToListAsync());
         }
 
-        // GET: Admin/ProductsAdmin/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -63,30 +61,27 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(product);
         }
 
-        // GET: Admin/ProductsAdmin/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.categories, "Id", "Name"); //dropdown
             return View();
         }
 
-        // POST: Admin/ProductsAdmin/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProudectCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Step 1: Save product without images or discounts
                 var product = new Proudect
                 {
                     Name = model.Name,
                     Description = model.Description,
                     Price = model.Price,
                     CategoryId = model.CategoryId
+                    //بدون الصوره و الخصم 
                 };
 
-                // Handle image file uploads (save files to disk first)
                 var uploadedImages = new List<string>();
                 if (model.Uploads != null && model.Uploads.Count > 0)
                 {
@@ -123,7 +118,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 _context.proudects.Add(product);
                 await _context.SaveChangesAsync();
 
-                // Step 2: Insert images via raw SQL (avoids MERGE)
                 foreach (var imgUrl in uploadedImages)
                 {
                     await _context.Database.ExecuteSqlRawAsync(
@@ -131,7 +125,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
                         imgUrl, product.Id);
                 }
 
-                // Step 3: Insert discount via raw SQL (avoids MERGE)
                 if (model.DiscountPercent.HasValue && model.DiscountPercent.Value > 0)
                 {
                     await _context.Database.ExecuteSqlRawAsync(
@@ -147,7 +140,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(model);
         }
 
-        // GET: Admin/ProductsAdmin/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -168,7 +160,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 Description = product.Description,
                 Price = product.Price,
                 CategoryId = product.CategoryId,
-                ExistingImg = product.Img,
+                ExistingImg = product.Img, // Main image URL 
                 ExistingImages = product.Images?.ToList() ?? new List<ProductImage>(),
                 DiscountPercent = activeDiscount?.DiscountPercent
             };
@@ -177,7 +169,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(model);
         }
 
-        // POST: Admin/ProductsAdmin/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProudectEditViewModel model)
@@ -200,9 +191,10 @@ namespace ecommerce_system.Areas.Admin.Controllers
                     product.Price = model.Price;
                     product.CategoryId = model.CategoryId;
 
-                    // Update Discount
-                    var activeDiscount = product.Discounts?.FirstOrDefault(d => d.Active);
+                    var activeDiscount = product.Discounts?.FirstOrDefault(d => d.Active); // خد الخصم  الحالي للمنتج
+
                     bool needNewDiscount = false;
+
                     if (model.DiscountPercent.HasValue && model.DiscountPercent.Value > 0)
                     {
                         if (activeDiscount != null)
@@ -219,7 +211,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
                         activeDiscount.Active = false;
                     }
 
-                    // Delete selected images
                     if (model.ImagesToDelete != null && model.ImagesToDelete.Count > 0)
                     {
                         var imagesToRemove = product.Images?
@@ -242,10 +233,8 @@ namespace ecommerce_system.Areas.Admin.Controllers
                         }
                     }
 
-                    // Save updates and deletions (no inserts = no MERGE)
                     await _context.SaveChangesAsync();
 
-                    // Add new discount via raw SQL to avoid MERGE
                     if (needNewDiscount)
                     {
                         await _context.Database.ExecuteSqlRawAsync(
@@ -253,9 +242,23 @@ namespace ecommerce_system.Areas.Admin.Controllers
                             "Default Discount", model.DiscountPercent!.Value, true, product.Id);
                     }
 
-                    // Add new images via raw SQL to avoid MERGE
                     if (model.Uploads != null && model.Uploads.Count > 0)
                     {
+                        var remainingOldImages = await _context.productImages
+                            .Where(pi => pi.ProudectId == product.Id)
+                            .ToListAsync();
+                        foreach (var oldImg in remainingOldImages)
+                        {
+                            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", oldImg.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                            if (System.IO.File.Exists(oldPath))
+                                System.IO.File.Delete(oldPath);
+                        }
+                        if (remainingOldImages.Any())
+                        {
+                            await _context.Database.ExecuteSqlRawAsync(
+                                "DELETE FROM ProductImages WHERE ProudectId = @p0", product.Id);
+                        }
+
                         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
                         string? firstNewImgUrl = null;
 
@@ -266,7 +269,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
                                 var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
                                 if (!allowedExtensions.Contains(extension))
                                 {
-                                    // Reload images for the view
                                     var reloadedProduct = await _context.proudects
                                         .Include(p => p.Images)
                                         .FirstOrDefaultAsync(p => p.Id == model.Id);
@@ -297,8 +299,8 @@ namespace ecommerce_system.Areas.Admin.Controllers
                             }
                         }
 
-                        // Update main image if needed
-                        if (string.IsNullOrEmpty(product.Img) && firstNewImgUrl != null)
+                        // Update main image to the first new image
+                        if (firstNewImgUrl != null)
                         {
                             product.Img = firstNewImgUrl;
                             await _context.SaveChangesAsync();
@@ -319,7 +321,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(model);
         }
 
-        // GET: Admin/ProductsAdmin/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -334,7 +335,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(product);
         }
 
-        // POST: Admin/ProductsAdmin/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -345,7 +345,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
             if (product != null)
             {
-                // Delete image files from disk
                 if (product.Images != null)
                 {
                     foreach (var img in product.Images)
@@ -355,6 +354,14 @@ namespace ecommerce_system.Areas.Admin.Controllers
                             System.IO.File.Delete(physicalPath);
                     }
                 }
+
+                if (!string.IsNullOrEmpty(product.Img))
+                {
+                    var mainImgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.Img.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (System.IO.File.Exists(mainImgPath))
+                        System.IO.File.Delete(mainImgPath);
+                }
+
                 _context.proudects.Remove(product);
             }
 
