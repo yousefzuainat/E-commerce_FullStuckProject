@@ -99,11 +99,11 @@
         @foreach (var cat in Model.Categories)
         {
             <div class="cat-card">
-                <div class="cat-fig">@cat.Icon</div>
+                <div class="cat-fig"><img src="~/images/Categories/@cat.Img"></div>
                 <div class="cat-info">
                     <div class="cat-cnt">@cat.ItemCount Items</div>
                     <div class="cat-nm">@cat.Name</div>
-                    <div class="cat-arr">→</div>
+                    <div class="cat-arr"><a asp-action="">-></a></div>
                 </div>
             </div>
         }
@@ -126,7 +126,7 @@
         {
             <div class="prod-card">
                 <div class="prod-thumb">
-                    <span>@p.Icon</span>
+                    <span>@p.Img</span>
                     @if (!string.IsNullOrEmpty(p.BadgeClass))
                     {
                         <span class="p-badge badge-@p.BadgeClass">@p.BadgeText</span>
