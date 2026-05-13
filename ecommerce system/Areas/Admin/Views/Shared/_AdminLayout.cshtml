@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin Panel | Nexus Commerce</title>
+    <title>@ViewData["Title"] - Admin Panel | VOLTEX</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="hidden sm:block">
                         <p class="text-xs text-admin-accent font-black uppercase tracking-[0.2em]">Admin Panel</p>
-                        <p class="text-sm font-bold text-white leading-none">Nexus Commerce</p>
+                        <p class="text-sm font-bold text-white leading-none">VOLTEX</p>
                     </div>
                 </a>
             </div>
@@ -121,7 +121,7 @@
                 </a>
 
                 <a asp-area="Admin" asp-controller="OrdersAdmin" asp-action="Index" 
-                    class="admin-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "admin-nav-active" : "")">
+                    class="admin-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Orders" ? "admin-nav-active" : "")">
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
                     <span>Orders</span>
                 </a>
