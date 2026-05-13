@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="~/css/voltex-auth.css" asp-append-version="true" />
 
     @RenderSection("Styles", required: false)
+    @Html.AntiForgeryToken()
 </head>
 <body>
 
@@ -60,7 +61,7 @@
             @if (SignInManager.IsSignedIn(User))
             {
                 @* Signed in: cart btn + profile icon with dropdown *@
-                <button class="cart-btn"><span id="cLbl">CART</span><span class="cart-n">0</span></button>
+                <a href="/Cart" class="cart-btn"><span id="cLbl">CART</span><span class="cart-n" id="cartCount">0</span></a>
                 <div class="nav-user-menu">
                     <button class="nav-profile-btn" onclick="toggleUserMenu()" aria-label="Account menu">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
@@ -104,7 +105,7 @@
                     <a asp-area="Identity" asp-page="/Account/Login" class="nav-login-btn">Login</a>
                     <a asp-area="Identity" asp-page="/Account/Register" class="nav-register-btn">Register</a>
                 </div>
-                <button class="cart-btn"><span id="cLbl">CART</span><span class="cart-n">0</span></button>
+                <a href="/Cart" class="cart-btn"><span id="cLbl">CART</span><span class="cart-n" id="cartCount">0</span></a>
             }
         </div>
     </nav>
@@ -186,6 +187,21 @@
                 document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
             }
         });
+    </script>
+
+    <script>
+        // Load cart count from session on every page
+        (async function () {
+            try {
+                const res = await fetch('/Cart/Count');
+                const data = await res.json();
+                const count = data.cartCount || 0;
+                document.querySelectorAll('.cart-n').forEach(el => {
+                    el.textContent = count;
+                    if (count > 0) el.classList.add('cart-n-active');
+                });
+            } catch (e) {}
+        })();
     </script>
 
     @RenderSection("Scripts", required: false)

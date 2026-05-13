@@ -97,18 +97,17 @@
     </div>
     <div class="cat-grid reveal">
         @foreach (var cat in Model.Categories)
-        {  
-            <a asp-controller="Proudects" asp-action="Index" asp-route-categoryId="@cat.Id" class="cat-card-wrapper">
-            <div class="cat-card">
-                <div class="cat-fig"><img src="~/images/Categories/@cat.Img"></div>
-                <div class="cat-info">
-                    <div class="cat-cnt">@cat.ItemCount Items</div>
-                    <div class="cat-nm">@cat.Name</div>
-                    <div class="cat-arr">-></div>
+        {
+            <a asp-controller="Proudects" asp-action="Index" asp-route-categoryId="@cat.CategoryId" class="cat-card-wrapper">
+                <div class="cat-card">
+                    <div class="cat-fig"><img src="~/images/Categories/@cat.Img"></div>
+                    <div class="cat-info">
+                        <div class="cat-cnt">@cat.ItemCount Items</div>
+                        <div class="cat-nm">@cat.Name</div>
+                        <div class="cat-arr">-></div>
+                    </div>
                 </div>
-            </div>
             </a>
-
         }
     </div>
 </section>
@@ -127,46 +126,43 @@
     <div class="prod-grid reveal">
         @foreach (var p in Model.FeaturedProducts)
         {
-            <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.id" class="cat-card-wrapper">
-
-            <div class="prod-card">
-                <div class="prod-thumb">
-                    <span><img src="@p.Img"></span>
-                    @if (!string.IsNullOrEmpty(p.BadgeClass))
-                    {
-                        <span class="p-badge badge-@p.BadgeClass">@p.BadgeText</span>
-                    }
-                </div>
-                <div class="prod-body">
-                    <p class="p-brand">@p.Brand</p>
-                    <p class="p-name">@p.Name</p>
-                    <p class="p-stars">
-                        @for (int i = 0; i < p.Rating; i++)
+            <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.ProductId" class="cat-card-wrapper">
+                <div class="prod-card">
+                    <div class="prod-thumb">
+                        <span><img src="@p.Img"></span>
+                        @if (!string.IsNullOrEmpty(p.BadgeClass))
                         {
-                            <text>★</text>
+                            <span class="p-badge badge-@p.BadgeClass">@p.BadgeText</span>
                         }
-                        @for (int i = p.Rating; i < 5; i++)
-                        {
-                            <text>☆</text>
-                        }
-                        <span class="p-rc">(@p.ReviewCount)</span>
-                    </p>
-                    <div class="p-foot">
-                        <span class="p-price">
-                            $@p.Price
-                            @if (p.OldPrice.HasValue)
+                    </div>
+                    <div class="prod-body">
+                        <p class="p-brand">@p.Brand</p>
+                        <p class="p-name">@p.Name</p>
+                        <p class="p-stars">
+                            @for (int i = 0; i < p.Rating; i++)
                             {
-                                <span class="p-old">$@p.OldPrice.Value</span>
+                                <text>★</text>
                             }
-                        </span>
-                        <button class="p-add">+</button>
+                            @for (int i = p.Rating; i < 5; i++)
+                            {
+                                <text>☆</text>
+                            }
+                            <span class="p-rc">(@p.ReviewCount)</span>
+                        </p>
+                        <div class="p-foot">
+                            <span class="p-price">
+                                $@p.Price
+                                @if (p.OldPrice.HasValue)
+                                {
+                                    <span class="p-old">$@p.OldPrice.Value</span>
+                                }
+                            </span>
+                            <button class="p-add" data-product-id="@p.ProductId" onclick="addToCart(this)">+</button>
+                        </div>
                     </div>
                 </div>
-
-            </div>
             </a>
         }
-
     </div>
 </section>
 
@@ -258,5 +254,54 @@
                 initCountdown(new Date(endIso));
             }
         })();
+
+        // ── Add to Cart ────────────────────────────────────
+        async function addToCart(btn) {
+            const productId = btn.dataset.productId;
+            if (!productId) return;
+
+            btn.disabled = true;
+            btn.textContent = '✓';
+
+            try {
+                const res = await fetch('/Cart/Add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: 'productId=' + productId + '&quantity=1'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Update badge
+                    document.querySelectorAll('.cart-n').forEach(el => {
+                        el.textContent = data.cartCount;
+                        el.classList.add('cart-n-active');
+                    });
+                    // Show toast
+                    showCartToast('Added to cart!');
+                }
+            } catch (e) {}
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '+';
+            }, 1200);
+        }
+
+        function showCartToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'cart-toast';
+            t.style.cssText = 'position:fixed;bottom:32px;right:32px;z-index:9999;padding:14px 24px;font-size:13px;letter-spacing:1px;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s;pointer-events:none;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);color:var(--text);font-family:var(--body,sans-serif);';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(12px)';
+                setTimeout(() => t.remove(), 350);
+            }, 2000);
+        }
     </script>
 }

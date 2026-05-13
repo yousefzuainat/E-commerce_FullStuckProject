@@ -25,6 +25,7 @@ namespace ecommerce_system.ViewModels
 
     public class HeroFeature
     {
+
         public string Name { get; set; }
         public decimal Price { get; set; }
         public string PriceFormatted => $"${Price:0}";
@@ -32,7 +33,7 @@ namespace ecommerce_system.ViewModels
 
     public class CategoryCard
     {
-        public int Id { get; set; }
+        public int CategoryId { get; set; }
         public string Img { get; set; }   // emoji mapped from Name
         public int ItemCount { get; set; }
         public string Name { get; set; }
@@ -41,7 +42,8 @@ namespace ecommerce_system.ViewModels
 
     public class ProductCard
     {
-        public int id {  get; set; }
+
+        public int ProductId { get; set; }
         public string Img { get; set; }
         public string BadgeClass { get; set; }   // "", "new", "sale"
         public string BadgeText { get; set; }    // "", "New", "−30%"
