@@ -228,5 +228,12 @@ namespace ecommerce_system.Controllers
         {
             return _context.proudects.Any(e => e.Id == id);
         }
+
+        //public async Task<IActionResult> Deals()
+        //{
+        //    var dealsProducts = await _context.proudects;
+        //     return View();
+
+        //}
     }
 }
