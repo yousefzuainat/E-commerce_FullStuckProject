@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="testtt\" />
+    <Folder Include="Views\Cart\" />
   </ItemGroup>
 
 </Project>

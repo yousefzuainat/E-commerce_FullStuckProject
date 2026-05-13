@@ -1,0 +1,223 @@
+@model ecommerce_system.ViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Your Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+}
+
+<div class="cart-page">
+
+    @* ── Page Header ── *@
+    <div class="cart-hd">
+        <div class="cart-hd-inner">
+            <p class="cart-eye">Your Selection</p>
+            <h1 class="cart-title">SHOPPING<br /><span class="cart-title-accent">CART</span></h1>
+            @if (Model.Items.Any())
+            {
+                <p class="cart-count-lbl">@Model.TotalQuantity item@(Model.TotalQuantity != 1 ? "s" : "") in your cart</p>
+            }
+        </div>
+    </div>
+
+    @if (!Model.Items.Any())
+    {
+        @* ── Empty State ── *@
+        <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <h2 class="cart-empty-ttl">Your cart is empty</h2>
+            <p class="cart-empty-sub">Looks like you haven't added anything yet. Browse our products and find something you love.</p>
+            <a href="/Proudects" class="btn-p">Start Shopping</a>
+        </div>
+    }
+    else
+    {
+        @* ── Cart Layout ── *@
+        <div class="cart-layout">
+
+            @* ── Items Column ── *@
+            <div class="cart-items-col" id="cartItemsCol">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="cart-item" data-product-id="@item.ProductId">
+                        <div class="cart-item-img">
+                            @if (!string.IsNullOrEmpty(item.Img) && !item.Img.All(c => char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '_' || c == '-'))
+                            {
+                                <span class="cart-item-emoji">@item.Img</span>
+                            }
+                            else
+                            {
+                                <img src="~/images/products/@item.Img" alt="@item.Name" />
+                            }
+                        </div>
+                        <div class="cart-item-info">
+                            <p class="cart-item-brand">@item.Brand</p>
+                            <p class="cart-item-name">@item.Name</p>
+                            <p class="cart-item-price">$@item.Price.ToString("F2")</p>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="qty-ctrl">
+                                <button class="qty-btn qty-minus" data-id="@item.ProductId" aria-label="Decrease">−</button>
+                                <span class="qty-val" id="qty-@item.ProductId">@item.Quantity</span>
+                                <button class="qty-btn qty-plus" data-id="@item.ProductId" aria-label="Increase">+</button>
+                            </div>
+                            <p class="cart-item-line" id="line-@item.ProductId">$@item.LineTotal.ToString("F2")</p>
+                        </div>
+                        <button class="cart-item-remove" data-id="@item.ProductId" aria-label="Remove item">✕</button>
+                    </div>
+                }
+            </div>
+
+            @* ── Summary Column ── *@
+            <div class="cart-summary">
+                <div class="cart-summary-inner">
+                    <h2 class="summary-ttl">Order Summary</h2>
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="summarySubtotal">$@Model.Subtotal.ToString("F2")</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span id="summaryShipping">
+                            @(Model.Shipping == 0 ? "FREE" : "$" + Model.Shipping.ToString("F2"))
+                        </span>
+                    </div>
+                    @if (Model.Shipping > 0)
+                    {
+                        <p class="free-ship-hint">Add $@((75 - Model.Subtotal).ToString("F2")) more for free shipping</p>
+                    }
+                    else
+                    {
+                        <p class="free-ship-hint free-ship-active">✓ You qualify for free shipping!</p>
+                    }
+
+                    <div class="summary-divider"></div>
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <span id="summaryTotal">$@Model.Total.ToString("F2")</span>
+                    </div>
+
+                    @* Checkout — requires auth *@
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Cart" asp-action="Checkout" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="checkout-btn">
+                                Proceed to Checkout →
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login"
+                           asp-route-returnUrl="/Cart"
+                           class="checkout-btn checkout-login-btn">
+                            Login to Checkout →
+                        </a>
+                        <p class="checkout-note">You'll be returned to your cart after login.</p>
+                    }
+
+                    <a href="/Proudects" class="continue-shopping">← Continue Shopping</a>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+    // ── Toast helper ──────────────────────────────────────
+    function showToast(msg, type = 'success') {
+        const t = document.createElement('div');
+        t.className = 'cart-toast cart-toast-' + type;
+        t.textContent = msg;
+        document.body.appendChild(t);
+        requestAnimationFrame(() => t.classList.add('show'));
+        setTimeout(() => {
+            t.classList.remove('show');
+            setTimeout(() => t.remove(), 350);
+        }, 2200);
+    }
+
+    // ── Update cart badge everywhere ──────────────────────
+    function updateBadge(count) {
+        document.querySelectorAll('.cart-n').forEach(el => {
+            el.textContent = count;
+            el.classList.toggle('cart-n-active', count > 0);
+        });
+    }
+
+    // ── Update summary numbers ────────────────────────────
+    function updateSummary(data) {
+        const sub = document.getElementById('summarySubtotal');
+        const ship = document.getElementById('summaryShipping');
+        const tot = document.getElementById('summaryTotal');
+        if (sub) sub.textContent = '$' + data.subtotal;
+        if (ship) ship.textContent = data.shipping === '0.00' ? 'FREE' : '$' + data.shipping;
+        if (tot) tot.textContent = '$' + data.total;
+    }
+
+    // ── REMOVE ────────────────────────────────────────────
+    document.querySelectorAll('.cart-item-remove').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const id = this.dataset.id;
+            const row = this.closest('.cart-item');
+            row.classList.add('removing');
+            const res = await fetch('/Cart/Remove', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': getToken() },
+                body: 'productId=' + id
+            });
+            const data = await res.json();
+            if (data.success) {
+                setTimeout(() => {
+                    row.remove();
+                    updateBadge(data.cartCount);
+                    updateSummary(data);
+                    if (data.isEmpty) location.reload();
+                }, 300);
+                showToast('Item removed from cart');
+            }
+        });
+    });
+
+    // ── QUANTITY ──────────────────────────────────────────
+    async function changeQty(productId, delta) {
+        const qtyEl = document.getElementById('qty-' + productId);
+        const current = parseInt(qtyEl.textContent);
+        const newQty = current + delta;
+        if (newQty < 1) return;
+
+        const res = await fetch('/Cart/Update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': getToken() },
+            body: 'productId=' + productId + '&quantity=' + newQty
+        });
+        const data = await res.json();
+        if (data.success) {
+            qtyEl.textContent = newQty;
+            const lineEl = document.getElementById('line-' + productId);
+            if (lineEl) lineEl.textContent = '$' + data.lineTotal;
+            updateBadge(data.cartCount);
+            updateSummary(data);
+        }
+    }
+
+    document.querySelectorAll('.qty-minus').forEach(btn => {
+        btn.addEventListener('click', () => changeQty(btn.dataset.id, -1));
+    });
+    document.querySelectorAll('.qty-plus').forEach(btn => {
+        btn.addEventListener('click', () => changeQty(btn.dataset.id, +1));
+    });
+
+    // ── Anti-forgery token helper ─────────────────────────
+    function getToken() {
+        return document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            || document.querySelector('meta[name="csrf-token"]')?.content || '';
+    }
+</script>
+}

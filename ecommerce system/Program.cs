@@ -35,6 +35,15 @@ namespace ecommerce_system
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddControllersWithViews();
 
+            // Session for guest cart
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(7);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             var app = builder.Build();
 
             // 3. SEEDING THE "ADMIN CAPTAIN"
@@ -68,6 +77,7 @@ namespace ecommerce_system
 
             app.UseRouting();
 
+            app.UseSession();           // Must be before UseAuthentication
             app.UseAuthentication(); // Verify Identity
             app.UseAuthorization();  // Verify Permissions
 
