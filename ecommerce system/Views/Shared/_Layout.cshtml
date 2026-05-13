@@ -1,3 +1,7 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ecommerce_system.Models.AppliactionUser> SignInManager
+@inject UserManager<ecommerce_system.Models.AppliactionUser> UserManager
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -5,18 +9,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — VOLTEX</title>
 
-    @* {{!-- Google Fonts --}} *@
+    @* Google Fonts *@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500&family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
-    @* {{!-- Shared theme CSS --}} *@
+    @* Shared theme CSS *@
     <link rel="stylesheet" href="~/css/voltex.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/voltex-auth.css" asp-append-version="true" />
 
     @RenderSection("Styles", required: false)
 </head>
 <body>
 
-    @* {{!-- ── Search overlay ── --}} *@
+    @* ── Search overlay ── *@
     <div class="s-ov" id="sOv">
         <div class="s-box">
             <input class="s-in" id="sIn" type="text" placeholder="Search…" />
@@ -25,7 +30,7 @@
         <button class="s-cls" onclick="closeS()">✕</button>
     </div>
 
-    @*{{!-- ── Navbar ── --}}*@
+    @* ── Navbar ── *@
     <nav>
         <a href="/" class="logo">
             <div class="logo-mark">
@@ -50,16 +55,63 @@
                 </div>
                 <div class="tog-thumb"></div>
             </label>
-            <button class="cart-btn"><span id="cLbl">CART</span><span class="cart-n">0</span></button>
+
+            @* ── Auth ── *@
+            @if (SignInManager.IsSignedIn(User))
+            {
+                @* Signed in: cart btn + profile icon with dropdown *@
+                <button class="cart-btn"><span id="cLbl">CART</span><span class="cart-n">0</span></button>
+                <div class="nav-user-menu">
+                    <button class="nav-profile-btn" onclick="toggleUserMenu()" aria-label="Account menu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                        </svg>
+                    </button>
+                    <div class="nav-dropdown" id="userDropdown">
+                        <div class="nav-drop-header">
+                            <span class="nav-drop-name">@UserManager.GetUserName(User)</span>
+                        </div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-area="Admin" asp-controller="Admin" asp-action="Index" class="nav-drop-item nav-drop-admin">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                Admin Panel
+                            </a>
+                            <div class="nav-drop-divider"></div>
+                        }
+                        <a href="#" class="nav-drop-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            Settings
+                        </a>
+                        <div class="nav-drop-divider"></div>
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+                            <button type="submit" class="nav-drop-item nav-drop-logout">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @* Signed out: login + register + cart *@
+                <div class="nav-auth-btns">
+                    <a asp-area="Identity" asp-page="/Account/Login" class="nav-login-btn">Login</a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="nav-register-btn">Register</a>
+                </div>
+                <button class="cart-btn"><span id="cLbl">CART</span><span class="cart-n">0</span></button>
+            }
         </div>
     </nav>
 
-    @* {{!-- ── Page content ── --}} *@
+    @* ── Page content ── *@
     <div class="page-content">
         @RenderBody()
     </div>
 
-    @* {{!-- ── Footer ── --}} *@
+    @* ── Footer ── *@
     <footer>
         <div class="foot-grid">
             <div>
@@ -113,9 +165,26 @@
         </div>
     </footer>
 
-    @* {{!-- ── Shared JS ── --}} *@
+    @* ── Shared JS ── *@
     <script src="~/js/voltex.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
 
+    <script>
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            const btn = document.querySelector('.nav-profile-btn');
+            if (!dropdown) return;
+            const isOpen = dropdown.classList.toggle('open');
+            btn?.classList.toggle('is-open', isOpen);
+        }
+        document.addEventListener('click', function (e) {
+            const menu = document.querySelector('.nav-user-menu');
+            if (menu && !menu.contains(e.target)) {
+                document.getElementById('userDropdown')?.classList.remove('open');
+                document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
+            }
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

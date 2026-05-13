@@ -711,3 +711,34 @@
 }
 [data-theme="dark"] .pag-no-review { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
 [data-theme="light"] .pag-no-review { font-family: 'Jost', sans-serif; font-weight: 500; }
+
+
+
+/* 1. Remove link styling */
+.prod-card-link {
+    text-decoration: none !important;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+    .prod-card-link:hover {
+        text-decoration: none !important;
+    }
+
+/* 2. Prevent the buttons from being "swallowed" by the main link */
+.pag-actions {
+    position: relative;
+    z-index: 10; /* Ensures buttons stay on top */
+}
+
+/* 3. Ensure the title doesn't turn blue or underline */
+.pag-name {
+    text-decoration: none !important;
+    color: #333; /* Or your preferred color */
+}
+
+.prod-card-link:hover .pag-card {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+}

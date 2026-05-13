@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="testtt\" />
-    <Folder Include="wwwroot\images\Categories\" />
   </ItemGroup>
 
 </Project>

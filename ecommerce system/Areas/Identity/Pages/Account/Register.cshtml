@@ -1,41 +1,54 @@
-﻿@page
+@page
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <span class="auth-eye">New Account</span>
+        <h1 class="auth-heading">Join Voltex.</h1>
+        <p class="auth-sub">Create your account — it only takes a minute.</p>
 
-<div class="row">
-    <div class="col-md-4">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.FullName" class="form-control" aria-required="true" placeholder="Full Name" />
-                <label asp-for="Input.FullName">Full Name</label>
-                <span asp-validation-for="Input.FullName" class="text-danger"></span>
+            <div asp-validation-summary="ModelOnly" class="auth-error" role="alert"></div>
+
+            <div class="auth-field">
+                <label asp-for="Input.FullName" class="auth-label">Full Name</label>
+                <input asp-for="Input.FullName" class="auth-input" aria-required="true" placeholder="Jane Doe" />
+                <span asp-validation-for="Input.FullName" class="auth-field-err"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+
+            <div class="auth-field">
+                <label asp-for="Input.Email" class="auth-label">Email</label>
+                <input asp-for="Input.Email" class="auth-input" autocomplete="username"
+                       aria-required="true" placeholder="you@example.com" />
+                <span asp-validation-for="Input.Email" class="auth-field-err"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+            <div class="auth-field">
+                <label asp-for="Input.Password" class="auth-label">Password</label>
+                <input asp-for="Input.Password" class="auth-input" autocomplete="new-password"
+                       aria-required="true" placeholder="••••••••" />
+                <span asp-validation-for="Input.Password" class="auth-field-err"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+
+            <div class="auth-field" style="margin-bottom:2rem">
+                <label asp-for="Input.ConfirmPassword" class="auth-label">Confirm Password</label>
+                <input asp-for="Input.ConfirmPassword" class="auth-input" autocomplete="new-password"
+                       aria-required="true" placeholder="••••••••" />
+                <span asp-validation-for="Input.ConfirmPassword" class="auth-field-err"></span>
             </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+
+            <button id="registerSubmit" type="submit" class="auth-submit">Create Account</button>
+
+            <div class="auth-links">
+                <a asp-area="Identity" asp-page="/Account/Login" class="auth-link-primary">
+                    Already have an account? Sign in
+                </a>
+            </div>
         </form>
     </div>
- 
 </div>
 
 @section Scripts {
