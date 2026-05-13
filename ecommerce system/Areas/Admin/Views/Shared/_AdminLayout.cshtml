@@ -113,12 +113,15 @@
                 <div class="pt-4 pb-1 px-4">
                     <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">Management</p>
                 </div>
+
                 <a asp-area="Admin" asp-controller="Admin" asp-action="Users"
                    class="admin-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "admin-nav-active" : "")">
                     <span class="material-symbols-outlined text-xl">group</span>
                     <span>Users</span>
                 </a>
-                <a href="#" class="admin-nav-item opacity-50 cursor-not-allowed">
+
+                <a asp-area="Admin" asp-controller="OrdersAdmin" asp-action="Index" 
+                    class="admin-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "admin-nav-active" : "")">
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
                     <span>Orders</span>
                 </a>
