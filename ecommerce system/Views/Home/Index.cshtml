@@ -97,15 +97,18 @@
     </div>
     <div class="cat-grid reveal">
         @foreach (var cat in Model.Categories)
-        {
+        {  
+            <a asp-controller="Proudects" asp-action="Index" asp-route-categoryId="@cat.Id" class="cat-card-wrapper">
             <div class="cat-card">
                 <div class="cat-fig"><img src="~/images/Categories/@cat.Img"></div>
                 <div class="cat-info">
                     <div class="cat-cnt">@cat.ItemCount Items</div>
                     <div class="cat-nm">@cat.Name</div>
-                    <div class="cat-arr"><a asp-action="">-></a></div>
+                    <div class="cat-arr">-></div>
                 </div>
             </div>
+            </a>
+
         }
     </div>
 </section>
@@ -124,6 +127,8 @@
     <div class="prod-grid reveal">
         @foreach (var p in Model.FeaturedProducts)
         {
+            <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.id" class="cat-card-wrapper">
+
             <div class="prod-card">
                 <div class="prod-thumb">
                     <span><img src="@p.Img"></span>
@@ -157,8 +162,11 @@
                         <button class="p-add">+</button>
                     </div>
                 </div>
+
             </div>
+            </a>
         }
+
     </div>
 </section>
 

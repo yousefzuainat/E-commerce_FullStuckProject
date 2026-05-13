@@ -58,6 +58,7 @@ namespace ecommerce_system.Controllers
                 .Include(c => c.Proudects)               // your nav is spelled Proudects
                 .Select(c => new CategoryCard
                 {
+                    Id = c.Id,
                     Name = c.Name,
                     Slug = c.Name.ToLowerInvariant().Replace(" ", "-"),
                     ItemCount = c.Proudects.Count,
@@ -173,6 +174,7 @@ namespace ecommerce_system.Controllers
 
             return new ProductCard
             {
+                id = p.Id,
                 Img = p.Img,
                 Brand = ExtractBrand(p.Name),
                 Name = p.Name,
