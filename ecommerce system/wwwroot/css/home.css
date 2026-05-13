@@ -481,6 +481,17 @@
     transform: scale(1.1);
 }
 
+/* Make <img> inside .cat-fig fill the container without zooming */
+.cat-fig img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
 [data-theme="dark"] .cat-card:nth-child(1) .cat-fig {
     background: linear-gradient(135deg,#0f1229,#0a0d1f);
 }
