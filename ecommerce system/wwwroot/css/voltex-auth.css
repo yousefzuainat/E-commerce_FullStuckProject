@@ -1,0 +1,556 @@
+/* ============================================================
+   VOLTEX — Auth Styles (navbar + login/register pages)
+   Matches voltex.css design system
+   ============================================================ */
+
+/* ── Login + Register ghost/filled nav buttons ── */
+.nav-auth-btns {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.nav-login-btn,
+.nav-register-btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color .2s, background .2s, border-color .2s, opacity .2s;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .nav-login-btn,
+[data-theme="dark"] .nav-register-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 8px 20px;
+    clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+}
+
+[data-theme="light"] .nav-login-btn,
+[data-theme="light"] .nav-register-btn {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 3px;
+}
+
+/* Ghost (Login) */
+.nav-login-btn {
+    background: transparent;
+    color: var(--text-sub);
+    border: 1px solid var(--btn2-bd);
+}
+
+    .nav-login-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+/* Filled (Register) */
+.nav-register-btn {
+    background: var(--btn1-bg);
+    color: var(--btn1-fg);
+    border: 1px solid transparent;
+}
+
+    .nav-register-btn:hover {
+        opacity: .85;
+    }
+
+
+/* ── Profile icon button ── */
+.nav-user-menu {
+    position: relative;
+}
+
+.nav-profile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: transparent;
+    border: 1px solid var(--btn2-bd);
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: border-color .2s, color .2s, background .2s;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .nav-profile-btn {
+    clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+
+[data-theme="light"] .nav-profile-btn {
+    border-radius: 50%;
+}
+
+.nav-profile-btn svg {
+    width: 17px;
+    height: 17px;
+    pointer-events: none;
+}
+
+.nav-profile-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.nav-profile-btn.is-open {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--btn1-fg);
+}
+
+
+/* ── Dropdown panel ── */
+.nav-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    z-index: 300;
+    transform-origin: top right;
+}
+
+[data-theme="dark"] .nav-dropdown {
+    box-shadow: 0 16px 48px rgba(0,0,0,.6), 0 0 0 1px rgba(255,106,0,.08);
+}
+
+[data-theme="light"] .nav-dropdown {
+    box-shadow: 0 8px 32px rgba(0,0,0,.1);
+    border-radius: 4px;
+}
+
+.nav-dropdown.open {
+    display: block;
+    animation: dropIn .15s ease;
+}
+
+@keyframes dropIn {
+    from {
+        opacity: 0;
+        transform: scale(.96) translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.nav-drop-header {
+    padding: .8rem 1rem .65rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.nav-drop-name {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .nav-drop-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .nav-drop-name {
+    font-family: 'Jost', sans-serif;
+}
+
+.nav-drop-item {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: .7rem 1rem;
+    color: var(--text-sub);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+    box-sizing: border-box;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+[data-theme="dark"] .nav-drop-item {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .nav-drop-item {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+}
+
+.nav-drop-item svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: .6;
+    transition: opacity .15s;
+}
+
+.nav-drop-item:hover {
+    background: var(--surface2);
+    color: var(--accent);
+}
+
+    .nav-drop-item:hover svg {
+        opacity: 1;
+    }
+
+/* admin — always accent */
+.nav-drop-admin {
+    color: var(--accent) !important;
+}
+
+    .nav-drop-admin svg {
+        opacity: 1 !important;
+    }
+
+    .nav-drop-admin:hover {
+        background: rgba(255,106,0,.1) !important;
+    }
+
+[data-theme="light"] .nav-drop-admin:hover {
+    background: rgba(224,92,58,.08) !important;
+}
+
+.nav-drop-divider {
+    height: 1px;
+    background: var(--border);
+    margin: .25rem 0;
+}
+
+/* sign out — red hover */
+.nav-drop-logout:hover {
+    background: rgba(255,60,60,.08) !important;
+    color: #ff5555 !important;
+}
+
+    .nav-drop-logout:hover svg {
+        opacity: 1;
+    }
+
+
+/* ============================================================
+   AUTH PAGES — Login & Register
+   ============================================================ */
+.auth-wrap {
+    min-height: calc(100vh - 66px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 3rem 2.75rem;
+    position: relative;
+    transition: background .5s, border-color .5s;
+}
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 2px;
+        background: var(--accent);
+        transition: background .5s;
+    }
+
+[data-theme="dark"] .auth-card {
+    clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+    box-shadow: 0 0 60px rgba(255,106,0,.06);
+}
+
+[data-theme="light"] .auth-card {
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.07);
+}
+
+.auth-eye {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .auth-eye {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .auth-eye {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+}
+
+.auth-heading {
+    font-family: var(--heading);
+    color: var(--text);
+    line-height: .95;
+    margin: 0 0 .4rem;
+    transition: font-family .5s, color .5s;
+}
+
+[data-theme="dark"] .auth-heading {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+[data-theme="light"] .auth-heading {
+    font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.auth-sub {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin: 0 0 2.25rem;
+    line-height: 1.7;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .auth-sub {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .auth-sub {
+    font-family: 'Jost', sans-serif;
+}
+
+.auth-error {
+    background: rgba(255,60,60,.08);
+    border: 1px solid rgba(255,60,60,.25);
+    color: #ff5555;
+    padding: .75rem 1rem;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+[data-theme="dark"] .auth-error {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .auth-error {
+    font-family: 'Jost', sans-serif;
+    border-radius: 3px;
+}
+
+.auth-field {
+    margin-bottom: 1.35rem;
+}
+
+.auth-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: .5rem;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .auth-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .auth-label {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+}
+
+.auth-input {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: .8rem 1rem;
+    outline: none;
+    transition: border-color .2s, background .5s, color .5s;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+}
+
+[data-theme="dark"] .auth-input {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .9rem;
+    clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+
+[data-theme="light"] .auth-input {
+    font-family: 'Jost', sans-serif;
+    font-size: .95rem;
+    border-radius: 3px;
+}
+
+.auth-input::placeholder {
+    color: var(--text-dim);
+}
+
+.auth-input:focus {
+    border-color: var(--accent);
+}
+
+.auth-field-err {
+    display: block;
+    font-size: 11px;
+    color: #ff5555;
+    margin-top: .35rem;
+    letter-spacing: .5px;
+}
+
+[data-theme="dark"] .auth-field-err {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .auth-field-err {
+    font-family: 'Jost', sans-serif;
+}
+
+.auth-check-row {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    margin-bottom: 2rem;
+}
+
+    .auth-check-row input[type="checkbox"] {
+        accent-color: var(--accent);
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .auth-check-row label {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        cursor: pointer;
+    }
+
+[data-theme="dark"] .auth-check-row label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .auth-check-row label {
+    font-family: 'Jost', sans-serif;
+}
+
+.auth-submit {
+    width: 100%;
+    background: var(--btn1-bg);
+    color: var(--btn1-fg);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity .2s, transform .2s, box-shadow .2s, background .5s, color .5s;
+    margin-bottom: 2rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+[data-theme="dark"] .auth-submit {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    padding: 15px 40px;
+    clip-path: polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+}
+
+    [data-theme="dark"] .auth-submit:hover {
+        opacity: .85;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px var(--glow-a);
+    }
+
+[data-theme="light"] .auth-submit {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    padding: 15px 40px;
+    border-radius: 3px;
+    letter-spacing: 2px;
+}
+
+    [data-theme="light"] .auth-submit:hover {
+        opacity: .88;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px var(--glow-a);
+    }
+
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.35rem;
+    transition: border-color .5s;
+}
+
+    .auth-links a {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        text-decoration: none;
+        transition: color .2s;
+    }
+
+[data-theme="dark"] .auth-links a {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .auth-links a {
+    font-family: 'Jost', sans-serif;
+}
+
+.auth-links a:hover {
+    color: var(--accent);
+}
+
+.auth-link-primary {
+    color: var(--accent) !important;
+}

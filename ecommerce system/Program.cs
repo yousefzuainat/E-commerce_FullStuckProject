@@ -12,17 +12,18 @@ namespace ecommerce_system
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120)));
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+            // --- FIXED: Removed AddDefaultIdentity and kept AddIdentity for Role support ---
             builder.Services.AddIdentity<AppliactionUser, IdentityRole>(options =>
                 options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -33,7 +34,6 @@ namespace ecommerce_system
                 var services = scope.ServiceProvider;
                 try
                 {
-                    // Call the seeding logic here
                     await SeedAdminUserAsync(services);
                 }
                 catch (Exception ex)
@@ -53,8 +53,9 @@ namespace ecommerce_system
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -71,6 +72,7 @@ namespace ecommerce_system
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
             app.MapRazorPages().WithStaticAssets();
 
             app.Run();
@@ -82,7 +84,6 @@ namespace ecommerce_system
             var userManager = serviceProvider.GetRequiredService<UserManager<AppliactionUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // 1. Create Roles if they don't exist
             string[] roles = { "Admin", "User" };
             foreach (var role in roles)
             {
@@ -92,7 +93,6 @@ namespace ecommerce_system
                 }
             }
 
-            // 2. Create the Admin User
             var adminEmail = "Admin@gmail.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -114,7 +114,6 @@ namespace ecommerce_system
             }
             else
             {
-                // User exists — make sure they have the Admin role
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
