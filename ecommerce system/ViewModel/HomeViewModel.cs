@@ -32,6 +32,7 @@ namespace ecommerce_system.ViewModels
 
     public class CategoryCard
     {
+        public int Id { get; set; }
         public string Img { get; set; }   // emoji mapped from Name
         public int ItemCount { get; set; }
         public string Name { get; set; }
@@ -40,6 +41,7 @@ namespace ecommerce_system.ViewModels
 
     public class ProductCard
     {
+        public int id {  get; set; }
         public string Img { get; set; }
         public string BadgeClass { get; set; }   // "", "new", "sale"
         public string BadgeText { get; set; }    // "", "New", "−30%"
