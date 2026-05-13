@@ -11,14 +11,23 @@ namespace ecommerce_system
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // 1. DATABASE CONFIGURATION
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120)));
 
-            // --- FIXED: Removed AddDefaultIdentity and kept AddIdentity for Role support ---
+            // 2. IDENTITY CONFIGURATION (Unified for Roles & UI)
+            // We use AddIdentity instead of AddDefaultIdentity to enable RoleManager support
             builder.Services.AddIdentity<AppliactionUser, IdentityRole>(options =>
-                options.SignIn.RequireConfirmedAccount = false)
+            {
+                options.SignIn.RequireConfirmedAccount = false; // Set to true if using Email confirmation
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
@@ -28,6 +37,7 @@ namespace ecommerce_system
 
             var app = builder.Build();
 
+            // 3. SEEDING THE "ADMIN CAPTAIN"
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -38,10 +48,11 @@ namespace ecommerce_system
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
+                    logger.LogError(ex, "An error occurred while seeding the Admin mission.");
                 }
             }
 
+            // 4. HTTP REQUEST PIPELINE (Middleware)
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -57,30 +68,32 @@ namespace ecommerce_system
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthentication(); // Verify Identity
+            app.UseAuthorization();  // Verify Permissions
 
-            app.MapStaticAssets();
-
+            // 5. ROUTE MAPPING
+            // Area route (for Admin dashboard)
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
 
+            // Default route
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapRazorPages().WithStaticAssets();
+            app.MapRazorPages();
 
             app.Run();
         }
 
+        // SEEDING LOGIC: Sets up the Admin role and the first "Captain" user
         private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<AppliactionUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+            // Create Roles if they don't exist
             string[] roles = { "Admin", "User" };
             foreach (var role in roles)
             {
@@ -90,6 +103,7 @@ namespace ecommerce_system
                 }
             }
 
+            // Create Admin User if they don't exist
             var adminEmail = "Admin@gmail.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -111,6 +125,7 @@ namespace ecommerce_system
             }
             else
             {
+                // Ensure existing Admin has the Admin role
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
