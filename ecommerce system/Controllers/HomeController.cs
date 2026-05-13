@@ -61,7 +61,7 @@ namespace ecommerce_system.Controllers
                     Name = c.Name,
                     Slug = c.Name.ToLowerInvariant().Replace(" ", "-"),
                     ItemCount = c.Proudects.Count,
-                    Icon = NameToEmoji(c.Name)
+                    Img = c.Img
                 })
                 .ToListAsync();
 
@@ -173,7 +173,7 @@ namespace ecommerce_system.Controllers
 
             return new ProductCard
             {
-                Icon = NameToEmoji(p.Category?.Name),
+                Img = p.Img,
                 Brand = ExtractBrand(p.Name),
                 Name = p.Name,
                 Rating = avgRating,
@@ -217,14 +217,14 @@ namespace ecommerce_system.Controllers
 
         private static List<ProductCard> GetFallbackProducts() => new()
         {
-            new() { Icon="🎧", BadgeClass="new",  BadgeText="New",    Brand="Sony",     Name="WH-1000XM6 Wireless Noise Cancelling",     Rating=5, ReviewCount="412",  Price=349 },
-            new() { Icon="⌨️", BadgeClass="hot",  BadgeText="Hot",    Brand="Keychron", Name="Q3 Max QMK Wireless Mechanical Keyboard",  Rating=4, ReviewCount="238",  Price=199 },
-            new() { Icon="🖱️", BadgeClass="sale", BadgeText="−30%",   Brand="Logitech", Name="MX Master 3S Performance Wireless Mouse",  Rating=5, ReviewCount="1.2K", Price=69,  OldPrice=99 },
-            new() { Icon="⚡", BadgeClass="new",  BadgeText="New",    Brand="Anker",    Name="Prime 240W GaN Desktop Charger",           Rating=5, ReviewCount="89",   Price=89 },
-            new() { Icon="🎮", BadgeClass="",     BadgeText="",       Brand="Razer",    Name="DeathAdder V3 HyperSpeed Gaming Mouse",    Rating=5, ReviewCount="674",  Price=99 },
-            new() { Icon="🖥️", BadgeClass="sale", BadgeText="−20%",   Brand="BenQ",     Name="ScreenBar Halo Monitor Light + Backlight", Rating=4, ReviewCount="307",  Price=159, OldPrice=199 },
-            new() { Icon="📱", BadgeClass="",     BadgeText="",       Brand="Apple",    Name="MagSafe Duo Charger 15W",                Rating=5, ReviewCount="2.1K", Price=129 },
-            new() { Icon="🎙️", BadgeClass="hot",  BadgeText="Hot",    Brand="Blue",     Name="Yeti X Professional USB Microphone",       Rating=5, ReviewCount="881",  Price=149 }
+            new() { Img="🎧", BadgeClass="new",  BadgeText="New",    Brand="Sony",     Name="WH-1000XM6 Wireless Noise Cancelling",     Rating=5, ReviewCount="412",  Price=349 },
+            new() { Img="⌨️", BadgeClass="hot",  BadgeText="Hot",    Brand="Keychron", Name="Q3 Max QMK Wireless Mechanical Keyboard",  Rating=4, ReviewCount="238",  Price=199 },
+            new() { Img="🖱️", BadgeClass="sale", BadgeText="−30%",   Brand="Logitech", Name="MX Master 3S Performance Wireless Mouse",  Rating=5, ReviewCount="1.2K", Price=69,  OldPrice=99 },
+            new() { Img="⚡", BadgeClass="new",  BadgeText="New",    Brand="Anker",    Name="Prime 240W GaN Desktop Charger",           Rating=5, ReviewCount="89",   Price=89 },
+            new() { Img="🎮", BadgeClass="",     BadgeText="",       Brand="Razer",    Name="DeathAdder V3 HyperSpeed Gaming Mouse",    Rating=5, ReviewCount="674",  Price=99 },
+            new() { Img="🖥️", BadgeClass="sale", BadgeText="−20%",   Brand="BenQ",     Name="ScreenBar Halo Monitor Light + Backlight", Rating=4, ReviewCount="307",  Price=159, OldPrice=199 },
+            new() { Img="📱", BadgeClass="",     BadgeText="",       Brand="Apple",    Name="MagSafe Duo Charger 15W",                Rating=5, ReviewCount="2.1K", Price=129 },
+            new() { Img="🎙️", BadgeClass="hot",  BadgeText="Hot",    Brand="Blue",     Name="Yeti X Professional USB Microphone",       Rating=5, ReviewCount="881",  Price=149 }
         };
     }
 
