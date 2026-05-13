@@ -618,8 +618,11 @@
 .prod-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-    max-width: 300px;
+    gap: 25px;
+    max-width: 1200px;
+    margin-left:100px;
+    
+    
 }
 
 [data-theme="dark"] .prod-card {
@@ -629,6 +632,7 @@
     overflow: hidden;
     cursor: pointer;
     transition: border-color .25s, box-shadow .25s;
+    height: 450px;
 }
 
     [data-theme="dark"] .prod-card::before {
@@ -643,6 +647,7 @@
         transform-origin: left;
         transition: transform .3s;
         z-index: 2;
+        height: 450px;
     }
 
     [data-theme="dark"] .prod-card:hover {
@@ -662,6 +667,7 @@
     cursor: pointer;
     transition: border-color .25s, box-shadow .25s, transform .25s;
     border-radius: 4px;
+    height: 450px;
 }
 
     [data-theme="light"] .prod-card:hover {
@@ -681,8 +687,9 @@
     transition: background .5s;
 }
 
-    .prod-thumb span,img{
-        max-width: 300px;
+    .prod-thumb a img{
+        width: 300px;
+        height:300px;
     }
 
     [data-theme="dark"] .prod-thumb {
