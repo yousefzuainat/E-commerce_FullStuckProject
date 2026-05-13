@@ -26,14 +26,11 @@
             <p class="sec-eye">Manage Store</p>
             <h1 class="sec-ttl">ALL<br />PRODUCTS</h1>
         </div>
-        <a asp-action="Create" class="btn-p btn-add-cat">
-            <span>+</span> Add Product
-        </a>
     </div>
 </div>
 
 @* {{!-- ══ Stats ══ --}} *@
-<div class="prod-stats reveal">
+@* <div class="prod-stats reveal">
     <div class="prod-stat-card">
         <div class="psc-num">@total</div>
         <div class="psc-lbl">Total Products</div>
@@ -50,7 +47,7 @@
         <div class="psc-num at">@(total > 0 ? "$" + avgPrice.ToString("0.00") : "—")</div>
         <div class="psc-lbl">Avg. Price</div>
     </div>
-</div>
+</div> *@
 
 @* {{!-- ══ Filter bar ══ --}} *@
 <div class="prod-filter-bar reveal">
@@ -86,8 +83,6 @@
     <div class="prod-empty reveal">
         <div class="prod-empty-ico">📦</div>
         <div class="prod-empty-ttl">No products yet</div>
-        <p class="prod-empty-sub">Add your first product to start building your catalogue.</p>
-        <a asp-action="Create" class="btn-p">+ Add Product</a>
     </div>
 }
 else
@@ -97,66 +92,66 @@ else
         {
             int reviewCount = p.Reviews?.Count ?? 0;
 
-            <div class="pag-card"
-                 data-name="@p.Name.ToLower()"
-                 data-category="@(p.Category?.Name?.ToLower() ?? "")"
-                 data-price="@p.Price">
+            @* Wrap the whole card in an anchor tag pointing to Details *@
+            <a asp-action="Details" asp-route-id="@p.Id" class="prod-card-link">
+                <div class="pag-card"
+                     data-name="@p.Name.ToLower()"
+                     data-category="@(p.Category?.Name?.ToLower() ?? "")"
+                     data-price="@p.Price">
 
-                @* {{!-- Thumbnail --}} *@
-                <div class="pag-thumb">
-                    @if (!string.IsNullOrEmpty(p.Img))
-                    {
-                        @* Ensure the path starts at the wwwroot folder using the ~/ operator *@
-                        <img src="~/images/products/@p.Img" alt="@p.Name" class="cag-img" asp-append-version="true" />
-                    }
-                    else
-                    {
-                        <span class="pag-thumb-emoji">🛍️</span>
-                    }
-
-                    @if (reviewCount > 0)
-                    {
-                        <span class="pag-badge badge-new">@reviewCount ★</span>
-                    }
-                </div>
-
-                @* {{!-- Body --}} *@
-                <div class="pag-body">
-                    <div class="pag-name">@p.Name</div>
-
-                    @if (p.Category != null)
-                    {
-                        <div class="pag-cat">@p.Category.Name</div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(p.Description))
-                    {
-                        <div class="pag-desc-preview">
-                            @(p.Description.Length > 72 ? p.Description[..72] + "…" : p.Description)
-                        </div>
-                    }
-
-                    <div class="pag-foot">
-                        <span class="pag-price">$@p.Price.ToString("0.00")</span>
-                        @if (reviewCount > 0)
+                    <div class="pag-thumb">
+                        @if (!string.IsNullOrEmpty(p.Img))
                         {
-                            <span class="pag-review-pill">💬 @reviewCount</span>
+                            <img src="~/images/products/@p.Img" alt="@p.Name" class="cag-img" asp-append-version="true" />
                         }
                         else
                         {
-                            <span class="pag-no-review">No reviews</span>
+                            <span class="pag-thumb-emoji">🛍️</span>
+                        }
+
+                        @if (reviewCount > 0)
+                        {
+                            <span class="pag-badge badge-new">@reviewCount ★</span>
                         }
                     </div>
-                </div>
 
-                @* {{!-- Actions --}} *@
-                <div class="pag-actions">
-                    <a asp-action="Details" asp-route-id="@p.Id" class="pag-btn pag-btn-ghost">👁 View</a>
-                    <a asp-action="Edit"    asp-route-id="@p.Id" class="pag-btn pag-btn-ghost">✏ Edit</a>
-                    <a asp-action="Delete"  asp-route-id="@p.Id" class="pag-btn pag-btn-danger">✕ Del</a>
-                </div>
+                    <div class="pag-body">
+                        <div class="pag-name">@p.Name</div>
 
-            </div>
+                        @if (p.Category != null)
+                        {
+                            <div class="pag-cat">@p.Category.Name</div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(p.Description))
+                        {
+                            <div class="pag-desc-preview">
+                                @(p.Description.Length > 72 ? p.Description[..72] + "…" : p.Description)
+                            </div>
+                        }
+
+                        <div class="pag-foot">
+                            <span class="pag-price">$@p.Price.ToString("0.00")</span>
+                            @if (reviewCount > 0)
+                            {
+                                <span class="pag-review-pill">💬 @reviewCount</span>
+                            }
+                            else
+                            {
+                                <span class="pag-no-review">No reviews</span>
+                            }
+                        </div>
+                    </div>
+
+                    @* Keep the Actions div *@
+                    <div class="pag-actions">
+                        @* Note: These are now nested anchors. See CSS below to handle this. *@
+                        <span class="pag-btn pag-btn-ghost">Details</span>
+                        <button type="button" class="pag-btn pag-btn-ghost">Wishlist</button>
+                        <button type="button" class="pag-btn pag-btn-danger">Add To Cart</button>
+                    </div>
+                </div>
+            </a>
         }
     </div>
 
