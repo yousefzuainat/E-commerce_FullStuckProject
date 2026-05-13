@@ -102,7 +102,7 @@ else
                     <div class="pag-thumb">
                         @if (!string.IsNullOrEmpty(p.Img))
                         {
-                            <img src="~/images/products/@p.Img" alt="@p.Name" class="cag-img" asp-append-version="true" />
+                            <img src="~@p.Img" alt="@p.Name" class="cag-img" asp-append-version="true" />
                         }
                         else
                         {
