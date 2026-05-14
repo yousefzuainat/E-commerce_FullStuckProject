@@ -44,17 +44,17 @@ namespace ecommerce_system.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var proudect = await _context.proudects
                 .Include(p => p.Category)
+                    .ThenInclude(c => c.Proudects)          // for related products
+                .Include(p => p.Reviews)
+                    .ThenInclude(r => r.User)               // load reviewer names
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (proudect == null)
-            {
                 return NotFound();
-            }
 
             return View(proudect);
         }
