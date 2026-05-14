@@ -150,8 +150,14 @@ else
                 <div class="pag-actions">
                     @* Note: These are now nested anchors. See CSS below to handle this. *@
                     @* <span class="pag-btn pag-btn-ghost">Details</span> *@
-                    <button type="button" class="pag-btn pag-btn-ghost">Wishlist</button>
-                    @* <button type="button" class="pag-btn pag-btn-danger">Add To Cart</button> *@
+                    <!-- Wishlist Form -->
+                    <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" class="action-form" data-ajax="true">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@p.Id" />
+                        <button type="submit" class="pag-btn pag-btn-ghost">
+                            <span>♥</span> Wishlist
+                        </button>
+                    </form>                    @* <button type="button" class="pag-btn pag-btn-danger">Add To Cart</button> *@
                     <button class="pag-btn pag-btn-danger" data-product-id="@p.Id" onclick="addToCart(this)">Add To Cart</button>
                 </div>
             </div>

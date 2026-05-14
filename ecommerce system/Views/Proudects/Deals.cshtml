@@ -78,8 +78,9 @@ else
                         </button>
                     </form>
 
-                    <!-- Wishlist  (create WishlistController with [HttpPost] Add if you don't have one) -->
-                    <form asp-action="Add" asp-controller="Wishlist" method="post" class="action-form" data-ajax="true">
+                    <!-- Wishlist Form -->
+                    <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" class="action-form" data-ajax="true">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="productId" value="@item.Id" />
                         <button type="submit" class="pag-btn pag-btn-ghost">
                             <span>♥</span> Wishlist
