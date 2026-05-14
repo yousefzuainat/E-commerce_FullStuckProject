@@ -1,0 +1,152 @@
+﻿@model IEnumerable<ecommerce_system.Models.Proudect>
+@{
+    ViewData["Title"] = "Deals";
+}
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
+
+<div class="prod-page-bar">
+    <div class="prod-page-bar-inner">
+        <h1 class="prod-empty-ttl">Deals</h1>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="prod-empty">
+        <div class="prod-empty-ico">🏷️</div>
+        <h3 class="prod-empty-ttl">No Deals Right Now</h3>
+        <p class="prod-empty-sub">Check back later for discounts.</p>
+    </div>
+}
+else
+{
+    <div class="prod-admin-grid">
+        @foreach (var item in Model)
+        {
+            var discount = item.Discounts?
+                .Select(d => d.DiscountPercent)
+                .DefaultIfEmpty(0m)
+                .Max() ?? 0m;
+
+            var finalPrice = item.Price * (1 - discount / 100m);
+
+            <div class="pag-card">
+                <!-- ═══════ Clickable image & body ═══════ -->
+                <a asp-action="Details" asp-route-id="@item.Id" class="card-link-block">
+                    <div class="pag-thumb">
+                        @if (!string.IsNullOrEmpty(item.Img))
+                        {
+                            <img src="@item.Img" class="pag-thumb-img" alt="@item.Name" />
+                        }
+                        else
+                        {
+                            <span class="pag-thumb-emoji">🏷️</span>
+                        }
+
+                        @if (discount > 0)
+                        {
+                            <span class="pag-badge badge-sale">-@discount.ToString("0")%</span>
+                        }
+                    </div>
+
+                    <div class="pag-body">
+                        <div class="pag-brand">@(item.Category?.Name ?? "Uncategorized")</div>
+                        <div class="pag-name">@item.Name</div>
+
+                        <div class="pag-foot">
+                            <span class="pag-price">@finalPrice.ToString("C")</span>
+                            @if (discount > 0)
+                            {
+                                <span class="pag-old">@item.Price.ToString("C")</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ═══════ Buttons ═══════ -->
+                <div class="pag-actions">
+                    <!-- Cart -->
+                    <form asp-action="Add" asp-controller="Cart" method="post" class="action-form" data-ajax="true">
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="pag-btn pag-btn-primary">
+                            <span>🛒</span> Cart
+                        </button>
+                    </form>
+
+                    <!-- Wishlist  (create WishlistController with [HttpPost] Add if you don't have one) -->
+                    <form asp-action="Add" asp-controller="Wishlist" method="post" class="action-form" data-ajax="true">
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <button type="submit" class="pag-btn pag-btn-ghost">
+                            <span>♥</span> Wishlist
+                        </button>
+                    </form>
+
+                    <!-- View Details -->
+                    <a asp-action="Details" asp-route-id="@item.Id" class="pag-btn pag-btn-ghost">
+                        <span>👁</span> View
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Intercept form submits so they act like AJAX (no full page reload)
+        document.querySelectorAll('form[data-ajax]').forEach(form => {
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                const original = btn.innerHTML;
+
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span> Adding…';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        btn.innerHTML = '<span>✓</span> Added';
+                        btn.classList.remove('pag-btn-primary');
+                        btn.classList.add('pag-btn-ghost');
+
+                        // Update navbar cart badge
+                        const badge = document.querySelector('.cart-count, .cart-badge');
+                        if (badge && data.cartCount != null) {
+                            badge.textContent = data.cartCount;
+                        }
+
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            btn.innerHTML = original;
+                            btn.disabled = false;
+                            if (form.action.includes('/Cart/')) {
+                                btn.classList.add('pag-btn-primary');
+                                btn.classList.remove('pag-btn-ghost');
+                            }
+                        }, 2000);
+                    } else {
+                        throw new Error();
+                    }
+                } catch {
+                    btn.innerHTML = '<span>❌</span> Failed';
+                    setTimeout(() => {
+                        btn.innerHTML = original;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            });
+        });
+    </script>
+}

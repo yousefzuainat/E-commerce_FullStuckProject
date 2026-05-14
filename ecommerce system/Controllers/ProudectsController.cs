@@ -229,11 +229,16 @@ namespace ecommerce_system.Controllers
             return _context.proudects.Any(e => e.Id == id);
         }
 
-        //public async Task<IActionResult> Deals()
-        //{
-        //    var dealsProducts = await _context.proudects;
-        //     return View();
+        public async Task<IActionResult> Deals()
+        {
+            var products = await _context.proudects
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Discounts)
+                .Where(p => p.Discounts != null && p.Discounts.Any())
+                .ToListAsync();
 
-        //}
+            return View(products);
+        }
     }
 }
