@@ -1,0 +1,54 @@
+@model IEnumerable<ecommerce_system.Models.order>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container my-5">
+    <h2 class="mb-4">My Orders</h2>
+
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You haven't placed any orders yet. <a asp-controller="Proudects" asp-action="Index">Start shopping</a>!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var order in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <strong>Order #@order.Id</strong>
+                            <span class="badge bg-light text-dark">@order.Status</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Total:</strong> @order.tootal_amount.ToString("C")</p>
+                            <p class="mb-1"><strong>Items:</strong> @(order.OrderItems?.Count ?? 0)</p>
+                            
+                            <hr />
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Details
+                                </a>
+                                <a asp-action="Invoice" asp-route-id="@order.Id" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-file-invoice"></i> Invoice
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

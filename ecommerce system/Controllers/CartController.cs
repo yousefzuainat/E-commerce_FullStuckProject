@@ -1,7 +1,7 @@
 using ecommerce_system.Data;
 using ecommerce_system.Models;
-using ecommerce_system.Services;
 using ecommerce_system.ViewModels;
+using ecommerce_system.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

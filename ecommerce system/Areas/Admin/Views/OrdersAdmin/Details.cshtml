@@ -1,0 +1,95 @@
+@model ecommerce_system.Models.order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container-fluid px-4 py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-4">Order Details</h1>
+            <p class="text-muted mb-2">Details for Order #@Model.Id</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Order Information</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Order ID</dt>
+                <dd class="col-sm-9">#@Model.Id</dd>
+
+                <dt class="col-sm-3">Customer</dt>
+                <dd class="col-sm-9">@(Model.User?.UserName ?? "Anonymous") (@Model.User?.Email)</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge rounded-pill @(Model.Status == "Completed" ? "bg-success" : Model.Status == "Pending" ? "bg-warning text-dark" : Model.Status == "Cancelled" ? "bg-danger" : "bg-info") px-3">
+                        @Model.Status
+                    </span>
+                    
+                    <form asp-action="UpdateStatus" method="post" class="mt-2 d-inline-block">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="input-group input-group-sm">
+                            <select name="status" class="form-select">
+                                <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                                <option value="Processing" selected="@(Model.Status == "Processing")">Processing</option>
+                                <option value="Completed" selected="@(Model.Status == "Completed")">Completed</option>
+                                <option value="Cancelled" selected="@(Model.Status == "Cancelled")">Cancelled</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </div>
+                    </form>
+                </dd>
+
+                <dt class="col-sm-3">Total Amount</dt>
+                <dd class="col-sm-9 fw-bold">@Model.tootal_amount.ToString("C")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Order Items</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small fw-bold">
+                        <tr>
+                            <th class="ps-4">PRODUCT</th>
+                            <th>PRICE</th>
+                            <th>QUANTITY</th>
+                            <th class="text-end pe-4">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.OrderItems != null && Model.OrderItems.Any())
+                        {
+                            foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td class="ps-4">@(item.Proudect?.Name ?? "Unknown Product")</td>
+                                    <td>@item.UnitPrice.ToString("C")</td>
+                                    <td>@item.Quantity</td>
+                                    <td class="text-end pe-4">@((item.Quantity * item.UnitPrice).ToString("C"))</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-3 text-muted">No items found for this order.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
