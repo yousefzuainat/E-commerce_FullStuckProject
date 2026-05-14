@@ -10,8 +10,8 @@
         .OrderBy(n => n)
         .ToList();
 
-    int     total    = Model.Count();
-    int     reviewed = Model.Count(p => p.Reviews != null && p.Reviews.Any());
+    int total = Model.Count();
+    int reviewed = Model.Count(p => p.Reviews != null && p.Reviews.Any());
     decimal avgPrice = Model.Any() ? Model.Average(p => p.Price) : 0;
 }
 
@@ -73,7 +73,7 @@
 
     <div class="view-toggle">
         <button class="view-btn active" id="viewGrid" title="Grid view">⊞</button>
-        <button class="view-btn"        id="viewList" title="List view">☰</button>
+        <button class="view-btn" id="viewList" title="List view">☰</button>
     </div>
 </div>
 
@@ -93,12 +93,12 @@ else
             int reviewCount = p.Reviews?.Count ?? 0;
 
             @* Wrap the whole card in an anchor tag pointing to Details *@
-            <a asp-action="Details" asp-route-id="@p.Id" class="prod-card-link">
-                <div class="pag-card"
-                     data-name="@p.Name.ToLower()"
-                     data-category="@(p.Category?.Name?.ToLower() ?? "")"
-                     data-price="@p.Price">
-
+           
+            <div class="pag-card"
+                 data-name="@p.Name.ToLower()"
+                 data-category="@(p.Category?.Name?.ToLower() ?? "")"
+                 data-price="@p.Price">
+                <a asp-action="Details" asp-route-id="@p.Id" class="prod-card-link">
                     <div class="pag-thumb">
                         @if (!string.IsNullOrEmpty(p.Img))
                         {
@@ -114,47 +114,49 @@ else
                             <span class="pag-badge badge-new">@reviewCount ★</span>
                         }
                     </div>
+                </a>
              
-                    <div class="pag-body">
-                        <div class="pag-name">@p.Name</div>
+                <div class="pag-body">
+                    <div class="pag-name">@p.Name</div>
 
-                        @if (p.Category != null)
-                        {
-                            <div class="pag-cat">@p.Category.Name</div>
-                        }
+                    @if (p.Category != null)
+                    {
+                        <div class="pag-cat">@p.Category.Name</div>
+                    }
 
-                        @if (!string.IsNullOrEmpty(p.Description))
-                        {
-                            <div class="pag-desc-preview">
-                                @(p.Description.Length > 72 ? p.Description[..72] + "…" : p.Description)
-                            </div>
-                        }
-                        
-                        <div class="pag-foot">
-                            <span class="pag-price">$@p.Price.ToString("0.00")</span>
-                            @if (reviewCount > 0)
-                            {
-                                <span class="pag-review-pill">💬 @reviewCount</span>
-                            }
-                            else
-                            {
-                                <span class="pag-no-review">No reviews</span>
-                            }
+                    @if (!string.IsNullOrEmpty(p.Description))
+                    {
+                        <div class="pag-desc-preview">
+                            @(p.Description.Length > 72 ? p.Description[..72] + "…" : p.Description)
                         </div>
+                    }
+                        
+                    <div class="pag-foot">
+                        <span class="pag-price">$@p.Price.ToString("0.00")</span>
+                        @if (reviewCount > 0)
+                        {
+                            <span class="pag-review-pill">💬 @reviewCount</span>
+                        }
+                        else
+                        {
+                            <span class="pag-no-review">No reviews</span>
+                        }
+                    </div>
 
                       
-                    </div>
-                
-                    @* Keep the Actions div *@
-                    <div class="pag-actions">
-                        @* Note: These are now nested anchors. See CSS below to handle this. *@
-                        <span class="pag-btn pag-btn-ghost">Details</span>
-                        <button type="button" class="pag-btn pag-btn-ghost">Wishlist</button>
-                        <button type="button" class="pag-btn pag-btn-danger">Add To Cart</button>
-                    </div>
                 </div>
-                </a>
-              
+                
+                @* Keep the Actions div *@
+                <div class="pag-actions">
+                    @* Note: These are now nested anchors. See CSS below to handle this. *@
+                    @* <span class="pag-btn pag-btn-ghost">Details</span> *@
+                    <button type="button" class="pag-btn pag-btn-ghost">Wishlist</button>
+                    @* <button type="button" class="pag-btn pag-btn-danger">Add To Cart</button> *@
+                    <button class="pag-btn pag-btn-danger" data-product-id="@p.Id" onclick="addToCart(this)">Add To Cart</button>
+                </div>
+            </div>
+
+                
         }
     </div>
 
@@ -167,4 +169,5 @@ else
 
 @section Scripts {
     <script src="~/js/products.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
 }

@@ -99,8 +99,8 @@
         @foreach (var cat in Model.Categories)
         {
             <a asp-controller="Proudects" asp-action="Index" asp-route-categoryId="@cat.CategoryId">
-            <div class="cat-card">
-                <div class="cat-fig">
+                <div class="cat-card">
+                    <div class="cat-fig">
                  
                         <img src="~/images/Categories/@cat.Img">
                     
@@ -111,201 +111,153 @@
                         <div class="cat-arr">-></div>
                     </div>
                 </div>
-                </a>
-            }
-        </div>
-    </section>
+            </a>
+        }
+    </div>
+</section>
 
-    @* ══════════════════════════════════════════════
+@* ══════════════════════════════════════════════
      FEATURED PRODUCTS
 ══════════════════════════════════════════════ *@
-    <section class="sec">
-        <div class="sec-hd">
-            <div>
-                <p class="sec-eye">Handpicked For You</p>
-                <h2 class="sec-ttl">FEATURED<br />PRODUCTS</h2>
-            </div>
-            <a href="#" class="sec-more">All Products →</a>
+<section class="sec">
+    <div class="sec-hd">
+        <div>
+            <p class="sec-eye">Handpicked For You</p>
+            <h2 class="sec-ttl">FEATURED<br />PRODUCTS</h2>
         </div>
-        <div class="prod-grid reveal">
-            @foreach (var p in Model.FeaturedProducts)
-            {
+        <a href="#" class="sec-more">All Products →</a>
+    </div>
+    <div class="prod-grid reveal">
+        @foreach (var p in Model.FeaturedProducts)
+        {
           
-                <div class="prod-card">
-                    <div class="prod-thumb">
-                        <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.ProductId"><img src="@p.Img"></a>
-                        @if (!string.IsNullOrEmpty(p.BadgeClass))
+            <div class="prod-card">
+                <div class="prod-thumb">
+                    <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.ProductId"><img src="@p.Img"></a>
+                    @if (!string.IsNullOrEmpty(p.BadgeClass))
+                    {
+                        <span class="p-badge badge-@p.BadgeClass">@p.BadgeText</span>
+                    }
+                </div>
+                <div class="prod-body">
+                    <p class="p-brand">@p.Brand</p>
+                    <p class="p-name">@p.Name</p>
+                    <p class="p-stars">
+                        @for (int i = 0; i < p.Rating; i++)
                         {
-                            <span class="p-badge badge-@p.BadgeClass">@p.BadgeText</span>
+                            <text>★</text>
                         }
-                    </div>
-                    <div class="prod-body">
-                        <p class="p-brand">@p.Brand</p>
-                        <p class="p-name">@p.Name</p>
-                        <p class="p-stars">
-                            @for (int i = 0; i < p.Rating; i++)
+                        @for (int i = p.Rating; i < 5; i++)
+                        {
+                            <text>☆</text>
+                        }
+                        <span class="p-rc">(@p.ReviewCount)</span>
+                    </p>
+                    <div class="p-foot">
+                        <span class="p-price">
+                            $@p.Price
+                            @if (p.OldPrice.HasValue)
                             {
-                                <text>★</text>
+                                <span class="p-old">$@p.OldPrice.Value</span>
                             }
-                            @for (int i = p.Rating; i < 5; i++)
-                            {
-                                <text>☆</text>
-                            }
-                            <span class="p-rc">(@p.ReviewCount)</span>
-                        </p>
-                        <div class="p-foot">
-                            <span class="p-price">
-                                $@p.Price
-                                @if (p.OldPrice.HasValue)
-                                {
-                                    <span class="p-old">$@p.OldPrice.Value</span>
-                                }
-                            </span>
-                            <button class="p-add" data-product-id="@p.ProductId" onclick="addToCart(this)">+</button>
-                        </div>
+                        </span>
+                        <button class="p-add" data-product-id="@p.ProductId" onclick="addToCart(this)">+</button>
                     </div>
                 </div>
+            </div>
             
-            }
-        </div>
-    </section>
+        }
+    </div>
+</section>
 
-    @* ══════════════════════════════════════════════
+@* ══════════════════════════════════════════════
      FLASH SALE BANNER
 ══════════════════════════════════════════════ *@
-    <div class="banner-wrap reveal">
-        <div class="banner" data-sale-end="@Model.FlashSale.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")">
-            <div>
-                <p class="b-eye">Limited Time Offer</p>
-                <h2 class="b-ttl" id="bTtl">
-                    @Html.Raw(Model.FlashSale.TitleLine1)<br />@Html.Raw(Model.FlashSale.TitleLine2)
-                </h2>
-                <p class="b-sub">@Model.FlashSale.Subtitle</p>
-                <div class="b-count">
-                    <div class="c-blk"><span class="c-num" id="ch">08</span><span class="c-lbl">Hours</span></div>
-                    <span class="c-colon">:</span>
-                    <div class="c-blk"><span class="c-num" id="cm">42</span><span class="c-lbl">Mins</span></div>
-                    <span class="c-colon">:</span>
-                    <div class="c-blk"><span class="c-num" id="cs">17</span><span class="c-lbl">Secs</span></div>
-                </div>
+<div class="banner-wrap reveal">
+    <div class="banner" data-sale-end="@Model.FlashSale.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")">
+        <div>
+            <p class="b-eye">Limited Time Offer</p>
+            <h2 class="b-ttl" id="bTtl">
+                @Html.Raw(Model.FlashSale.TitleLine1)<br />@Html.Raw(Model.FlashSale.TitleLine2)
+            </h2>
+            <p class="b-sub">@Model.FlashSale.Subtitle</p>
+            <div class="b-count">
+                <div class="c-blk"><span class="c-num" id="ch">08</span><span class="c-lbl">Hours</span></div>
+                <span class="c-colon">:</span>
+                <div class="c-blk"><span class="c-num" id="cm">42</span><span class="c-lbl">Mins</span></div>
+                <span class="c-colon">:</span>
+                <div class="c-blk"><span class="c-num" id="cs">17</span><span class="c-lbl">Secs</span></div>
             </div>
-            <button class="b-btn">Shop the Sale →</button>
         </div>
+        <button class="b-btn">Shop the Sale →</button>
     </div>
+</div>
 
-    @* ══════════════════════════════════════════════
+@* ══════════════════════════════════════════════
      BRAND PARTNERS
 ══════════════════════════════════════════════ *@
-    <div class="brands-sec reveal">
-        <p class="brands-lbl">Official Partners &amp; Retailers</p>
-        <div class="brands-row">
-            @foreach (var brand in Model.PartnerBrands)
-            {
-                <span class="brand-nm">@brand</span>
-            }
-        </div>
+<div class="brands-sec reveal">
+    <p class="brands-lbl">Official Partners &amp; Retailers</p>
+    <div class="brands-row">
+        @foreach (var brand in Model.PartnerBrands)
+        {
+            <span class="brand-nm">@brand</span>
+        }
     </div>
+</div>
 
-    @* ══════════════════════════════════════════════
+@* ══════════════════════════════════════════════
      FEATURES / TRUST SIGNALS
 ══════════════════════════════════════════════ *@
-    <section class="sec sec-alt">
-        <div class="feat-grid reveal">
-            <div class="feat-card">
-                <div class="feat-ico">🚚</div>
-                <div class="feat-nm">Free Shipping</div>
-                <p class="feat-txt">On all orders over $75. Same-day delivery available in select cities.</p>
-            </div>
-            <div class="feat-card">
-                <div class="feat-ico">🔄</div>
-                <div class="feat-nm">30-Day Returns</div>
-                <p class="feat-txt">Full refund, no questions asked. Easy label printing from your account.</p>
-            </div>
-            <div class="feat-card">
-                <div class="feat-ico">🔒</div>
-                <div class="feat-nm">Secure Checkout</div>
-                <p class="feat-txt">256-bit SSL. Card, Apple Pay, and PayPal accepted securely.</p>
-            </div>
-            <div class="feat-card">
-                <div class="feat-ico">💬</div>
-                <div class="feat-nm">24/7 Support</div>
-                <p class="feat-txt">Real humans, any time. Chat, email, or call around the clock.</p>
-            </div>
+<section class="sec sec-alt">
+    <div class="feat-grid reveal">
+        <div class="feat-card">
+            <div class="feat-ico">🚚</div>
+            <div class="feat-nm">Free Shipping</div>
+            <p class="feat-txt">On all orders over $75. Same-day delivery available in select cities.</p>
         </div>
-    </section>
-
-    @* ══════════════════════════════════════════════
-     NEWSLETTER
-══════════════════════════════════════════════ *@
-    <div class="nl-sec reveal">
-        <p class="nl-eye">Stay in the Loop</p>
-        <h2 class="nl-ttl" id="nlTtl">JOIN THE VOLTEX COMMUNITY</h2>
-        <p class="nl-sub">Early access to drops, exclusive deals, and gear guides straight to your inbox.</p>
-        <div class="nl-form">
-            <input class="nl-in" type="email" placeholder="your@email.com" />
-            <button class="nl-go">Subscribe</button>
+        <div class="feat-card">
+            <div class="feat-ico">🔄</div>
+            <div class="feat-nm">30-Day Returns</div>
+            <p class="feat-txt">Full refund, no questions asked. Easy label printing from your account.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-ico">🔒</div>
+            <div class="feat-nm">Secure Checkout</div>
+            <p class="feat-txt">256-bit SSL. Card, Apple Pay, and PayPal accepted securely.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-ico">💬</div>
+            <div class="feat-nm">24/7 Support</div>
+            <p class="feat-txt">Real humans, any time. Chat, email, or call around the clock.</p>
         </div>
     </div>
+</section>
 
-    @section Scripts {
-        <script src="~/js/home.js" asp-append-version="true"></script>
-        <script>
-            // Feed the server-calculated end time into your countdown
-            (function () {
-                const banner = document.querySelector('.banner');
-                const endIso = banner?.dataset.saleEnd;
-                if (endIso && typeof initCountdown === 'function') {
-                    initCountdown(new Date(endIso));
-                }
-            })();
+@* ══════════════════════════════════════════════
+     NEWSLETTER
+══════════════════════════════════════════════ *@
+<div class="nl-sec reveal">
+    <p class="nl-eye">Stay in the Loop</p>
+    <h2 class="nl-ttl" id="nlTtl">JOIN THE VOLTEX COMMUNITY</h2>
+    <p class="nl-sub">Early access to drops, exclusive deals, and gear guides straight to your inbox.</p>
+    <div class="nl-form">
+        <input class="nl-in" type="email" placeholder="your@email.com" />
+        <button class="nl-go">Subscribe</button>
+    </div>
+</div>
 
-            // ── Add to Cart ────────────────────────────────────
-            async function addToCart(btn) {
-                const productId = btn.dataset.productId;
-                if (!productId) return;
-
-                btn.disabled = true;
-                btn.textContent = '✓';
-
-                try {
-                    const res = await fetch('/Cart/Add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                        },
-                        body: 'productId=' + productId + '&quantity=1'
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        // Update badge
-                        document.querySelectorAll('.cart-n').forEach(el => {
-                            el.textContent = data.cartCount;
-                            el.classList.add('cart-n-active');
-                        });
-                        // Show toast
-                        showCartToast('Added to cart!');
-                    }
-                } catch (e) {}
-
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.textContent = '+';
-                }, 1200);
+@section Scripts {
+    <script src="~/js/home.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
+    <script>
+        // Feed the server-calculated end time into your countdown
+        (function () {
+            const banner = document.querySelector('.banner');
+            const endIso = banner?.dataset.saleEnd;
+            if (endIso && typeof initCountdown === 'function') {
+                initCountdown(new Date(endIso));
             }
-
-            function showCartToast(msg) {
-                const t = document.createElement('div');
-                t.className = 'cart-toast';
-                t.style.cssText = 'position:fixed;bottom:32px;right:32px;z-index:9999;padding:14px 24px;font-size:13px;letter-spacing:1px;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s;pointer-events:none;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);color:var(--text);font-family:var(--body,sans-serif);';
-                t.textContent = msg;
-                document.body.appendChild(t);
-                requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
-                setTimeout(() => {
-                    t.style.opacity = '0';
-                    t.style.transform = 'translateY(12px)';
-                    setTimeout(() => t.remove(), 350);
-                }, 2000);
-            }
-        </script>
-    }
+        })();
+    </script>
+}
