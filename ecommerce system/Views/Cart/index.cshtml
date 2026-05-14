@@ -43,13 +43,13 @@
                 {
                     <div class="cart-item" data-product-id="@item.ProductId">
                         <div class="cart-item-img">
-                            @if (!string.IsNullOrEmpty(item.Img) && !item.Img.All(c => char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '_' || c == '-'))
+                            @if (!string.IsNullOrEmpty(item.Img) )
                             {
-                                <span class="cart-item-emoji">@item.Img</span>
+                                <img src="@item.Img" alt="@item.Name" />
                             }
                             else
                             {
-                                <img src="~/images/products/@item.Img" alt="@item.Name" />
+                                <span class="cart-item-emoji">@item.Img</span>
                             }
                         </div>
                         <div class="cart-item-info">
