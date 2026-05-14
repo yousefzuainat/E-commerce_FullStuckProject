@@ -44,6 +44,8 @@ namespace ecommerce_system
                 options.Cookie.IsEssential = true;
             });
 
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["SecretKey"];
+
             var app = builder.Build();
 
             // 3. SEEDING THE "ADMIN CAPTAIN"

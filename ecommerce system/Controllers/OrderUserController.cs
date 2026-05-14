@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace ecommerce_system.Areas.Admin.Controllers
+namespace ecommerce_system.Controllers
 {
     [Area("Admin")]
     public class OrderUserController : Controller
