@@ -44,7 +44,7 @@
             <li><a href="/" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">Home</a></li>
             <li><a href="/Categories" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" ? "active" : "")">Categories</a></li>
             <li><a href="/Proudects" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Proudects" ? "active" : "")">Products</a></li>
-            <li><a href="#">Deals</a></li>
+            <li><a asp-action="Deals" asp-controller="Proudects">Deals</a></li>
         </ul>
 
         <div class="nav-r">
