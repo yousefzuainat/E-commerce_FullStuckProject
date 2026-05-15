@@ -16,6 +16,7 @@ namespace ecommerce_system.Models
         [Column("Descrption")]
         public string Description { get; set; }  
 
+
         public string? Img { get; set; }
 
         [Required(ErrorMessage = "Price is required")]

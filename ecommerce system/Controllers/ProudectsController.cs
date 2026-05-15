@@ -23,17 +23,18 @@ namespace ecommerce_system.Controllers
         }
 
         // GET: Proudects
+        // GET: Proudects
         public async Task<IActionResult> Index(int? categoryId)
         {
-            // Start with all products including category info
-            IQueryable<Proudect> query = _context.proudects.Include(p => p.Category);
+            // 1. Add .Include(p => p.Discounts) and .Include(p => p.Reviews)
+            IQueryable<Proudect> query = _context.proudects
+                .Include(p => p.Category)
+                .Include(p => p.Discounts) // CRITICAL: This enables the badge and sale price logic
+                .Include(p => p.Reviews);   // Enables the star/review counts
 
-            // If a categoryId is provided, filter the list
             if (categoryId != null)
             {
                 query = query.Where(p => p.CategoryId == categoryId);
-
-                // Optional: Pass the category name to the view to show in a heading
                 var category = await _context.categories.FindAsync(categoryId);
                 ViewBag.FilteredCategory = category?.Name;
             }
@@ -43,18 +44,17 @@ namespace ecommerce_system.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var proudect = await _context.proudects
                 .Include(p => p.Category)
-                    .ThenInclude(c => c.Proudects)          // for related products
-                .Include(p => p.Reviews)
-                    .ThenInclude(r => r.User)               // load reviewer names
+                    .ThenInclude(c => c!.Proudects) // Use ! to handle nullability warning
+                .Include(p => p.Reviews!)           // Load the collection
+                    .ThenInclude(r => r.User)       // Load the reviewer
+                .Include(p => p.Discounts)          // Load discounts for the price block
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (proudect == null)
-                return NotFound();
+            if (proudect == null) return NotFound();
 
             return View(proudect);
         }
@@ -235,6 +235,7 @@ namespace ecommerce_system.Controllers
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Discounts)
+                .Include(p => p.Reviews!)           // Load the collection
                 .Where(p => p.Discounts != null && p.Discounts.Any())
                 .ToListAsync();
 

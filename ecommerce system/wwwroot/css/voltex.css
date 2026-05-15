@@ -21,9 +21,9 @@ html { scroll-behavior: smooth; }
     --accent:   #ff6a00;
     --accent2:  #d4f700;
     --accent3:  #00c2ff;
-    --text:     #e4e8ff;
+    --text:     #fff;
     --text-sub: #8892c8;
-    --text-dim: #4a5282;
+    --text-dim: #d8d3cc;
     --glow-a:   rgba(255,106,0,.35);
     --glow-b:   rgba(212,247,0,.25);
     --heading:  'Bebas Neue', sans-serif;
