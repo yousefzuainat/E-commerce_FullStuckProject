@@ -23,5 +23,7 @@ namespace ecommerce_system.Models
         public payment? Payment { get; set; }
 
         public ICollection<OrderItem>? OrderItems { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

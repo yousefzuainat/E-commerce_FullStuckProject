@@ -32,12 +32,11 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 applicationDbContext = applicationDbContext.Where(o => o.UserId == userId);
             }
 
-            ViewBag.UserId = new SelectList(_context.Users, "Id", "UserName", userId);
+            ViewBag.UserId = new SelectList(_context.Users, "Id", "FullName", userId);
             
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Admin/OrdersAdmin/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,7 +46,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
             var order = await _context.orders
                 .Include(o => o.User)
-                .Include(o => o.OrderItems)
+                .Include(o => o.OrderItems) 
                 .ThenInclude(oi => oi.Proudect)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -59,7 +58,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(order);
         }
         
-        // POST: Admin/OrdersAdmin/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int id, string status)
@@ -70,12 +68,20 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            order.Status = status;
+            if (Enum.TryParse<OrderStatus>(status, out var orderStatus))
+            {
+                order.Status = orderStatus.ToString();
+            }
+            else
+            {
+                order.Status = status;
+            }
+            
             await _context.SaveChangesAsync();
+            TempData["success"] = $"Order #{order.Id} status updated to {order.Status}.";
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/OrdersAdmin/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,11 +95,10 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 return NotFound();
             }
             
-            ViewBag.UserId = new SelectList(_context.Users, "Id", "UserName", order.UserId);
+            ViewBag.UserId = new SelectList(_context.Users, "Id", "FullName", order.UserId);
             return View(order);
         }
 
-        // POST: Admin/OrdersAdmin/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,tootal_amount,Status,UserId")] order order)
@@ -121,9 +126,10 @@ namespace ecommerce_system.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                TempData["success"] = $"Order #{order.Id} updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.UserId = new SelectList(_context.Users, "Id", "UserName", order.UserId);
+            ViewBag.UserId = new SelectList(_context.Users, "Id", "FullName", order.UserId);
             return View(order);
         }
 
@@ -132,7 +138,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return _context.orders.Any(e => e.Id == id);
         }
 
-        // GET: Admin/OrdersAdmin/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -151,7 +156,6 @@ namespace ecommerce_system.Areas.Admin.Controllers
             return View(order);
         }
 
-        // POST: Admin/OrdersAdmin/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -163,6 +167,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
             }
             
             await _context.SaveChangesAsync();
+            TempData["success"] = $"Order #{id} deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
     }

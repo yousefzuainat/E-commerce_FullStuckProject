@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Stripe.Checkout;
+using ecommerce_system.Services;
 
 namespace ecommerce_system.Controllers
 {
@@ -23,14 +23,44 @@ namespace ecommerce_system.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
-            var cart = await _context.cart
-                .Include(c => c.CartItems)
-                    .ThenInclude(ci => ci.Proudect)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var sessionItems = SessionCartService.GetCart(HttpContext);
 
-            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
+            if (!sessionItems.Any())
             {
                 return RedirectToAction("Index", "Cart");
+            }
+
+            var cart = new Cart
+            {
+                UserId = userId,
+                CartItems = new List<CartItem>()
+            };
+
+            foreach (var item in sessionItems)
+            {
+                var product = await _context.proudects
+                    .Include(p => p.Discounts)
+                    .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+                    
+                if (product != null)
+                {
+                    var bestDiscount = product.Discounts?
+                        .Where(d => d.Active)
+                        .OrderByDescending(d => d.DiscountPercent)
+                        .FirstOrDefault();
+
+                    if (bestDiscount != null)
+                    {
+                        product.Price = product.Price - (product.Price * bestDiscount.DiscountPercent / 100m);
+                    }
+
+                    cart.CartItems.Add(new CartItem
+                    {
+                        ProudectId = product.Id,
+                        Quantity = item.Quantity,
+                        Proudect = product
+                    });
+                }
             }
 
             return View(cart);
@@ -40,97 +70,65 @@ namespace ecommerce_system.Controllers
         public async Task<IActionResult> ProcessPayment()
         {
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-            var cart = await _context.cart
-                .Include(c => c.CartItems)
-                    .ThenInclude(ci => ci.Proudect)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var sessionItems = SessionCartService.GetCart(HttpContext);
 
-            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
+            if (!sessionItems.Any())
             {
                 return RedirectToAction("Index", "Cart");
             }
 
-            var domain = $"{Request.Scheme}://{Request.Host}";
-
-            var options = new SessionCreateOptions
-            {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>(),
-                Mode = "payment",
-                SuccessUrl = domain + "/Checkout/Success?session_id={CHECKOUT_SESSION_ID}",
-                CancelUrl = domain + "/Checkout/Cancel",
-                CustomerEmail = user?.Email
-            };
-
             decimal totalAmount = 0;
-
-            foreach (var item in cart.CartItems)
-            {
-                if (item.Proudect != null)
-                {
-                    totalAmount += item.Quantity * item.Proudect.Price;
-                    var sessionListItem = new SessionLineItemOptions
-                    {
-                        PriceData = new SessionLineItemPriceDataOptions
-                        {
-                            UnitAmount = (long)(item.Proudect.Price * 100), // Stripe expects amounts in cents
-                            Currency = "usd",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = item.Proudect.Name.ToString()
-                            }
-                        },
-                        Quantity = item.Quantity
-                    };
-                    options.LineItems.Add(sessionListItem);
-                }
-            }
-
-            var service = new SessionService();
-            Session session = service.Create(options);
-
-            TempData["SessionId"] = session.Id;
-
-            Response.Headers.Add("Location", session.Url);
-            return new StatusCodeResult(303);
-        }
-
-        public async Task<IActionResult> Success(string session_id)
-        {
-            var userId = _userManager.GetUserId(User);
-            var cart = await _context.cart
-                .Include(c => c.CartItems)
-                    .ThenInclude(ci => ci.Proudect)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-
-            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            decimal totalAmount = cart.CartItems.Sum(ci => ci.Quantity * (ci.Proudect?.Price ?? 0));
-
             var order = new order
             {
                 UserId = userId,
-                tootal_amount = totalAmount,
-                Status = "Paid",
-                Name = User.Identity?.Name ?? "Customer",
-                OrderItems = new List<OrderItem>()
+                Status = OrderStatus.Paid.ToString(),
+                Name = User.Identity?.Name ?? "Customer"
             };
 
-            foreach (var item in cart.CartItems)
+            var orderItemsList = new List<OrderItem>();
+
+            foreach (var item in sessionItems)
             {
-                order.OrderItems.Add(new OrderItem
+                var product = await _context.proudects
+                    .Include(p => p.Discounts)
+                    .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+
+                if (product != null)
                 {
-                    ProudectId = item.ProudectId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Proudect?.Price ?? 0
-                });
+                    var price = product.Price;
+                    var bestDiscount = product.Discounts?
+                        .Where(d => d.Active)
+                        .OrderByDescending(d => d.DiscountPercent)
+                        .FirstOrDefault();
+
+                    if (bestDiscount != null)
+                    {
+                        price = price - (price * bestDiscount.DiscountPercent / 100m);
+                    }
+
+                    totalAmount += item.Quantity * price;
+
+                    orderItemsList.Add(new OrderItem
+                    {
+                        ProudectId = product.Id,
+                        Quantity = item.Quantity,
+                        UnitPrice = price
+                    });
+                }
             }
 
+            order.tootal_amount = totalAmount;
+
             _context.orders.Add(order);
+            await _context.SaveChangesAsync(); // Save order first to avoid MERGE issues and get ID
+
+            // Add OrderItems one by one to avoid EF Core MERGE batching error on older SQL Servers
+            foreach (var orderItem in orderItemsList)
+            {
+                orderItem.OrderId = order.Id;
+                _context.Add(orderItem);
+                await _context.SaveChangesAsync();
+            }
 
             // Create Payment record
             var payment = new payment
@@ -142,19 +140,12 @@ namespace ecommerce_system.Controllers
             };
 
             _context.payment.Add(payment);
-
-            _context.cartItems.RemoveRange(cart.CartItems);
-            
             await _context.SaveChangesAsync();
 
-            TempData["success"] = "Payment successful! Your order has been placed.";
-            return RedirectToAction("Index", "UserOrders");
-        }
+            SessionCartService.ClearCart(HttpContext);
 
-        public IActionResult Cancel()
-        {
-            TempData["error"] = "Payment was cancelled.";
-            return RedirectToAction("Index");
+             TempData["success"] = "Payment successful! Your order has been placed.";
+            return RedirectToAction("Index", "UserOrders");
         }
     }
 }
