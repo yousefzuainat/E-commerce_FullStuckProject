@@ -1,41 +1,139 @@
 ﻿@model IEnumerable<ecommerce_system.Models.WishListItem>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Wishlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.WishList)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Proudect)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.WishList.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Proudect.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
-    </tbody>
-</table>
+
+<div class="prod-page-bar reveal">
+    <div class="prod-page-bar-inner">
+        <div>
+            <p class="sec-eye">Saved Items</p>
+            <h1 class="sec-ttl">MY<br />WISHLIST</h1>
+        </div>
+    </div>
+</div>
+
+<div class="prod-filter-bar reveal">
+    <div class="prod-search-wrap">
+        <span class="ps-icon">⌕</span>
+        <input type="text" id="prodSearch" placeholder="Search wishlist…" class="prod-search-input" />
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="prod-empty reveal">
+        <div class="prod-empty-ico">♥</div>
+        <div class="prod-empty-ttl">Your wishlist is empty</div>
+        <p class="prod-empty-sub">Explore our products and add your favorites here!</p>
+        <a asp-controller="Proudects" asp-action="Index" class="pag-btn pag-btn-danger" style="max-width: 200px; margin-top: 20px; color:white; border:none;">Browse Products</a>
+    </div>
+}
+else
+{
+    <div class="prod-admin-grid reveal" id="prodGrid">
+        @foreach (var item in Model)
+        {
+            var p = item.Proudect;
+            if (p == null) continue;
+
+            // 1. Calculations (Identical to Products/Deals)
+            var discountPercent = p.Discounts?.Select(d => d.DiscountPercent).DefaultIfEmpty(0m).Max() ?? 0m;
+            var finalPrice = p.Price * (1 - discountPercent / 100m);
+            
+            int totalReviews = p.Reviews?.Count ?? 0;
+            double avgRating = totalReviews > 0 ? p.Reviews!.Average(r => r.Rating) : 0;
+            int fullStars = (int)Math.Round(avgRating);
+
+            <div class="pag-card" data-name="@p.Name.ToLower()" data-category="@(p.Category?.Name?.ToLower() ?? "")" data-price="@finalPrice">
+        
+                <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.Id" class="prod-card-link">
+                    <div class="pag-thumb">
+                     @{   var discountPercent = p.Discounts?.Select(d => d.DiscountPercent).DefaultIfEmpty(0m).Max() ?? 0m;
+                        int rCount = p.Reviews?.Count ?? 0;
+                     }
+                        @if (!string.IsNullOrEmpty(p.Img))
+                        {
+                            <img src="~@p.Img" alt="@p.Name" class="pag-thumb-img" asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <span class="pag-thumb-emoji">🛍️</span>
+                        }
+                        @* 2. Priority Badge *@
+                        @if (discountPercent > 0)
+                        {
+                            <span class="p-badge badge-sale">@discountPercent.ToString("0")% OFF</span>
+                        }
+                        else if (rCount > 5)
+                        {
+                            @* fallback badge: if it has many reviews, call it "HOT" *@
+                            <span class="p-badge badge-hot">HOT ★</span>
+                        }
+                        else if (item.Id > 0)
+                        @* Adjust logic here for "New" items if you have a date *@
+                        {
+                            <span class="p-badge badge-new">NEW</span>
+                        }
+                    </div>
+                </a>
+
+                <div class="pag-body">
+                    <div class="pag-name">@p.Name</div>
+                    <div class="pag-cat">@(p.Category?.Name ?? "General")</div>
+                    <div class="pag-desc-preview">@p.Description</div>
+                    @* 3. Stars (Identical to Products) *@
+                    <p class="p-stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= fullStars)
+                            {
+                                <span style="color: #f5a623;">★</span>
+                            }
+                            else
+                            {
+                                <span style="color: #ccc;">★</span>
+                            }
+                        }
+                        <span class="p-rc">(@totalReviews)</span>
+                    </p>
+
+                    <div class="pag-foot">
+                        @* 4. Side-by-Side Prices *@
+                        <div class="price-container">
+                            <span class="pag-price">@finalPrice.ToString("C")</span>
+                            @if (discountPercent > 0)
+                            {
+                                <span class="pag-old">@p.Price.ToString("C")</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pag-actions">
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="flex:1;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="pag-btn pag-btn-ghost">
+                            <span>✕</span> Remove
+                        </button>
+                    </form>
+
+                    <button class="pag-btn pag-btn-danger" data-product-id="@p.Id" onclick="addToCart(this)" style="flex:1;">
+                        <span>🛒</span> + Cart
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+    <div style="padding: 40px"></div>
+}
+
+@section Scripts {
+    <script src="~/js/products.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
+}

@@ -3,14 +3,16 @@
     ViewData["Title"] = "Deals";
 }
 
-
 @section Styles {
     <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
 
 <div class="prod-page-bar">
     <div class="prod-page-bar-inner">
-        <h1 class="prod-empty-ttl">Deals</h1>
+        <div>
+            <p class="sec-eye">Limited Time</p>
+            <h1 class="sec-ttl">HOT<br />DEALS</h1>
+        </div>
     </div>
 </div>
 
@@ -34,29 +36,68 @@ else
 
             var finalPrice = item.Price * (1 - discount / 100m);
 
+            // Calculate Stars safely
+            int totalReviews = item.Reviews?.Count ?? 0;
+            double avgRating = totalReviews > 0 ? item.Reviews!.Average(r => r.Rating) : 0;
+            int fullStars = (int)Math.Round(avgRating);
+
             <div class="pag-card">
                 <!-- ═══════ Clickable image & body ═══════ -->
-                <a asp-action="Details" asp-route-id="@item.Id" class="card-link-block">
+                <a asp-action="Details" asp-route-id="@item.Id" class="prod-card-link">
                     <div class="pag-thumb">
                         @if (!string.IsNullOrEmpty(item.Img))
                         {
-                            <img src="@item.Img" class="pag-thumb-img" alt="@item.Name" />
+                            <img src="~@item.Img" alt="@item.Name" class="pag-thumb-img" asp-append-version="true" />
                         }
                         else
                         {
-                            <span class="pag-thumb-emoji">🏷️</span>
+                            <span class="pag-thumb-emoji">🛍️</span>
                         }
 
-                        @if (discount > 0)
+                        @* Logic-based badges (No Model Changes Required) *@
+                        @{
+                            // Calculate discount for this specific item loop
+                            var discountPercent = item.Discounts?.Select(d => d.DiscountPercent).DefaultIfEmpty(0m).Max() ?? 0m;
+                            int rCount = item.Reviews?.Count ?? 0;
+                        }
+
+                        @if (discountPercent > 0)
                         {
-                            <span class="pag-badge badge-sale">-@discount.ToString("0")%</span>
+                            @* Shows the discount percentage if it exists *@
+                            <span class="p-badge badge-sale">@discountPercent.ToString("0")% OFF</span>
+                        }
+                        else if (rCount > 5)
+                        {
+                            @* fallback badge: if it has many reviews, call it "HOT" *@
+                            <span class="p-badge badge-hot">HOT ★</span>
+                        }
+                        else if (item.Id > 0)
+                        @* Adjust logic here for "New" items if you have a date *@
+                        {
+                            <span class="p-badge badge-new">NEW</span>
                         }
                     </div>
 
                     <div class="pag-body">
-                        <div class="pag-brand">@(item.Category?.Name ?? "Uncategorized")</div>
+                        <div class="pag-cat">@(item.Category?.Name ?? "Uncategorized")</div>
                         <div class="pag-name">@item.Name</div>
-
+                        
+                        @* Darker description with auto-ellipsis from CSS *@
+                        <div class="pag-desc-preview">@item.Description</div>
+                        <p class="p-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= fullStars)
+                                {
+                                    <span style="color: #f5a623;">★</span>
+                                }
+                                else
+                                {
+                                    <span style="color: #ccc;">★</span>
+                                }
+                            }
+                            <span class="p-rc">(@totalReviews)</span>
+                        </p>
                         <div class="pag-foot">
                             <span class="pag-price">@finalPrice.ToString("C")</span>
                             @if (discount > 0)
@@ -67,39 +108,33 @@ else
                     </div>
                 </a>
 
-                <!-- ═══════ Buttons ═══════ -->
+                <!-- ═══════ Standardized Buttons ═══════ -->
                 <div class="pag-actions">
-                    <!-- Cart -->
-                    <form asp-action="Add" asp-controller="Cart" method="post" class="action-form" data-ajax="true">
-                        <input type="hidden" name="productId" value="@item.Id" />
-                        <input type="hidden" name="quantity" value="1" />
-                        <button type="submit" class="pag-btn pag-btn-primary">
-                            <span>🛒</span> Cart
-                        </button>
-                    </form>
-
+                    @* Note: These are now nested anchors. See CSS below to handle this. *@
+                    @* <span class="pag-btn pag-btn-ghost">Details</span> *@
                     <!-- Wishlist Form -->
-                    <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" class="action-form" data-ajax="true">
+                    <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" class="action-form" data-ajax="true" style="flex:1;">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="productId" value="@item.Id" />
                         <button type="submit" class="pag-btn pag-btn-ghost">
-                            <span>♥</span> Wishlist
+                            <span>♥</span> WISHLIST
                         </button>
-                    </form>
-
-                    <!-- View Details -->
-                    <a asp-action="Details" asp-route-id="@item.Id" class="pag-btn pag-btn-ghost">
-                        <span>👁</span> View
-                    </a>
+                    </form>                   @* <button type="button" class="pag-btn pag-btn-danger">Add To Cart</button> *@
+                    <button class="pag-btn pag-btn-danger" data-product-id="@item.Id" onclick="addToCart(this)">Add To Cart</button>
                 </div>
+
             </div>
         }
     </div>
 }
 
 @section Scripts {
-    <script>
-        // Intercept form submits so they act like AJAX (no full page reload)
+
+    <script src="~/js/products.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
+
+    @* <script>
+        // Existing AJAX script remains the same...
         document.querySelectorAll('form[data-ajax]').forEach(form => {
             form.addEventListener('submit', async e => {
                 e.preventDefault();
@@ -119,27 +154,12 @@ else
 
                     if (data.success) {
                         btn.innerHTML = '<span>✓</span> Added';
-                        btn.classList.remove('pag-btn-primary');
-                        btn.classList.add('pag-btn-ghost');
-
-                        // Update navbar cart badge
-                        const badge = document.querySelector('.cart-count, .cart-badge');
-                        if (badge && data.cartCount != null) {
-                            badge.textContent = data.cartCount;
-                        }
-
-                        // Reset after 2 seconds
+                        // Feedback loop
                         setTimeout(() => {
                             btn.innerHTML = original;
                             btn.disabled = false;
-                            if (form.action.includes('/Cart/')) {
-                                btn.classList.add('pag-btn-primary');
-                                btn.classList.remove('pag-btn-ghost');
-                            }
                         }, 2000);
-                    } else {
-                        throw new Error();
-                    }
+                    } else { throw new Error(); }
                 } catch {
                     btn.innerHTML = '<span>❌</span> Failed';
                     setTimeout(() => {
@@ -149,5 +169,6 @@ else
                 }
             });
         });
-    </script>
+
+    </script> *@
 }

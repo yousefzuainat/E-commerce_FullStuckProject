@@ -28,9 +28,9 @@ namespace ecommerce_system.Controllers
         public async Task<IActionResult> AddToWishlist(int productId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
+            if (userId == null) return Json(new { success = false, message = "Unauthorized" });
 
-            // 1. Get or Create the WishList header for this user
+            // 1. Get or Create the WishList header
             var userWishlist = await _context.wishList
                 .FirstOrDefaultAsync(w => w.UserId == userId);
 
@@ -54,20 +54,26 @@ namespace ecommerce_system.Controllers
                 };
                 _context.wishListItems.Add(newItem);
                 await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Added to wishlist" });
             }
 
-            // 3. Return JSON for the AJAX script in your View
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Already in wishlist" });
         }
 
         // GET: WishListItems
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
 
-            // Use .Where first for performance, then include related data
+            // Load wishlist items and "reach through" to get product details
             var items = await _context.wishListItems
                 .Include(w => w.Proudect)
+                    .ThenInclude(p => p!.Category)     // Load Category
+                .Include(w => w.Proudect)
+                    .ThenInclude(p => p!.Discounts)    // Load Discounts for badge/price
+                .Include(w => w.Proudect)
+                    .ThenInclude(p => p!.Reviews)      // Load Reviews for stars
                 .Where(w => w.WishList.UserId == userId)
                 .ToListAsync();
 
