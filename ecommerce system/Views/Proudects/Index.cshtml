@@ -122,3 +122,47 @@ else
         }
     </div>
 }
+@section Scripts {
+
+    <script src="~/js/products.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
+
+    @* <script>
+        // Existing AJAX script remains the same...
+        document.querySelectorAll('form[data-ajax]').forEach(form => {
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                const original = btn.innerHTML;
+
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span> Adding…';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        btn.innerHTML = '<span>✓</span> Added';
+                        // Feedback loop
+                        setTimeout(() => {
+                            btn.innerHTML = original;
+                            btn.disabled = false;
+                        }, 2000);
+                    } else { throw new Error(); }
+                } catch {
+                    btn.innerHTML = '<span>❌</span> Failed';
+                    setTimeout(() => {
+                        btn.innerHTML = original;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            });
+        });
+
+    </script> *@
+}
