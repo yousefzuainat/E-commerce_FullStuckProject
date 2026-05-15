@@ -6,6 +6,56 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+    <style>
+        .disc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            background: linear-gradient(135deg, #ff6a00, #ff9900);
+            color: #000;
+            margin-top: 4px;
+        }
+        [data-theme="light"] .disc-badge { border-radius: 3px; }
+
+        .cart-item-price-wrap { display: flex; flex-direction: column; gap: 2px; }
+        .cart-item-original  {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-decoration: line-through;
+        }
+        .cart-item-final {
+            font-family: var(--heading);
+            color: #4edea3;
+            font-size: 16px;
+        }
+        [data-theme="dark"] .cart-item-final { letter-spacing: 1px; }
+        [data-theme="light"] .cart-item-final { font-weight: 800; }
+
+        .savings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-size: 13px;
+            color: #4edea3;
+            font-weight: 600;
+            background: rgba(78,222,163,.06);
+            padding: 8px 12px;
+            border-left: 2px solid #4edea3;
+        }
+        [data-theme="dark"] .savings-row { font-family: 'Space Grotesk', sans-serif; }
+        [data-theme="light"] .savings-row { font-family: 'Jost', sans-serif; border-radius: 0 4px 4px 0; }
+        .savings-row span:last-child {
+            font-family: var(--heading);
+            font-size: 15px;
+            color: #4edea3;
+        }
+    </style>
 }
 
 <div class="cart-page">
@@ -24,7 +74,6 @@
 
     @if (!Model.Items.Any())
     {
-        @* ── Empty State ── *@
         <div class="cart-empty">
             <div class="cart-empty-icon">🛒</div>
             <h2 class="cart-empty-ttl">Your cart is empty</h2>
@@ -34,7 +83,6 @@
     }
     else
     {
-        @* ── Cart Layout ── *@
         <div class="cart-layout">
 
             @* ── Items Column ── *@
@@ -43,28 +91,48 @@
                 {
                     <div class="cart-item" data-product-id="@item.ProductId">
                         <div class="cart-item-img">
-                            @if (!string.IsNullOrEmpty(item.Img) )
-                            {
-                                <img src="@item.Img" alt="@item.Name" />
-                            }
-                            else
-                            {
-                                <span class="cart-item-emoji">@item.Img</span>
+                            @{
+                                var img = item.Img ?? "";
+                                if (img.StartsWith("/") || img.StartsWith("http"))
+                                {
+                                    <img src="@img" alt="@item.Name" />
+                                }
+                                else
+                                {
+                                    <span class="cart-item-emoji">@(string.IsNullOrEmpty(img) ? "📦" : img)</span>
+                                }
                             }
                         </div>
+
                         <div class="cart-item-info">
                             <p class="cart-item-brand">@item.Brand</p>
                             <p class="cart-item-name">@item.Name</p>
-                            <p class="cart-item-price">$@item.Price.ToString("F2")</p>
+
+                            <div class="cart-item-price-wrap">
+                                @if (item.HasDiscount)
+                                {
+                                    <span class="cart-item-original">$@item.Price.ToString("F2")</span>
+                                    <span class="cart-item-final" id="unit-price-@item.ProductId">
+                                        $@item.DiscountedPrice.ToString("F2") <small style="font-size:10px;opacity:.7">/ea</small>
+                                    </span>
+                                    <span class="disc-badge">🏷 @((int)item.DiscountPercent)% OFF</span>
+                                }
+                                else
+                                {
+                                    <span class="cart-item-price" id="unit-price-@item.ProductId">$@item.Price.ToString("F2")</span>
+                                }
+                            </div>
                         </div>
+
                         <div class="cart-item-controls">
                             <div class="qty-ctrl">
                                 <button class="qty-btn qty-minus" data-id="@item.ProductId" aria-label="Decrease">−</button>
                                 <span class="qty-val" id="qty-@item.ProductId">@item.Quantity</span>
-                                <button class="qty-btn qty-plus" data-id="@item.ProductId" aria-label="Increase">+</button>
+                                <button class="qty-btn qty-plus"  data-id="@item.ProductId" aria-label="Increase">+</button>
                             </div>
                             <p class="cart-item-line" id="line-@item.ProductId">$@item.LineTotal.ToString("F2")</p>
                         </div>
+
                         <button class="cart-item-remove" data-id="@item.ProductId" aria-label="Remove item">✕</button>
                     </div>
                 }
@@ -74,6 +142,22 @@
             <div class="cart-summary">
                 <div class="cart-summary-inner">
                     <h2 class="summary-ttl">Order Summary</h2>
+
+                    @* Savings row (only visible when discounts exist) *@
+                    @if (Model.TotalSavings > 0)
+                    {
+                        <div id="savingsRow" class="savings-row">
+                            <span>🏷 You Save</span>
+                            <span id="summarySavings">-$@Model.TotalSavings.ToString("F2")</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="savingsRow" class="savings-row" style="display:none">
+                            <span>🏷 You Save</span>
+                            <span id="summarySavings">-$0.00</span>
+                        </div>
+                    }
 
                     <div class="summary-row">
                         <span>Subtotal</span>
@@ -100,23 +184,18 @@
                         <span id="summaryTotal">$@Model.Total.ToString("F2")</span>
                     </div>
 
-                    @* Checkout — requires auth *@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <form asp-controller="Cart" asp-action="Checkout" method="post">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="checkout-btn">
-                                Proceed to Checkout →
-                            </button>
+                            <button type="submit" class="checkout-btn">Proceed to Checkout →</button>
                         </form>
                     }
                     else
                     {
                         <a asp-area="Identity" asp-page="/Account/Login"
                            asp-route-returnUrl="/Cart"
-                           class="checkout-btn checkout-login-btn">
-                            Login to Checkout →
-                        </a>
+                           class="checkout-btn checkout-login-btn">Login to Checkout →</a>
                         <p class="checkout-note">You'll be returned to your cart after login.</p>
                     }
 
@@ -130,20 +209,15 @@
 
 @section Scripts {
 <script>
-    // ── Toast helper ──────────────────────────────────────
     function showToast(msg, type = 'success') {
         const t = document.createElement('div');
         t.className = 'cart-toast cart-toast-' + type;
         t.textContent = msg;
         document.body.appendChild(t);
         requestAnimationFrame(() => t.classList.add('show'));
-        setTimeout(() => {
-            t.classList.remove('show');
-            setTimeout(() => t.remove(), 350);
-        }, 2200);
+        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 2200);
     }
 
-    // ── Update cart badge everywhere ──────────────────────
     function updateBadge(count) {
         document.querySelectorAll('.cart-n').forEach(el => {
             el.textContent = count;
@@ -151,20 +225,28 @@
         });
     }
 
-    // ── Update summary numbers ────────────────────────────
     function updateSummary(data) {
-        const sub = document.getElementById('summarySubtotal');
+        const sub  = document.getElementById('summarySubtotal');
         const ship = document.getElementById('summaryShipping');
-        const tot = document.getElementById('summaryTotal');
-        if (sub) sub.textContent = '$' + data.subtotal;
+        const tot  = document.getElementById('summaryTotal');
+        const sav  = document.getElementById('summarySavings');
+        const savRow = document.getElementById('savingsRow');
+
+        if (sub)  sub.textContent  = '$' + data.subtotal;
         if (ship) ship.textContent = data.shipping === '0.00' ? 'FREE' : '$' + data.shipping;
-        if (tot) tot.textContent = '$' + data.total;
+        if (tot)  tot.textContent  = '$' + data.total;
+
+        if (sav && savRow && data.savings !== undefined) {
+            const s = parseFloat(data.savings);
+            savRow.style.display = s > 0 ? '' : 'none';
+            sav.textContent = '-$' + s.toFixed(2);
+        }
     }
 
-    // ── REMOVE ────────────────────────────────────────────
+    // ── REMOVE ──
     document.querySelectorAll('.cart-item-remove').forEach(btn => {
         btn.addEventListener('click', async function () {
-            const id = this.dataset.id;
+            const id  = this.dataset.id;
             const row = this.closest('.cart-item');
             row.classList.add('removing');
             const res = await fetch('/Cart/Remove', {
@@ -185,11 +267,11 @@
         });
     });
 
-    // ── QUANTITY ──────────────────────────────────────────
+    // ── QUANTITY ──
     async function changeQty(productId, delta) {
-        const qtyEl = document.getElementById('qty-' + productId);
+        const qtyEl   = document.getElementById('qty-' + productId);
         const current = parseInt(qtyEl.textContent);
-        const newQty = current + delta;
+        const newQty  = current + delta;
         if (newQty < 1) return;
 
         const res = await fetch('/Cart/Update', {
@@ -200,6 +282,7 @@
         const data = await res.json();
         if (data.success) {
             qtyEl.textContent = newQty;
+            // Update line total
             const lineEl = document.getElementById('line-' + productId);
             if (lineEl) lineEl.textContent = '$' + data.lineTotal;
             updateBadge(data.cartCount);
@@ -214,7 +297,6 @@
         btn.addEventListener('click', () => changeQty(btn.dataset.id, +1));
     });
 
-    // ── Anti-forgery token helper ─────────────────────────
     function getToken() {
         return document.querySelector('input[name="__RequestVerificationToken"]')?.value
             || document.querySelector('meta[name="csrf-token"]')?.content || '';
