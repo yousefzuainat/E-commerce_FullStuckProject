@@ -59,7 +59,8 @@ namespace ecommerce_system.Data
             modelBuilder.Entity<AppliactionUser>()
                 .HasDiscriminator<string>("Discriminator")
                 .HasValue("AppliactionUser");
-
+            modelBuilder.Entity<order>().Ignore(o => o.CreatedAt);
+            modelBuilder.Entity<OrderItem>().Ignore(oi => oi.CreatedAt);
             // Fix for SQL Server versions (DateTime compatibility)
             var dateTimeOffsetConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTimeOffset, DateTime>(
                 v => v.DateTime,
@@ -68,7 +69,7 @@ namespace ecommerce_system.Data
             var nullableDateTimeOffsetConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTimeOffset?, DateTime?>(
                 v => v.HasValue ? v.Value.DateTime : default(DateTime?),
                 v => v.HasValue ? new DateTimeOffset(v.Value) : default(DateTimeOffset?));
-
+            modelBuilder.Entity<Proudect>().Property(p => p.Price).HasColumnType("decimal(18,2)");
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 foreach (var property in entityType.GetProperties())

@@ -1,0 +1,97 @@
+﻿@model ecommerce_system.Models.order
+
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/orderconfirm.css" asp-append-version="true" />
+}
+<div class="pd-page">
+    @* ── Breadcrumb ── *@
+    <div class="pd-crumb">
+        <a asp-action="Index" class="pd-crumb-link">ORDERS</a>
+        <span class="pd-crumb-sep">/</span>
+        <span class="pd-crumb-cur">#VOLT-@Model.Id.ToString("D5")</span>
+    </div>
+    
+
+
+    <div class="co-layout">
+        @* ── Left Side: Items List ── *@
+        <div class="co-panel">
+            <div class="co-panel-hd">
+                <span class="co-panel-ttl">Products in this Order</span>
+                <span class="co-panel-count">@Model.OrderItems?.Count Items</span>
+            </div>
+
+            <div class="co-items-list">
+                @foreach (var item in Model.OrderItems!)
+                {
+                    <div class="co-item">
+                        <div class="co-item-img">
+                            @if (!string.IsNullOrEmpty(item.Proudect?.Img))
+                            {
+                                <img src="@item.Proudect.Img" alt="@item.Proudect.Name" />
+                            }
+                            else
+                            {
+                                <span class="co-item-emoji">📦</span>
+                            }
+                        </div>
+                        <div class="co-item-info">
+                            <div class="co-item-brand">@item.Proudect?.Category?.Name</div>
+                            <div class="co-item-name">@item.Proudect?.Name</div>
+                            <div class="co-item-qty">QTY: @item.Quantity</div>
+                        </div>
+                        <div class="co-item-price-col">
+                            <div class="co-item-unit">@item.UnitPrice.ToString("C")</div>
+                            <div class="co-item-line">@((item.UnitPrice * item.Quantity).ToString("C"))</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* ── Right Side: Order Summary ── *@
+        <div class="co-summary">
+            <div class="co-summary-inner">
+                <h2 class="co-sum-ttl">Order Summary</h2>
+                
+                <div class="co-sum-row">
+                    <span>Status</span>
+                    @{
+                        var statusClass = Model.Status?.ToLower() switch
+                        {
+                            "paid" => "status-success",
+                            "cancelled" => "status-cancelled",
+                            _ => "status-pending"
+                        };
+                    }
+                    <span class="status-pill @statusClass">@Model.Status</span>
+                </div>
+
+                <div class="co-sum-div"></div>
+
+                <div class="co-sum-row">
+                    <span>Subtotal</span>
+                    <span>@Model.tootal_amount.ToString("C")</span>
+                </div>
+                <div class="co-sum-row">
+                    <span>Shipping</span>
+                    <span style="color: #4edea3;">FREE</span>
+                </div>
+
+                <div class="co-sum-div"></div>
+
+                <div class="co-sum-row co-sum-total">
+                    <span>Total Paid</span>
+                    <span>@Model.tootal_amount.ToString("C")</span>
+                </div>
+
+                <a asp-action="Index" class="ocr-view-btn">← Back to History</a>
+            </div>
+        </div>
+    </div>
+</div>
