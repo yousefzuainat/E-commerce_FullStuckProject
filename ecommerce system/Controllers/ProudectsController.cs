@@ -46,17 +46,16 @@ namespace ecommerce_system.Controllers
         {
             if (id == null) return NotFound();
 
-            var proudect = await _context.proudects
+            var product = await _context.proudects
                 .Include(p => p.Category)
-                    .ThenInclude(c => c!.Proudects) // Use ! to handle nullability warning
-                .Include(p => p.Reviews!)           // Load the collection
-                    .ThenInclude(r => r.User)       // Load the reviewer
-                .Include(p => p.Discounts)          // Load discounts for the price block
+                .Include(p => p.Images)
+                .Include(p => p.Discounts)
+                .Include(p => p.Reviews)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (proudect == null) return NotFound();
+            if (product == null) return NotFound();
 
-            return View(proudect);
+            return View(product);
         }
 
         // GET: Proudects/Create

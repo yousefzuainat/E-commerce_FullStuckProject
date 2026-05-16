@@ -1,0 +1,143 @@
+/* ============================================================
+   VOLTEX — Product Details: Real Image Gallery
+   Append to: wwwroot/css/products.css
+   ============================================================ */
+
+/* ── Main image container ── */
+.pd-main-img {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="dark"] .pd-main-img {
+    border: 1px solid var(--border);
+}
+
+[data-theme="light"] .pd-main-img {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+.pd-main-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity .15s ease, transform .4s ease;
+}
+
+/* Fade-out class applied during image swap */
+.pd-img-fade {
+    opacity: 0 !important;
+    transform: scale(1.02);
+}
+
+/* ── Thumbnail strip (real images) ── */
+.pd-thumbs-real {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+    .pd-thumbs-real .pd-thumb-item {
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        cursor: pointer;
+        padding: 0;
+        background: var(--surface);
+        border: 2px solid var(--border);
+        transition: border-color .2s, transform .15s;
+        display: block;
+    }
+
+[data-theme="light"] .pd-thumbs-real .pd-thumb-item {
+    border-radius: 4px;
+}
+
+.pd-thumbs-real .pd-thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .3s ease;
+}
+
+.pd-thumbs-real .pd-thumb-item:hover {
+    border-color: rgba(255, 106, 0, .5);
+    transform: translateY(-2px);
+}
+
+    .pd-thumbs-real .pd-thumb-item:hover img {
+        transform: scale(1.06);
+    }
+
+.pd-thumbs-real .pd-thumb-item.active {
+    border-color: var(--accent);
+}
+
+[data-theme="dark"] .pd-thumbs-real .pd-thumb-item.active {
+    box-shadow: 0 0 12px rgba(255,106,0,.25);
+}
+
+[data-theme="light"] .pd-thumbs-real .pd-thumb-item.active {
+    box-shadow: 0 0 12px rgba(224,92,58,.2);
+}
+
+/* ── Wishlist button ── */
+.pd-btn-wish {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    flex-shrink: 0;
+    transition: color .2s, border-color .2s, background .2s, transform .15s;
+    position: relative;
+}
+
+[data-theme="light"] .pd-btn-wish {
+    border-radius: 4px;
+}
+
+.pd-btn-wish:hover {
+    border-color: #e05c5c;
+    color: #e05c5c;
+}
+
+/* Filled heart when active */
+.pd-btn-wish-active {
+    color: #e05c5c !important;
+    border-color: rgba(224, 92, 92, .4) !important;
+    background: rgba(224, 92, 92, .06) !important;
+}
+
+/* Click pulse animation */
+@keyframes wishPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.35);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pd-wish-pulse {
+    animation: wishPulse .4s cubic-bezier(.4,0,.2,1);
+}

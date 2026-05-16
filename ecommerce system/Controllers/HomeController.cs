@@ -283,6 +283,12 @@ namespace ecommerce_system.Controllers
         new() { AuthorName="Rima Barakat",     Initials="RB", Rating=4, TimeAgo="1mo ago", Content="Clean website, smooth checkout, and the cart remembered my items even after I closed the tab. Small detail but it matters a lot." },
     }
         };
+
+        // Other Pages
+        public IActionResult About() => View();
+        public IActionResult Privacy() => View();
+        public IActionResult Terms() => View();
+        public IActionResult FAQ() => View();
     }
 
 }

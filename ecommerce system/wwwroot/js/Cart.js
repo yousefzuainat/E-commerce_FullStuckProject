@@ -32,7 +32,6 @@ async function addToCart(btn) {
 
     setTimeout(() => {
         btn.disabled = false;
-        btn.textContent = 'Add To Cart';
     }, 1200);
 }
 

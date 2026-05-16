@@ -41,6 +41,7 @@ namespace ecommerce_system.Controllers
             var exists = await _context.wishListItems
                 .AnyAsync(w => w.ProudectId == productId && w.WishListId == userWishlist.Id);
 
+
             if (!exists)
             {
                 var newItem = new WishListItem { ProudectId = productId, WishListId = userWishlist.Id };

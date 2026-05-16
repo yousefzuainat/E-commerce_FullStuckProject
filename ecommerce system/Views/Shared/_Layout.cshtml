@@ -21,6 +21,189 @@
 
     @RenderSection("Styles", required: false)
     @Html.AntiForgeryToken()
+
+    <style>
+            /* ═══════════════════════════════════════════════
+               NAVBAR — improved layout & UX
+            ════════════════════════════════════════════════ */
+
+            /* Make the right-side cluster tighter */
+            .nav-r {
+                display: flex;
+                align-items: center;
+                gap: 6px;          /* was probably ~12px — tighter is cleaner */
+            }
+
+            /* ── Auth dropdown (guest) ── */
+            .nav-auth-menu {
+                position: relative;
+            }
+
+            /* The small trigger button when NOT signed in */
+            .nav-auth-trigger {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 5px 10px;
+                background: transparent;
+                border: 1px solid var(--accent, #f60);
+                border-radius: 6px;
+                color: var(--fg, #fff);
+                font-family: inherit;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: .08em;
+                text-transform: uppercase;
+                cursor: pointer;
+                transition: background .2s, color .2s;
+                white-space: nowrap;
+            }
+            .nav-auth-trigger:hover,
+            .nav-auth-trigger.is-open {
+                background: var(--accent, #f60);
+                color: #000;
+            }
+            .nav-auth-trigger svg {
+                width: 15px;
+                height: 15px;
+                flex-shrink: 0;
+            }
+            /* chevron rotates when open */
+            .nav-auth-trigger .auth-chev {
+                transition: transform .25s;
+            }
+            .nav-auth-trigger.is-open .auth-chev {
+                transform: rotate(180deg);
+            }
+
+            /* The dropdown panel */
+            .nav-auth-dropdown {
+                position: absolute;
+                top: calc(100% + 10px);
+                right: 0;
+                min-width: 230px;
+                background: var(--card-bg, #111);
+                border: 1px solid var(--border, rgba(255,255,255,.1));
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 16px 48px rgba(0,0,0,.45);
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(-6px);
+                transition: opacity .22s, transform .22s;
+                z-index: 999;
+            }
+            .nav-auth-dropdown.open {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+            }
+
+            /* Header inside the auth dropdown */
+            .auth-drop-heading {
+                padding: 8px 12px 10px;
+                font-size: 0.68rem;
+                letter-spacing: .1em;
+                text-transform: uppercase;
+                color: var(--muted, #888);
+                border-bottom: 1px solid var(--border, rgba(255,255,255,.07));
+                margin-bottom: 6px;
+            }
+
+            /* Individual items inside the auth dropdown */
+            .auth-drop-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 11px 12px;
+                border-radius: 8px;
+                font-size: 0.82rem;
+                font-weight: 500;
+                color: var(--fg, #fff);
+                text-decoration: none;
+                transition: background .15s;
+                cursor: pointer;
+                width: 100%;
+                border: none;
+                background: transparent;
+                font-family: inherit;
+                letter-spacing: .04em;
+            }
+            .auth-drop-item:hover {
+                background: var(--hover, rgba(255,255,255,.06));
+            }
+            .auth-drop-divider {
+                height: 1px;
+                background: var(--border, rgba(255,255,255,.07));
+                margin: 6px 0;
+            }
+
+            /* Primary CTA inside the dropdown (Register) */
+            .auth-drop-primary {
+                background: var(--accent, #f60) !important;
+                color: #000 !important;
+                font-weight: 700;
+                justify-content: center;
+                letter-spacing: .08em;
+                text-transform: uppercase;
+                margin-top: 4px;
+                border-radius: 8px;
+            }
+            .auth-drop-primary:hover {
+                filter: brightness(1.1);
+            }
+
+            /* Theme toggle inside the auth dropdown */
+            .auth-drop-theme-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 12px;
+                font-size: 0.78rem;
+                color: var(--muted, #888);
+            }
+
+            /* ── Card: fixed-size description with …Read More ── */
+            .pag-desc-wrap {
+                font-size: 0.8rem;
+                line-height: 1.5;
+                color: var(--muted, #888);
+                /* exactly 3 lines visible */
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                min-height: 3.6em;   /* prevents cards from shrinking when desc is short */
+                margin-bottom: 8px;
+            }
+            .pag-read-more {
+                color: var(--accent, #f60);
+                font-weight: 600;
+                font-size: 0.78rem;
+                white-space: nowrap;
+            }
+
+            /* Force all pag-cards to the same height */
+            .pag-card {
+                display: flex;
+                flex-direction: column;
+            }
+            /* The clickable area stretches, pushing buttons to the bottom */
+            .pag-card .prod-card-link {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .pag-card .pag-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            /* Push price+buttons to the very bottom */
+            .pag-card .pag-foot {
+                margin-top: auto;
+            }
+    </style>
 </head>
 <body>
 
@@ -35,62 +218,70 @@
 
     @* ── Navbar ── *@
     <nav>
+        @* Logo *@
         <a href="/" class="logo">
             <div class="logo-mark">
                 <svg viewBox="0 0 14 14"><polygon points="7,1 13,4 13,10 7,13 1,10 1,4" /></svg>
             </div>
             <span id="logoTxt">VOLTEX</span>
         </a>
+
         @{
-            // Get the current controller and action from the route data
             var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
             var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
         }
+
+        @* Nav links *@
         <ul class="nav-links">
-            <li><a  href="/" class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">Home</a></li>
-            <li><a  href="/Categories" class="@(currentController == "Categories" && currentAction == "Index" ? "active" : "")">Categories</a></li>
-            <li><a  href="/Proudects" class="@(currentController == "Proudects" && currentAction == "Index" ? "active" : "")">Products</a></li>
+            <li><a href="/" class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">Home</a></li>
+            <li><a href="/Categories" class="@(currentController == "Categories" && currentAction == "Index" ? "active" : "")">Categories</a></li>
+            <li><a href="/Proudects" class="@(currentController == "Proudects" && currentAction == "Index" ? "active" : "")">Products</a></li>
             <li>
-                <a asp-area="" class="v-link @(currentController == "Proudects" && currentAction == "Deals" ? "active" : "")" asp-controller="Proudects" asp-action="Deals">DEALS</a>
+                <a asp-area="" asp-controller="Proudects" asp-action="Deals"
+                   class="v-link @(currentController == "Proudects" && currentAction == "Deals" ? "active" : "")">Deals</a>
             </li>
             <li>
                 <a asp-controller="Testimonials" asp-action="Write"
-                       class="@(currentController == "Testimonials" && currentAction == "Write" ? "active" : "")">
-                    Reviews
-                </a>
+                   class="@(currentController == "Testimonials" && currentAction == "Write" ? "active" : "")">Reviews</a>
             </li>
         </ul>
 
+        @* Right cluster *@
         <div class="nav-r">
-            <button class="icon-btn" onclick="openS()" aria-label="Search">⌕</button>
-            <label class="tog" aria-label="Toggle theme">
-                <input type="checkbox" id="togIn" onchange="setTheme(this.checked ? 'light' : 'dark')" />
-                <div class="tog-track">
-                    <div class="tog-icons"><span>🌙</span><span>☀</span></div>
-                </div>
-                <div class="tog-thumb"></div>
-            </label>
 
-            @* ── Auth ── *@
+            @* Search *@
+            <button class="icon-btn" onclick="openS()" aria-label="Search">⌕</button>
+
             @if (SignInManager.IsSignedIn(User))
             {
-                @* Signed in: cart btn + profile icon with dropdown *@
-                <a href="/Cart" class="cart-btn"><span id="cLbl">CART</span><span class="cart-n" id="cartCount">0</span></a>
+                @* ── SIGNED IN: cart + profile dropdown ── *@
+                <a href="/Cart" class="cart-btn">
+                    <span id="cLbl">CART</span>
+                    <span class="cart-n" id="cartCount">0</span>
+                </a>
+
                 <div class="nav-user-menu">
                     <button class="nav-profile-btn" onclick="toggleUserMenu()" aria-label="Account menu">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <circle cx="12" cy="8" r="4" />
                             <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                         </svg>
                     </button>
+
                     <div class="nav-dropdown" id="userDropdown">
                         <div class="nav-drop-header">
                             <span class="nav-drop-name">@UserManager.GetUserName(User)</span>
                         </div>
+
                         @if (User.IsInRole("Admin"))
                         {
                             <a asp-area="Admin" asp-controller="Admin" asp-action="Index" class="nav-drop-item nav-drop-admin">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="7" height="7" />
+                                    <rect x="14" y="3" width="7" height="7" />
+                                    <rect x="14" y="14" width="7" height="7" />
+                                    <rect x="3" y="14" width="7" height="7" />
+                                </svg>
                                 Admin Panel
                             </a>
                             <a asp-controller="Testimonials" asp-area="" asp-action="Manage" class="nav-drop-item">
@@ -101,6 +292,18 @@
                             </a>
                             <div class="nav-drop-divider"></div>
                         }
+
+                        @* Theme toggle *@
+                        <div class="nav-drop-item">
+                            <label class="tog" aria-label="Toggle theme">
+                                <input type="checkbox" id="togIn" onchange="setTheme(this.checked ? 'light' : 'dark')" />
+                                <div class="tog-track">
+                                    <div class="tog-icons"><span>🌙</span><span>☀</span></div>
+                                </div>
+                                <div class="tog-thumb"></div>
+                            </label>
+                        </div>
+
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-drop-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <circle cx="12" cy="8" r="4" />
@@ -108,21 +311,25 @@
                             </svg>
                             Settings
                         </a>
-
                         <a class="nav-drop-item" asp-controller="WishListItems" asp-area="" asp-action="Index">
-                            <span class="v-drop-icon">♥</span> MY WISHLIST
+                            <span class="v-drop-icon">♥</span> My Wishlist
                         </a>
-                                
                         <a class="nav-drop-item" asp-controller="UserOrders" asp-area="" asp-action="Index">
-                            <span class="v-drop-icon">📦</span> ORDER HISTORY
+                            <span class="v-drop-icon">📦</span> Order History
                         </a>
                         <a class="nav-drop-item" asp-controller="Testimonials" asp-area="" asp-action="Write">
-                            <span class="v-drop-icon">✍</span> WRITE A REVIEW
+                            <span class="v-drop-icon">✍</span> Write a Review
                         </a>
+
                         <div class="nav-drop-divider"></div>
+
                         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
                             <button type="submit" class="nav-drop-item nav-drop-logout">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
                                 Sign Out
                             </button>
                         </form>
@@ -131,12 +338,60 @@
             }
             else
             {
-                @* Signed out: login + register + cart *@
-                <div class="nav-auth-btns">
-                    <a asp-area="Identity" asp-page="/Account/Login" class="nav-login-btn">Login</a>
-                    <a asp-area="Identity" asp-page="/Account/Register" class="nav-register-btn">Register</a>
+                @* ── GUEST: compact auth dropdown ── *@
+                <div class="nav-auth-menu">
+                    <button class="nav-auth-trigger" id="authTrigger" onclick="toggleAuthMenu()" aria-label="Sign in or register">
+                        @* Person icon *@
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                        </svg>
+                        Account
+                        @* Chevron *@
+                        <svg class="auth-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </button>
+
+                    <div class="nav-auth-dropdown" id="authDropdown">
+                        <div class="auth-drop-heading">Welcome to VOLTEX</div>
+
+                        <a asp-area="Identity" asp-page="/Account/Login" class="auth-drop-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                                <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
+                                <polyline points="10 17 15 12 10 7" />
+                                <line x1="15" y1="12" x2="3" y2="12" />
+                            </svg>
+                            Sign In
+                        </a>
+
+                        <div class="auth-drop-divider"></div>
+
+                        <a asp-area="Identity" asp-page="/Account/Register" class="auth-drop-item auth-drop-primary">
+                            Create Account
+                        </a>
+
+                        <div class="auth-drop-divider"></div>
+
+                        @* Theme toggle for guests *@
+                        <div class="auth-drop-theme-row">
+                            <span>Theme</span>
+                            <label class="tog" aria-label="Toggle theme">
+                                <input type="checkbox" id="togIn" onchange="setTheme(this.checked ? 'light' : 'dark')" />
+                                <div class="tog-track">
+                                    <div class="tog-icons"><span>🌙</span><span>☀</span></div>
+                                </div>
+                                <div class="tog-thumb"></div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <a href="/Cart" class="cart-btn"><span id="cLbl">CART</span><span class="cart-n" id="cartCount">0</span></a>
+
+                @* Cart always visible *@
+                <a href="/Cart" class="cart-btn">
+                    <span id="cLbl">CART</span>
+                    <span class="cart-n" id="cartCount">0</span>
+                </a>
             }
         </div>
     </nav>
@@ -193,9 +448,10 @@
         <div class="foot-btm">
             <p class="foot-copy">© 2026 VOLTEX. All rights reserved.</p>
             <div class="foot-leg">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-                <a href="#">Cookies</a>
+                <a asp-action="Privacy" asp-controller="Home">Privacy</a>
+                <a asp-action="Terms" asp-controller="Home">Terms</a>
+                <a asp-action="FAQ" asp-controller="Home">Q&A</a>
+                <a asp-action="About" asp-controller="Home">About Us</a>
             </div>
         </div>
     </footer>
@@ -204,34 +460,53 @@
     <script src="~/js/voltex.js" asp-append-version="true"></script>
 
     <script>
+        /* ── Signed-in user profile dropdown ── */
         function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            const btn = document.querySelector('.nav-profile-btn');
-            if (!dropdown) return;
-            const isOpen = dropdown.classList.toggle('open');
-            btn?.classList.toggle('is-open', isOpen);
+        const dropdown = document.getElementById('userDropdown');
+        const btn      = document.querySelector('.nav-profile-btn');
+        if (!dropdown) return;
+        const isOpen = dropdown.classList.toggle('open');
+        btn?.classList.toggle('is-open', isOpen);
         }
+
+        /* ── Guest auth dropdown ── */
+        function toggleAuthMenu() {
+        const dropdown = document.getElementById('authDropdown');
+        const btn      = document.getElementById('authTrigger');
+        if (!dropdown) return;
+        const isOpen = dropdown.classList.toggle('open');
+        btn?.classList.toggle('is-open', isOpen);
+        }
+
+        /* Close all dropdowns when clicking outside */
         document.addEventListener('click', function (e) {
-            const menu = document.querySelector('.nav-user-menu');
-            if (menu && !menu.contains(e.target)) {
-                document.getElementById('userDropdown')?.classList.remove('open');
-                document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
-            }
+        // profile
+        const userMenu = document.querySelector('.nav-user-menu');
+        if (userMenu && !userMenu.contains(e.target)) {
+        document.getElementById('userDropdown')?.classList.remove('open');
+        document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
+        }
+        // auth
+        const authMenu = document.querySelector('.nav-auth-menu');
+        if (authMenu && !authMenu.contains(e.target)) {
+        document.getElementById('authDropdown')?.classList.remove('open');
+        document.getElementById('authTrigger')?.classList.remove('is-open');
+        }
         });
     </script>
 
     <script>
-        // Load cart count from session on every page
+        /* Load cart count from session on every page */
         (async function () {
-            try {
-                const res = await fetch('/Cart/Count');
-                const data = await res.json();
-                const count = data.cartCount || 0;
-                document.querySelectorAll('.cart-n').forEach(el => {
-                    el.textContent = count;
-                    if (count > 0) el.classList.add('cart-n-active');
-                });
-            } catch (e) {}
+        try {
+        const res   = await fetch('/Cart/Count');
+        const data  = await res.json();
+        const count = data.cartCount || 0;
+        document.querySelectorAll('.cart-n').forEach(el => {
+        el.textContent = count;
+        if (count > 0) el.classList.add('cart-n-active');
+        });
+        } catch (e) {}
         })();
     </script>
 

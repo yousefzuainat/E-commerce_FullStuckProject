@@ -1,0 +1,163 @@
+@{
+    ViewData["Title"] = "About Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/voltex-info.css" asp-append-version="true" />
+}
+
+@* ══════════════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════════════ *@
+<div class="page-content">
+    <div class="info-hero reveal">
+        <span class="info-eye">// Our Story</span>
+        <h1 class="info-title">ABOUT<br /><em>VOLTEX</em></h1>
+        <p class="info-sub">
+            We started Voltex with one goal — bring professional-grade gear to every player, builder, and creator.
+            No compromises. No noise. Just performance.
+        </p>
+    </div>
+
+    @* ══════════════════════════════════════════════
+         MISSION SPLIT
+    ══════════════════════════════════════════════ *@
+    <div class="info-body-wide">
+        <div class="about-mission reveal">
+            <div>
+                <span class="info-section-eye">// Mission</span>
+                <h2 class="info-section-ttl">WE BUILD<br />FOR WINNERS</h2>
+                <p class="info-p">
+                    Voltex was founded on the belief that elite hardware shouldn't be locked behind elite budgets.
+                    We curate only what performs — tested, benchmarked, and approved by people who actually use the gear.
+                </p>
+                <p class="info-p">
+                    Every product on Voltex earns its place. Our team reviews hundreds of SKUs each month so you don't have to sort through the noise.
+                    From pro peripherals to precision tools — we've got your setup covered.
+                </p>
+                <p class="info-p">
+                    We're based in Jordan and built with the MENA gaming and tech community in mind. Fast delivery, local support, and a platform that speaks your language.
+                </p>
+            </div>
+            <div class="about-mission-visual">
+                <div class="mission-hex">
+                    <span class="mission-num">01</span>
+                    <span class="mission-num-lbl">Mission Driven</span>
+                </div>
+            </div>
+        </div>
+
+        @* ── Stats ── *@
+        <div class="about-stats reveal">
+            <div class="about-stat-item">
+                <span class="about-stat-n">500+</span>
+                <span class="about-stat-l">Products</span>
+            </div>
+            <div class="about-stat-item">
+                <span class="about-stat-n">98%</span>
+                <span class="about-stat-l">Satisfaction</span>
+            </div>
+            <div class="about-stat-item">
+                <span class="about-stat-n">40+</span>
+                <span class="about-stat-l">Partner Brands</span>
+            </div>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             VALUES
+        ══════════════════════════════════════════════ *@
+        <span class="info-section-eye reveal">// What We Stand For</span>
+        <h2 class="info-section-ttl reveal">OUR VALUES</h2>
+        <div class="about-values reveal">
+            <div class="about-value-card">
+                <span class="about-value-ico">⚡</span>
+                <div class="about-value-ttl">Performance First</div>
+                <p class="about-value-txt">
+                    Every item in our catalog passes a strict performance review.
+                    If it doesn't deliver in real-world conditions, it doesn't make the cut.
+                </p>
+            </div>
+            <div class="about-value-card">
+                <span class="about-value-ico">🔍</span>
+                <div class="about-value-ttl">Total Transparency</div>
+                <p class="about-value-txt">
+                    Honest specs, honest pricing, honest reviews. We never inflate ratings
+                    or hide fees. What you see is exactly what you get.
+                </p>
+            </div>
+            <div class="about-value-card">
+                <span class="about-value-ico">🌍</span>
+                <div class="about-value-ttl">Community Rooted</div>
+                <p class="about-value-txt">
+                    Built for the MENA gaming and tech community. Local support,
+                    local shipping, local understanding of what the market actually needs.
+                </p>
+            </div>
+            <div class="about-value-card">
+                <span class="about-value-ico">🔒</span>
+                <div class="about-value-ttl">Trust &amp; Security</div>
+                <p class="about-value-txt">
+                    Your data, your orders, your account — secured. We use modern encryption
+                    and never sell personal information to third parties.
+                </p>
+            </div>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             TEAM
+        ══════════════════════════════════════════════ *@
+        <div class="info-divider"></div>
+        <span class="info-section-eye reveal">// The People Behind Voltex</span>
+        <h2 class="info-section-ttl reveal">MEET THE<br />TEAM</h2>
+        <div class="team-grid reveal">
+            <div class="team-card">
+                <div class="team-avatar">
+                    <span class="team-initials">HO</span>
+                </div>
+                <div class="team-name">Hanan Othman</div>
+                <span class="team-role">Product Owner</span>
+                <p class="team-bio">
+                    Drives the vision and roadmap for Voltex. Hanan ensures every feature
+                    shipped solves a real problem for real users — keeping the team focused
+                    and the product sharp.
+                </p>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">
+                    <span class="team-initials">SK</span>
+                </div>
+                <div class="team-name">Shahad Khraisheh</div>
+                <span class="team-role">Scrum Master</span>
+                <p class="team-bio">
+                    The engine behind the team's delivery. Shahad keeps sprints on track,
+                    removes blockers fast, and makes sure the team ships quality on schedule
+                    every single cycle.
+                </p>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">
+                    <span class="team-initials">YZ</span>
+                </div>
+                <div class="team-name">Yousef Zuainat</div>
+                <span class="team-role">Developer</span>
+                <p class="team-bio">
+                    Builds the platform from the ground up. Yousef architects the backend,
+                    crafts the frontend, and makes sure every interaction on Voltex is
+                    fast, reliable, and polished.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Reveal on scroll
+        const els = document.querySelectorAll('.reveal');
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.08 });
+        els.forEach(el => io.observe(el));
+    </script>
+}

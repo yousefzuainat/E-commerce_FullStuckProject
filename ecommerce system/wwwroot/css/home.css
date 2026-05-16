@@ -1347,3 +1347,205 @@
 .nl-go:hover {
     opacity: .88;
 }
+
+
+/* ============================================================
+   VOLTEX — Home Page Product Card Improvements
+   Add these rules at the END of home.css
+   (they override the existing .prod-card rules cleanly)
+   ============================================================ */
+
+/* ── Grid: equal columns, no left margin offset ── */
+.prod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 100%; /* was capped + offset with margin-left:100px */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+@media (max-width: 1100px) {
+    .prod-grid {
+        grid-template-columns: repeat(3,1fr);
+    }
+}
+
+@media (max-width: 780px) {
+    .prod-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .prod-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Card shell: fixed height, flex column so footer is always at bottom ── */
+[data-theme="dark"] .prod-card,
+[data-theme="light"] .prod-card {
+    display: flex;
+    flex-direction: column;
+    height: 420px; /* fixed: all cards identical height */
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* ── Thumbnail: fixed portion of the card ── */
+.prod-thumb {
+    flex-shrink: 0;
+    height: 200px; /* fixed image area */
+    aspect-ratio: unset; /* override the old 1:1 ratio that caused overflow */
+    overflow: hidden;
+    position: relative;
+}
+
+    .prod-thumb a {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+        .prod-thumb a img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 12px;
+            transition: transform .45s cubic-bezier(.25,.46,.45,.94);
+        }
+
+/* Subtle zoom on hover instead of the whole-card shift */
+[data-theme="dark"] .prod-card:hover .prod-thumb a img,
+[data-theme="light"] .prod-card:hover .prod-thumb a img {
+    transform: scale(1.06);
+}
+
+/* ── Body: flex-grow so it fills remaining space ── */
+.prod-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px 18px;
+    min-height: 0; /* important for flex children to shrink */
+}
+
+/* ── Brand label ── */
+.p-brand {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent); /* accent instead of dim — more energy */
+    margin-bottom: 5px;
+    flex-shrink: 0;
+}
+
+/* ── Name: fixed 2-line clamp so cards don't misalign ── */
+.p-name {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text);
+    /* Hard-limit to 2 lines — prevents tall cards */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.9em; /* reserve space even for 1-line names */
+    flex-shrink: 0;
+}
+
+/* ── Stars ── */
+.p-stars {
+    font-size: 11px;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    color: #f5a623; /* consistent warm gold, not theme accent */
+}
+
+.p-rc {
+    color: var(--text-dim);
+    font-size: 10px;
+    letter-spacing: 0;
+    margin-left: 2px;
+}
+
+/* ── Footer: always pinned to the bottom of the card ── */
+.p-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto; /* push to the very bottom */
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+/* ── Price ── */
+[data-theme="dark"] .p-price {
+    font-size: 17px;
+    letter-spacing: 0;
+    font-weight: 700;
+}
+
+[data-theme="light"] .p-price {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.p-old {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: line-through;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* ── Add button: more polished, bigger tap target ── */
+.p-add {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .18s, border-color .18s, color .18s, transform .15s;
+}
+
+    /* Subtle lift on the button itself (not the whole card) */
+    .p-add:hover {
+        transform: scale(1.12);
+    }
+
+[data-theme="dark"] .prod-card:hover .p-add {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+}
+
+[data-theme="light"] .prod-card:hover .p-add {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+/* ── Top accent line: thicker, smoother ── */
+[data-theme="dark"] .prod-card::before {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .35s cubic-bezier(.25,.46,.45,.94);
+}
+
+[data-theme="dark"] .prod-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* ── Hover lift for light theme (kept, just refined) ── */
+[data-theme="light"] .prod-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 48px rgba(224,92,58,.13), 0 2px 8px rgba(0,0,0,.06);
+}

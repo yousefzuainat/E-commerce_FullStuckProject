@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Testimonials.css" asp-append-version="true" />
 }
+
 @* ══════════════════════════════════════════════
      HERO
 ══════════════════════════════════════════════ *@
@@ -77,7 +78,6 @@
             {
                 <span class="tick-item">@t<span class="tick-dot"></span></span>
             }
-            // duplicate for seamless loop
             foreach (var t in tickers)
             {
                 <span class="tick-item">@t<span class="tick-dot"></span></span>
@@ -103,9 +103,7 @@
             <a asp-controller="Proudects" asp-action="Index" asp-route-categoryId="@cat.CategoryId">
                 <div class="cat-card">
                     <div class="cat-fig">
-                 
                         <img src="~/images/Categories/@cat.Img">
-                    
                     </div>
                     <div class="cat-info">
                         <div class="cat-cnt">@cat.ItemCount Items</div>
@@ -119,7 +117,7 @@
 </section>
 
 @* ══════════════════════════════════════════════
-     FEATURED PRODUCTS
+     FEATURED PRODUCTS  — uses shared card partial
 ══════════════════════════════════════════════ *@
 <section class="sec">
     <div class="sec-hd">
@@ -127,15 +125,21 @@
             <p class="sec-eye">Handpicked For You</p>
             <h2 class="sec-ttl">FEATURED<br />PRODUCTS</h2>
         </div>
-        <a href="#" class="sec-more">All Products →</a>
+        <a href="/Proudects" class="sec-more">All Products →</a>
     </div>
+
+    @* Purpose:
+        - Renders the "Featured Products" grid on the home page. 
+          This section iterates over the page model's 
+          `Model.FeaturedProducts` collection and renders a product card for each item. *@
     <div class="prod-grid reveal">
         @foreach (var p in Model.FeaturedProducts)
         {
-          
             <div class="prod-card">
                 <div class="prod-thumb">
-                    <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.ProductId"><img src="@p.Img"></a>
+                    <a asp-controller="Proudects" asp-action="Details" asp-route-id="@p.ProductId">
+                        <img src="@p.Img" alt="@p.Name">
+                    </a>
                     @if (!string.IsNullOrEmpty(p.BadgeClass))
                     {
                         <span class="p-badge badge-@p.BadgeClass">@p.BadgeText</span>
@@ -167,8 +171,8 @@
                     </div>
                 </div>
             </div>
-            
         }
+
     </div>
 </section>
 
@@ -191,7 +195,7 @@
                 <div class="c-blk"><span class="c-num" id="cs">17</span><span class="c-lbl">Secs</span></div>
             </div>
         </div>
-        <button class="b-btn">Shop the Sale →</button>
+        <a asp-controller="Proudects" asp-action="Deals" class="b-btn" style="text-decoration:none;">Shop the Sale →</a>
     </div>
 </div>
 
@@ -255,13 +259,12 @@
     <script src="~/js/home.js" asp-append-version="true"></script>
     <script src="~/js/Cart.js" asp-append-version="true"></script>
     <script>
-        // Feed the server-calculated end time into your countdown
         (function () {
-            const banner = document.querySelector('.banner');
-            const endIso = banner?.dataset.saleEnd;
-            if (endIso && typeof initCountdown === 'function') {
-                initCountdown(new Date(endIso));
-            }
+        const banner = document.querySelector('.banner');
+        const endIso = banner?.dataset.saleEnd;
+        if (endIso && typeof initCountdown === 'function') {
+        initCountdown(new Date(endIso));
+        }
         })();
     </script>
 }

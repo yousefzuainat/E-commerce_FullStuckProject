@@ -1,0 +1,76 @@
+/* ============================================================
+   VOLTEX — Product Card Wishlist Button
+   Add these rules to products.css (or home.css)
+   ============================================================ */
+
+/* Make the thumbnail a positioning parent (likely already set,
+   but included here for safety) */
+.prod-thumb {
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Wishlist overlay form ── */
+.prod-wish-form {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 0;
+    z-index: 2;
+}
+
+/* ── Wishlist button — matches Voltex ghost button style ── */
+.prod-wish-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    opacity: 0;                          /* hidden until card is hovered */
+    transform: translateY(-6px);
+    transition: opacity .2s ease,
+                transform .2s ease,
+                border-color .2s,
+                color .2s,
+                background .5s,
+                border-color .5s;
+}
+
+[data-theme="dark"] .prod-wish-btn {
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+[data-theme="light"] .prod-wish-btn {
+    border-radius: 50%;
+}
+
+/* Show on card hover */
+.prod-card:hover .prod-wish-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hover state on the button itself */
+.prod-wish-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255, 106, 0, 0.08);
+}
+
+[data-theme="light"] .prod-wish-btn:hover {
+    background: rgba(224, 92, 58, 0.08);
+}
+
+/* Added state (toggled via JS after AJAX success) */
+.prod-wish-btn.added {
+    border-color: var(--accent);
+    color: var(--accent);
+    opacity: 1;
+    transform: translateY(0);
+}

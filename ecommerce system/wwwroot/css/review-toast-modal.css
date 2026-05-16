@@ -1,0 +1,248 @@
+/* ============================================================
+   VOLTEX — Toast Notifications + Edit Review Modal
+   Append to: wwwroot/css/products.css
+   ============================================================ */
+
+/* ── Toast ────────────────────────────────────────────────── */
+.vx-toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px 14px 16px;
+    min-width: 280px;
+    max-width: 420px;
+    border-left: 3px solid transparent;
+    backdrop-filter: blur(16px);
+    animation: toastIn .35s cubic-bezier(.4,0,.2,1) forwards;
+    transition: opacity .4s, transform .4s;
+}
+
+[data-theme="dark"] .vx-toast {
+    background: rgba(11,14,34,.92);
+    border: 1px solid var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+[data-theme="light"] .vx-toast {
+    background: rgba(255,255,255,.95);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.1);
+}
+
+.vx-toast-success { border-left-color: var(--accent2); }
+.vx-toast-error   { border-left-color: var(--accent);  }
+.vx-toast-info    { border-left-color: var(--accent3);  }
+
+.vx-toast-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+.vx-toast-success .vx-toast-icon { color: var(--accent2); }
+.vx-toast-error   .vx-toast-icon { color: var(--accent);  }
+.vx-toast-info    .vx-toast-icon { color: var(--accent3);  }
+
+.vx-toast-msg {
+    flex: 1;
+    color: var(--text);
+    line-height: 1.5;
+    transition: color .5s;
+}
+
+.vx-toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    transition: color .2s;
+    line-height: 1;
+}
+.vx-toast-close:hover { color: var(--accent); }
+
+.vx-toast-hide {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Edit button on review card ──────────────────────────── */
+.rv-edit-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .2s, color .2s, background .2s;
+}
+
+[data-theme="dark"]  .rv-edit-btn { clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+[data-theme="light"] .rv-edit-btn { border-radius: 4px; }
+
+.rv-edit-btn:hover {
+    border-color: var(--accent3);
+    color: var(--accent3);
+    background: rgba(0,194,255,.06);
+}
+
+/* ── "Already reviewed" notice + Edit link ───────────────── */
+.rv-already-msg {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    font-size: 13px;
+    margin-top: 24px;
+    transition: border-color .5s, color .5s, background .5s;
+}
+
+[data-theme="dark"]  .rv-already-msg { font-family: 'Space Grotesk', sans-serif; background: rgba(212,247,0,.04); border-left: 3px solid var(--accent2); }
+[data-theme="light"] .rv-already-msg { font-family: 'Jost', sans-serif; border-radius: 4px; background: rgba(77,140,111,.05); border-left: 3px solid var(--accent2); }
+
+.rv-already-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 13px;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color .2s;
+    margin-left: auto;
+}
+
+[data-theme="dark"]  .rv-already-edit { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+[data-theme="light"] .rv-already-edit { font-family: 'Jost', sans-serif; font-weight: 600; }
+
+.rv-already-edit:hover { color: var(--accent3); }
+
+/* ── One-review notice above form ───────────────────────── */
+.rv-one-notice {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    transition: color .5s;
+}
+
+[data-theme="dark"]  .rv-one-notice { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+[data-theme="light"] .rv-one-notice { font-family: 'Jost', sans-serif; }
+
+/* ── Modal backdrop ──────────────────────────────────────── */
+.vx-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+.vx-modal-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ── Modal panel ─────────────────────────────────────────── */
+.vx-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -48%);
+    z-index: 201;
+    width: min(560px, calc(100vw - 32px));
+    max-height: 90vh;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, transform .3s cubic-bezier(.4,0,.2,1);
+}
+
+.vx-modal.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translate(-50%, -50%);
+}
+
+[data-theme="dark"] .vx-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 36px 32px;
+}
+
+[data-theme="light"] .vx-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 36px 32px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.15);
+}
+
+/* ── Modal header ── */
+.vx-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.vx-modal-ttl {
+    font-family: var(--heading);
+    color: var(--text);
+    transition: font-family .5s, color .5s;
+}
+
+[data-theme="dark"]  .vx-modal-ttl { font-size: 22px; letter-spacing: 3px; text-transform: uppercase; }
+[data-theme="light"] .vx-modal-ttl { font-size: 20px; font-weight: 800; }
+
+.vx-modal-cls {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .2s, color .2s;
+}
+
+[data-theme="light"] .vx-modal-cls { border-radius: 4px; }
+.vx-modal-cls:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Modal footer ── */
+.vx-modal-foot {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    transition: border-color .5s;
+}
