@@ -8,8 +8,7 @@
         if (item.Proudect != null)
             subtotal += item.Quantity * item.Proudect.Price;
 
-    decimal shipping = subtotal >= 75 ? 0 : 9.99m;
-    decimal total    = subtotal + shipping;
+    decimal total    = subtotal;
 }
 
 
@@ -17,6 +16,7 @@
     {
         <link rel="stylesheet" href="~/css/checkout.css" asp-append-version="true" / >
 }
+
 
 
 
@@ -111,18 +111,10 @@
             <div class="co-summary-inner">
                 <h2 class="co-sum-ttl">Order Summary</h2>
 
-                @if (shipping == 0)
-                {
-                    <p class="co-ship-banner">✓ FREE SHIPPING on this order!</p>
-                }
 
                 <div class="co-sum-row">
                     <span>Subtotal (@Model.CartItems.Sum(i => i.Quantity) items)</span>
                     <span>$@subtotal.ToString("F2")</span>
-                </div>
-                <div class="co-sum-row">
-                    <span>Shipping</span>
-                    <span>@(shipping == 0 ? "FREE" : "$" + shipping.ToString("F2"))</span>
                 </div>
                 <div class="co-sum-row">
                     <span>Tax</span>

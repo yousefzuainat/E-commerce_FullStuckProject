@@ -13,19 +13,29 @@ namespace ecommerce_system.Services
 
         public static List<SessionCartItem> GetCart(HttpContext context)
         {
-            var json = context.Request.Cookies[CartKey];
-            if (string.IsNullOrEmpty(json))
-                return new List<SessionCartItem>();
-
-            try {
-                return JsonSerializer.Deserialize<List<SessionCartItem>>(json) ?? new List<SessionCartItem>();
-            } catch {
-                return new List<SessionCartItem>();
+            if (context.Items.TryGetValue(CartKey, out var cachedCart) && cachedCart is List<SessionCartItem> cart)
+            {
+                return cart;
             }
+
+            var json = context.Request.Cookies[CartKey];
+            var deserialized = new List<SessionCartItem>();
+            
+            if (!string.IsNullOrEmpty(json))
+            {
+                try {
+                    deserialized = JsonSerializer.Deserialize<List<SessionCartItem>>(json) ?? new List<SessionCartItem>();
+                } catch {
+                }
+            }
+
+            context.Items[CartKey] = deserialized;
+            return deserialized;
         }
 
         public static void SaveCart(HttpContext context, List<SessionCartItem> cart)
         {
+            context.Items[CartKey] = cart;
             var options = new CookieOptions 
             { 
                 Expires = DateTimeOffset.UtcNow.AddDays(30), 
