@@ -22,5 +22,6 @@ namespace ecommerce_system.Models
         [ForeignKey("Proudect")]
         public int ProudectId { get; set; }
         public Proudect? Proudect { get; set; }
+        public object? CreatedAt { get; internal set; }
     }
 }

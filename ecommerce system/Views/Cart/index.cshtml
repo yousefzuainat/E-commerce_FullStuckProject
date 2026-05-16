@@ -6,56 +6,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
-    <style>
-        .disc-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding: 3px 8px;
-            background: linear-gradient(135deg, #ff6a00, #ff9900);
-            color: #000;
-            margin-top: 4px;
-        }
-        [data-theme="light"] .disc-badge { border-radius: 3px; }
-
-        .cart-item-price-wrap { display: flex; flex-direction: column; gap: 2px; }
-        .cart-item-original  {
-            font-size: 11px;
-            color: var(--text-dim);
-            text-decoration: line-through;
-        }
-        .cart-item-final {
-            font-family: var(--heading);
-            color: #4edea3;
-            font-size: 16px;
-        }
-        [data-theme="dark"] .cart-item-final { letter-spacing: 1px; }
-        [data-theme="light"] .cart-item-final { font-weight: 800; }
-
-        .savings-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            font-size: 13px;
-            color: #4edea3;
-            font-weight: 600;
-            background: rgba(78,222,163,.06);
-            padding: 8px 12px;
-            border-left: 2px solid #4edea3;
-        }
-        [data-theme="dark"] .savings-row { font-family: 'Space Grotesk', sans-serif; }
-        [data-theme="light"] .savings-row { font-family: 'Jost', sans-serif; border-radius: 0 4px 4px 0; }
-        .savings-row span:last-child {
-            font-family: var(--heading);
-            font-size: 15px;
-            color: #4edea3;
-        }
-    </style>
+  
 }
 
 <div class="cart-page">

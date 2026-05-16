@@ -4,143 +4,11 @@
     ViewData["Title"] = "My Orders";
 }
 
-<style>
-    /* Premium Toast Notification */
-    .toast-notification {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: rgba(16, 185, 129, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        color: #fff;
-        padding: 16px 24px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        transform: translateY(100px);
-        opacity: 0;
-        animation: slideUpToast 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        z-index: 1000;
-    }
-    
-    .toast-icon {
-        background: var(--success);
-        color: #000;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/orderconfirm.css" asp-append-version="true" />
+}
 
-    @@keyframes slideUpToast {
-        to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* Orders Grid */
-    .orders-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
-    .order-card {
-        background: var(--surface, rgba(20, 20, 20, 0.6));
-        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-        border-radius: 12px;
-        padding: 24px;
-        transition: all 0.3s ease;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .order-card:hover {
-        transform: translateY(-4px);
-        background: var(--surface-hover, rgba(30, 30, 30, 0.8));
-        border-color: rgba(255, 255, 255, 0.15);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-    }
-
-    .order-id {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--text, #fff);
-    }
-
-    .order-date {
-        font-size: 12px;
-        color: var(--text-dim, #a0a0a0);
-        margin-top: 4px;
-    }
-
-    /* Status Badges */
-    .status-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 20px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    }
-    .status-paid { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
-    .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-    .status-processing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
-    .status-completed { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-    .status-cancelled { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-
-    .order-details {
-        flex-grow: 1;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-    .detail-label { color: var(--text-dim, #a0a0a0); }
-    .detail-value { font-weight: 500; }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        background: var(--surface, rgba(20, 20, 20, 0.6));
-        border: 1px dashed var(--border, rgba(255, 255, 255, 0.08));
-        border-radius: 12px;
-    }
-    .empty-state h3 { font-size: 20px; margin-bottom: 10px; }
-    .empty-state p { color: var(--text-dim); margin-bottom: 24px; }
-    .btn-shop {
-        display: inline-block;
-        background: #fff;
-        color: #000;
-        padding: 12px 24px;
-        border-radius: 30px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-        transition: transform 0.2s;
-    }
-    .btn-shop:hover { transform: scale(1.05); color: #000; }
-</style>
-
+@* --- Toast remains the same --- *@
 @if (TempData["success"] != null)
 {
     <div class="toast-notification" id="paymentToast">
@@ -150,47 +18,41 @@
             <div style="font-size: 13px; color: rgba(255,255,255,0.7);">@TempData["success"]</div>
         </div>
     </div>
-    
-    <script>
-        // Auto-hide toast after 5 seconds
-        setTimeout(() => {
-            const toast = document.getElementById('paymentToast');
-            if(toast) {
-                toast.style.animation = 'none';
-                toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(20px)';
-                setTimeout(() => toast.remove(), 500);
-            }
-        }, 5000);
-    </script>
 }
-
 <div class="orders-wrapper">
-    <h1 class="orders-title">Order History</h1>
-    <p class="orders-subtitle">Review your past purchases and track current orders.</p>
+    @* ── Page Header Section ── *@
+    <div class="prod-page-bar reveal">
+        <div class="prod-page-bar-inner">
+            <div>
+                <p class="co-eye">Account</p>
+                <h1 class="co-title">ORDER <span class="co-title-accent">HISTORY</span></h1>
+                <p class="co-sub-lbl">View and track your previous purchases</p>
+            </div>
+        </div>
+    </div>
 
     @if (!Model.Any())
     {
         <div class="empty-state">
             <h3>No orders yet</h3>
             <p>You haven't placed any orders. Start exploring our premium gear.</p>
-            <a asp-controller="Home" asp-action="Index" class="btn-shop">Explore Products</a>
+            <a asp-controller="Proudects" asp-action="Index" class="btn-shop">Explore Products</a>
         </div>
     }
     else
     {
-        <div class="orders-grid">
-            @foreach (var order in Model.OrderByDescending(o => o.CreatedAt))
+        <div class="orders-grid-two">
+            @foreach (var order in Model.OrderByDescending(o => o.Id))
             {
-                <div class="order-card">
-                    <div class="order-header">
-                        <div>
-                            <div class="order-id">Order #@order.Id</div>
-                            <div class="order-date">@order.CreatedAt.ToString("MMM dd, yyyy • HH:mm")</div>
+                <div class="order-card-v2 reveal">
+                    <div class="oc-v2-header">
+                        <div class="oc-v2-id-wrap">
+                            <span class="oc-v2-icon">📦</span>
+                            <div class="order-id">#VOLT-@order.Id.ToString("D5")</div>
                         </div>
                         @{
-                            var statusClass = order.Status?.ToLower() switch {
+                            var statusClass = order.Status?.ToLower() switch
+                            {
                                 "paid" => "status-paid",
                                 "processing" => "status-processing",
                                 "completed" => "status-completed",
@@ -198,20 +60,23 @@
                                 _ => "status-pending"
                             };
                         }
-                        <div class="status-badge @statusClass">
-                            @order.Status
+                        <span class="status-badge @statusClass">@order.Status</span>
+                    </div>
+
+                    <div class="oc-v2-body">
+                        <div class="detail-row">
+                            <span class="detail-label">Items Count</span>
+                            <span class="detail-value">@((order.OrderItems?.Count ?? 0)) Units</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Order Type</span>
+                            <span class="detail-value">Standard Shipping</span>
                         </div>
                     </div>
 
-                    <div class="order-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Total Amount</span>
-                            <span class="detail-value">$@order.tootal_amount.ToString("F2")</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Items</span>
-                            <span class="detail-value">@(order.OrderItems?.Count ?? 0) items</span>
-                        </div>
+                    <div class="oc-v2-footer">
+                        <div class="ocr-price">@order.tootal_amount.ToString("C")</div>
+                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="ocr-view-btn">VIEW DETAILS</a>
                     </div>
                 </div>
             }

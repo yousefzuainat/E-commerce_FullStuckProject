@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ecommerce_system.Controllers
 {
@@ -62,6 +63,19 @@ namespace ecommerce_system.Controllers
                 .Include(o => o.Payment)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
+
+            if (order == null) return NotFound();
+
+            return View(order);
+        }
+        public async Task<IActionResult> OrderDetails(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var order = await _context.orders
+                .Include(o => o.OrderItems!)
+                    .ThenInclude(oi => oi.Proudect) // Get product info (Img, Name)
+                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null) return NotFound();
 
