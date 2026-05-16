@@ -28,12 +28,9 @@ namespace ecommerce_system.Controllers
         public async Task<IActionResult> AddToWishlist(int productId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Json(new { success = false, message = "Unauthorized" });
+            if (userId == null) return Unauthorized();
 
-            // 1. Get or Create the WishList header
-            var userWishlist = await _context.wishList
-                .FirstOrDefaultAsync(w => w.UserId == userId);
-
+            var userWishlist = await _context.wishList.FirstOrDefaultAsync(w => w.UserId == userId);
             if (userWishlist == null)
             {
                 userWishlist = new WishList { UserId = userId };
@@ -41,23 +38,28 @@ namespace ecommerce_system.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // 2. Check if item already exists
             var exists = await _context.wishListItems
                 .AnyAsync(w => w.ProudectId == productId && w.WishListId == userWishlist.Id);
 
             if (!exists)
             {
-                var newItem = new WishListItem
-                {
-                    ProudectId = productId,
-                    WishListId = userWishlist.Id
-                };
+                var newItem = new WishListItem { ProudectId = productId, WishListId = userWishlist.Id };
                 _context.wishListItems.Add(newItem);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "Added to wishlist" });
+
+                // If it's an AJAX request (from JS), return JSON. 
+                // Otherwise (normal form submit), redirect to the Wishlist page.
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return Json(new { success = true, message = "Added to wishlist!" });
+
+                return RedirectToAction(nameof(Index));
             }
 
-            return Json(new { success = true, message = "Already in wishlist" });
+            // If already exists
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = true, isDuplicate = true, message = "Already in wishlist" });
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: WishListItems

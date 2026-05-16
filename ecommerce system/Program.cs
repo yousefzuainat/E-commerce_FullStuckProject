@@ -16,7 +16,7 @@ namespace ecommerce_system
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120)));
+                options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120).MaxBatchSize(1)));
 
             // 2. IDENTITY CONFIGURATION (Unified for Roles & UI)
             // We use AddIdentity instead of AddDefaultIdentity to enable RoleManager support

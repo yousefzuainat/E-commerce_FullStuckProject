@@ -120,17 +120,25 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
                 foreach (var imgUrl in uploadedImages)
                 {
-                    await _context.Database.ExecuteSqlRawAsync(
-                        "INSERT INTO ProductImages (ImageUrl, ProudectId) VALUES (@p0, @p1)",
-                        imgUrl, product.Id);
+                    _context.productImages.Add(new ProductImage
+                    {
+                        ImageUrl = imgUrl,
+                        ProudectId = product.Id
+                    });
                 }
 
                 if (model.DiscountPercent.HasValue && model.DiscountPercent.Value > 0)
                 {
-                    await _context.Database.ExecuteSqlRawAsync(
-                        "INSERT INTO Discounts (Name, DiscountPercent, Active, ProudectId) VALUES (@p0, @p1, @p2, @p3)",
-                        "Default Discount", model.DiscountPercent.Value, true, product.Id);
+                    _context.discounts.Add(new Discount
+                    {
+                        Name = "Default Discount",
+                        DiscountPercent = model.DiscountPercent.Value,
+                        Active = true,
+                        ProudectId = product.Id
+                    });
                 }
+
+                await _context.SaveChangesAsync();
 
                 TempData["success"] = "Product created successfully!";
                 return RedirectToAction(nameof(Index));
@@ -237,9 +245,14 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
                     if (needNewDiscount)
                     {
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "INSERT INTO Discounts (Name, DiscountPercent, Active, ProudectId) VALUES (@p0, @p1, @p2, @p3)",
-                            "Default Discount", model.DiscountPercent!.Value, true, product.Id);
+                        _context.discounts.Add(new Discount
+                        {
+                            Name = "Default Discount",
+                            DiscountPercent = model.DiscountPercent!.Value,
+                            Active = true,
+                            ProudectId = product.Id
+                        });
+                        await _context.SaveChangesAsync();
                     }
 
                     if (model.Uploads != null && model.Uploads.Count > 0)
@@ -255,8 +268,8 @@ namespace ecommerce_system.Areas.Admin.Controllers
                         }
                         if (remainingOldImages.Any())
                         {
-                            await _context.Database.ExecuteSqlRawAsync(
-                                "DELETE FROM ProductImages WHERE ProudectId = @p0", product.Id);
+                            _context.productImages.RemoveRange(remainingOldImages);
+                            await _context.SaveChangesAsync();
                         }
 
                         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
@@ -290,9 +303,12 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
                                 var imgUrl = "/images/products/" + fileName;
 
-                                await _context.Database.ExecuteSqlRawAsync(
-                                    "INSERT INTO ProductImages (ImageUrl, ProudectId) VALUES (@p0, @p1)",
-                                    imgUrl, product.Id);
+                                _context.productImages.Add(new ProductImage
+                                {
+                                    ImageUrl = imgUrl,
+                                    ProudectId = product.Id
+                                });
+                                await _context.SaveChangesAsync();
 
                                 if (firstNewImgUrl == null)
                                     firstNewImgUrl = imgUrl;

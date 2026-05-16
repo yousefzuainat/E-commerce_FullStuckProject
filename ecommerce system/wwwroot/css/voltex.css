@@ -364,3 +364,8 @@ footer {
 
 /* ── Content offset for fixed nav ── */
 .page-content { padding-top: 66px; }
+.v-drop-icon {
+    font-size: 12px;
+    width: 14px;
+    display: inline-block;
+}
