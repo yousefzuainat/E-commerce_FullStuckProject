@@ -1,0 +1,217 @@
+﻿/* ============================================================
+   VOLTEX — Testimonials Section
+   Append to: wwwroot/css/home.css
+   ============================================================ */
+
+/* ── Grid ── */
+.testi-sec {
+    position: relative;
+    z-index: 1;
+}
+
+.testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* ── Card ── */
+[data-theme="dark"] .testi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 32px 30px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .25s, box-shadow .25s, background .5s;
+}
+
+    [data-theme="dark"] .testi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .3s;
+    }
+
+    [data-theme="dark"] .testi-card:hover {
+        border-color: rgba(255, 106, 0, .4);
+        box-shadow: 0 0 30px rgba(255, 106, 0, .08), 0 20px 40px rgba(0, 0, 0, .3);
+    }
+
+        [data-theme="dark"] .testi-card:hover::before {
+            transform: scaleX(1);
+        }
+
+[data-theme="light"] .testi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    padding: 36px 32px 30px;
+    position: relative;
+    overflow: hidden;
+    transition: border-left-color .25s, box-shadow .25s, transform .25s, background .5s;
+}
+
+    [data-theme="light"] .testi-card:hover {
+        border-left-color: var(--accent);
+        box-shadow: 0 12px 40px rgba(224, 92, 58, .1);
+        transform: translateY(-4px);
+    }
+
+/* ── Quote icon ── */
+.testi-quote {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 16px;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .testi-quote {
+    color: rgba(255, 106, 0, .25);
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+[data-theme="light"] .testi-quote {
+    color: rgba(224, 92, 58, .2);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+}
+
+/* ── Stars ── */
+.testi-stars {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.star-on {
+    color: var(--accent);
+    transition: color .5s;
+}
+
+.star-off {
+    color: var(--border);
+    transition: color .5s;
+}
+
+/* ── Body copy ── */
+.testi-body {
+    color: var(--text-sub);
+    line-height: 1.85;
+    margin-bottom: 28px;
+    flex-grow: 1;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .testi-body {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+[data-theme="light"] .testi-body {
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    font-style: italic;
+}
+
+/* ── Author row ── */
+.testi-author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    transition: border-color .5s;
+}
+
+/* Avatar circle */
+.testi-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--btn1-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: background .5s, color .5s;
+}
+
+[data-theme="dark"] .testi-avatar {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+[data-theme="light"] .testi-avatar {
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 6px; /* slight squircle in light mode */
+}
+
+.testi-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.testi-name {
+    color: var(--text);
+    font-weight: 600;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .testi-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    letter-spacing: .5px;
+}
+
+[data-theme="light"] .testi-name {
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.testi-time {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color .5s;
+}
+
+[data-theme="dark"] .testi-time {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .testi-time {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .testi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .testi-grid {
+        grid-template-columns: 1fr;
+    }
+}
