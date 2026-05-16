@@ -10,8 +10,8 @@ namespace ecommerce_system.ViewModels
 
         public decimal TotalSavings => Items.Sum(i => i.SavingsAmount);
 
-        public decimal Shipping => Subtotal >= 75 ? 0 : 9.99m;
-        public decimal Total => Subtotal + Shipping;
+        public decimal Shipping => 0m;
+        public decimal Total => Subtotal;
         public int TotalQuantity => Items.Sum(i => i.Quantity);
     }
 

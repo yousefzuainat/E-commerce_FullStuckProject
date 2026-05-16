@@ -163,20 +163,6 @@
                         <span>Subtotal</span>
                         <span id="summarySubtotal">$@Model.Subtotal.ToString("F2")</span>
                     </div>
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span id="summaryShipping">
-                            @(Model.Shipping == 0 ? "FREE" : "$" + Model.Shipping.ToString("F2"))
-                        </span>
-                    </div>
-                    @if (Model.Shipping > 0)
-                    {
-                        <p class="free-ship-hint">Add $@((75 - Model.Subtotal).ToString("F2")) more for free shipping</p>
-                    }
-                    else
-                    {
-                        <p class="free-ship-hint free-ship-active">✓ You qualify for free shipping!</p>
-                    }
 
                     <div class="summary-divider"></div>
                     <div class="summary-row summary-total">
@@ -227,13 +213,11 @@
 
     function updateSummary(data) {
         const sub  = document.getElementById('summarySubtotal');
-        const ship = document.getElementById('summaryShipping');
         const tot  = document.getElementById('summaryTotal');
         const sav  = document.getElementById('summarySavings');
         const savRow = document.getElementById('savingsRow');
 
         if (sub)  sub.textContent  = '$' + data.subtotal;
-        if (ship) ship.textContent = data.shipping === '0.00' ? 'FREE' : '$' + data.shipping;
         if (tot)  tot.textContent  = '$' + data.total;
 
         if (sav && savRow && data.savings !== undefined) {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ecommerce_system.Services;
+using Stripe.Checkout;
 
 namespace ecommerce_system.Controllers
 {
@@ -77,7 +78,75 @@ namespace ecommerce_system.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
+            var domain = $"{Request.Scheme}://{Request.Host}";
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+                SuccessUrl = domain + "/Checkout/Success",
+                CancelUrl = domain + "/Checkout/Index",
+            };
+
             decimal totalAmount = 0;
+
+            foreach (var item in sessionItems)
+            {
+                var product = await _context.proudects
+                    .Include(p => p.Discounts)
+                    .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+
+                if (product != null)
+                {
+                    var price = product.Price;
+                    var bestDiscount = product.Discounts?
+                        .Where(d => d.Active)
+                        .OrderByDescending(d => d.DiscountPercent)
+                        .FirstOrDefault();
+
+                    if (bestDiscount != null)
+                    {
+                        price = price - (price * bestDiscount.DiscountPercent / 100m);
+                    }
+
+                    totalAmount += item.Quantity * price;
+
+                    options.LineItems.Add(new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(price * 100), // Stripe expects amount in cents
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = product.Name,
+                            },
+                        },
+                        Quantity = item.Quantity,
+                    });
+                }
+            }
+            
+
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            Response.Headers.Append("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+
+        public async Task<IActionResult> Success()
+        {
+            var userId = _userManager.GetUserId(User);
+            var sessionItems = SessionCartService.GetCart(HttpContext);
+
+            if (!sessionItems.Any())
+            {
+                return RedirectToAction("Index", "UserOrders");
+            }
+
+            decimal subtotal = 0;
             var order = new order
             {
                 UserId = userId,
@@ -106,7 +175,7 @@ namespace ecommerce_system.Controllers
                         price = price - (price * bestDiscount.DiscountPercent / 100m);
                     }
 
-                    totalAmount += item.Quantity * price;
+                    subtotal += item.Quantity * price;
 
                     orderItemsList.Add(new OrderItem
                     {
@@ -117,12 +186,13 @@ namespace ecommerce_system.Controllers
                 }
             }
 
+            decimal totalAmount = subtotal;
+
             order.tootal_amount = totalAmount;
 
             _context.orders.Add(order);
-            await _context.SaveChangesAsync(); // Save order first to avoid MERGE issues and get ID
+            await _context.SaveChangesAsync();
 
-            // Add OrderItems one by one to avoid EF Core MERGE batching error on older SQL Servers
             foreach (var orderItem in orderItemsList)
             {
                 orderItem.OrderId = order.Id;
@@ -130,7 +200,6 @@ namespace ecommerce_system.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Create Payment record
             var payment = new payment
             {
                 amount = (int)totalAmount,
@@ -144,7 +213,7 @@ namespace ecommerce_system.Controllers
 
             SessionCartService.ClearCart(HttpContext);
 
-             TempData["success"] = "Payment successful! Your order has been placed.";
+            TempData["success"] = "Payment successful! Your order has been placed via Stripe.";
             return RedirectToAction("Index", "UserOrders");
         }
     }
