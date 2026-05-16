@@ -115,6 +115,26 @@ namespace ecommerce_system.Controllers
                 .Take(8)
                 .ToList();
 
+            /* ── 7. Testimonials (approved, newest 6) ── */
+            var rawTestimonials = await _context.Testimonials
+                .Where(t => t.IsApproved)
+                .Include(t => t.User)
+                .OrderByDescending(t => t.CreatedAt)
+                .Take(6)
+                .ToListAsync();
+
+            var testimonials = new TestimonialsSection
+            {
+                Items = rawTestimonials.Select(t => new TestimonialItem
+                {
+                    AuthorName = t.User?.FullName ?? t.User?.UserName ?? "Voltex Customer",
+                    Content = t.Content,
+                    Rating = t.Rating,
+                    TimeAgo = FormatTimeAgo(t.CreatedAt),
+                    Initials = GetInitials(t.User?.FullName ?? t.User?.UserName ?? "VC")
+                }).ToList()
+            };
+
             /* ── Assemble ── */
             var vm = new HomeViewModel
             {
@@ -128,7 +148,8 @@ namespace ecommerce_system.Controllers
                 Categories = categories,
                 FeaturedProducts = featured.Any() ? featured : GetFallbackProducts(),
                 FlashSale = flashSale,
-                PartnerBrands = brands.Any() ? brands : GetFallbackBrands()
+                PartnerBrands = brands.Any() ? brands : GetFallbackBrands(),
+                Testimonials = testimonials.Items.Any() ? testimonials : GetFallbackTestimonials()
             };
 
             return View(vm);
@@ -227,6 +248,40 @@ namespace ecommerce_system.Controllers
             new() { Img="🖥️", BadgeClass="sale", BadgeText="−20%",   Brand="BenQ",     Name="ScreenBar Halo Monitor Light + Backlight", Rating=4, ReviewCount="307",  Price=159, OldPrice=199 },
             new() { Img="📱", BadgeClass="",     BadgeText="",       Brand="Apple",    Name="MagSafe Duo Charger 15W",                Rating=5, ReviewCount="2.1K", Price=129 },
             new() { Img="🎙️", BadgeClass="hot",  BadgeText="Hot",    Brand="Blue",     Name="Yeti X Professional USB Microphone",       Rating=5, ReviewCount="881",  Price=149 }
+        };
+
+
+        // Fallback testimonials if DB is empty
+        private static string FormatTimeAgo(DateTime utc)
+        {
+            var diff = DateTime.UtcNow - utc;
+            if (diff.TotalDays >= 365) return $"{(int)(diff.TotalDays / 365)}y ago";
+            if (diff.TotalDays >= 30) return $"{(int)(diff.TotalDays / 30)}mo ago";
+            if (diff.TotalDays >= 1) return $"{(int)diff.TotalDays}d ago";
+            if (diff.TotalHours >= 1) return $"{(int)diff.TotalHours}h ago";
+            return "Just now";
+        }
+
+        private static string GetInitials(string name)
+        {
+            var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length >= 2
+                ? $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant()
+                : name.Length >= 2 ? name[..2].ToUpperInvariant() : name.ToUpperInvariant();
+        }
+
+        // If no testimonials in DB, show these hardcoded ones
+        private static TestimonialsSection GetFallbackTestimonials() => new()
+        {
+            Items = new List<TestimonialItem>
+    {
+        new() { AuthorName="Ahmad Al-Rashid",  Initials="AR", Rating=5, TimeAgo="2d ago",  Content="Ordered the Sony headphones — arrived next day, double-boxed. Sound quality is exactly as described. Voltex is now my go-to for tech." },
+        new() { AuthorName="Sara Khalil",      Initials="SK", Rating=5, TimeAgo="1w ago",  Content="The Keychron keyboard I bought feels absolutely premium. Customer support answered my questions within the hour. Highly recommend." },
+        new() { AuthorName="Omar Nasser",      Initials="ON", Rating=4, TimeAgo="2w ago",  Content="Great selection and competitive prices. The filter on the products page made it really easy to find exactly what I needed." },
+        new() { AuthorName="Lina Haddad",      Initials="LH", Rating=5, TimeAgo="3w ago",  Content="Love the dark theme on the site — it actually makes browsing feel premium. Products are legit and shipping was faster than expected." },
+        new() { AuthorName="Yousef Mansour",   Initials="YM", Rating=5, TimeAgo="1mo ago", Content="The Anker charger I got is a beast. Charges my laptop and phone simultaneously. Voltex had the best price I found anywhere online." },
+        new() { AuthorName="Rima Barakat",     Initials="RB", Rating=4, TimeAgo="1mo ago", Content="Clean website, smooth checkout, and the cart remembered my items even after I closed the tab. Small detail but it matters a lot." },
+    }
         };
     }
 

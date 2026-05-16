@@ -129,6 +129,11 @@
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
                     <span>Orders</span>
                 </a>
+                <a asp-area="Admin" asp-controller="TestimonialsAdmin" asp-action="Index"
+                    class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "TestimonialsAdmin" ? "admin-nav-active" : "")">
+                    <span class="material-symbols-outlined text-xl">rate_review</span>
+                    <span>Testimonials</span>
+                </a>
             </nav>
 
             <!-- System Health -->

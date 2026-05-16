@@ -1,0 +1,210 @@
+﻿@model IEnumerable<ecommerce_system.Models.Testimonials>
+@{
+    ViewData["Title"] = "Testimonials";
+    Layout = "_AdminLayout";
+
+    var pending = Model.Where(t => !t.IsApproved).ToList();
+    var approved = Model.Where(t => t.IsApproved).ToList();
+
+    string Initials(string? fullName, string? userName)
+    {
+        var name = fullName ?? userName ?? "?";
+        var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant()
+            : name.Length >= 2 ? name[..2].ToUpperInvariant() : name.ToUpperInvariant();
+    }
+}
+
+@* ── Page Header ── *@
+<div class="mb-8">
+    <h1 class="text-4xl font-black text-white">Testimonials</h1>
+    <p class="text-gray-400 mt-2">Review, approve, or remove customer testimonials shown on the homepage.</p>
+</div>
+
+@* ── Stats Row ── *@
+<div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="admin-card p-5">
+        <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Total</p>
+        <p class="text-3xl font-black text-white">@Model.Count()</p>
+    </div>
+    <div class="admin-card p-5">
+        <p class="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-1">Pending</p>
+        <div class="flex items-center gap-2">
+            <p class="text-3xl font-black text-white">@pending.Count</p>
+            @if (pending.Any())
+            {
+                <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+            }
+        </div>
+    </div>
+    <div class="admin-card p-5">
+        <p class="text-[10px] font-black text-green-500 uppercase tracking-widest mb-1">Live</p>
+        <p class="text-3xl font-black text-white">@approved.Count</p>
+    </div>
+</div>
+
+@* ════════════════════════════════════════
+   PENDING
+════════════════════════════════════════ *@
+<div class="admin-card rounded-2xl mb-6">
+
+    <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+        <h2 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-yellow-400 text-lg">pending</span>
+            Pending Approval
+            @if (pending.Any())
+            {
+                <span class="bg-yellow-500/15 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded-md">
+                    @pending.Count
+                </span>
+            }
+        </h2>
+    </div>
+
+    @if (!pending.Any())
+    {
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+            <span class="material-symbols-outlined text-5xl text-gray-700 mb-3">task_alt</span>
+            <p class="text-gray-400 font-semibold">No pending testimonials</p>
+            <p class="text-gray-600 text-sm mt-1">You're all caught up!</p>
+        </div>
+    }
+    else
+    {
+        <div class="divide-y divide-white/5">
+            @foreach (var t in pending)
+            {
+                var initials = Initials(t.User?.FullName, t.User?.UserName);
+                var authorName = t.User?.FullName ?? t.User?.UserName ?? "Unknown";
+
+                <div class="flex items-start gap-4 px-6 py-5 hover:bg-white/[0.02] transition-colors">
+
+                    @* Avatar *@
+                    <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-sm font-black text-black flex-shrink-0 mt-0.5">
+                        @initials
+                    </div>
+
+                    @* Body *@
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <span class="text-white font-bold text-sm">@authorName</span>
+                            <span class="text-yellow-400 text-xs tracking-wider">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    @(i <= t.Rating ? "★" : "☆")
+                                }
+                            </span>
+                            <span class="text-gray-500 text-xs ml-auto">
+                                @t.CreatedAt.ToString("MMM dd, yyyy · HH:mm")
+                            </span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed">@t.Content</p>
+                    </div>
+
+                    @* Actions *@
+                    <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+                        <form asp-area="Admin" asp-controller="TestimonialsAdmin" asp-action="Approve"
+                              method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@t.Id" />
+                            <button type="submit" class="admin-btn-primary text-xs px-3 py-2">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                Approve
+                            </button>
+                        </form>
+                        <form asp-area="Admin" asp-controller="TestimonialsAdmin" asp-action="Reject"
+                              method="post"
+                              onsubmit="return confirm('Reject and permanently delete this testimonial?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@t.Id" />
+                            <button type="submit" class="admin-btn-secondary text-xs px-3 py-2 hover:border-red-500/50 hover:text-red-400 transition-colors">
+                                <span class="material-symbols-outlined text-sm">cancel</span>
+                                Reject
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@* ════════════════════════════════════════
+   LIVE / APPROVED
+════════════════════════════════════════ *@
+<div class="admin-card rounded-2xl">
+
+    <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+        <h2 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-green-400 text-lg">verified</span>
+            Live on Homepage
+            <span class="bg-green-500/15 text-green-400 text-xs font-bold px-2 py-0.5 rounded-md">
+                @approved.Count
+            </span>
+        </h2>
+    </div>
+
+    @if (!approved.Any())
+    {
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+            <span class="material-symbols-outlined text-5xl text-gray-700 mb-3">reviews</span>
+            <p class="text-gray-400 font-semibold">No approved testimonials yet</p>
+            <p class="text-gray-600 text-sm mt-1">Approve some above to display them on the homepage.</p>
+        </div>
+    }
+    else
+    {
+        <div class="divide-y divide-white/5">
+            @foreach (var t in approved)
+            {
+                var initials = Initials(t.User?.FullName, t.User?.UserName);
+                var authorName = t.User?.FullName ?? t.User?.UserName ?? "Unknown";
+
+                <div class="flex items-start gap-4 px-6 py-5 hover:bg-white/[0.02] transition-colors opacity-80 hover:opacity-100">
+
+                    @* Avatar — green tint for approved *@
+                    <div class="w-10 h-10 rounded-xl bg-green-500/20 border border-green-500/30 flex items-center justify-center text-sm font-black text-green-400 flex-shrink-0 mt-0.5">
+                        @initials
+                    </div>
+
+                    @* Body *@
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <span class="text-white font-bold text-sm">@authorName</span>
+                            <span class="text-yellow-400 text-xs tracking-wider">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    @(i <= t.Rating ? "★" : "☆")
+                                }
+                            </span>
+                            <span class="flex items-center gap-1 bg-green-500/10 text-green-400 text-xs font-bold px-2 py-0.5 rounded-md">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                LIVE
+                            </span>
+                            <span class="text-gray-500 text-xs ml-auto">
+                                @t.CreatedAt.ToString("MMM dd, yyyy")
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm leading-relaxed">@t.Content</p>
+                    </div>
+
+                    @* Remove *@
+                    <form asp-area="Admin" asp-controller="TestimonialsAdmin" asp-action="Reject"
+                          method="post"
+                          onsubmit="return confirm('Remove this live testimonial from the homepage?')"
+                          class="flex-shrink-0 ml-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@t.Id" />
+                        <button type="submit" class="admin-btn-secondary text-xs px-3 py-2 hover:border-red-500/50 hover:text-red-400 transition-colors">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            Remove
+                        </button>
+                    </form>
+
+                </div>
+            }
+        </div>
+    }
+</div>

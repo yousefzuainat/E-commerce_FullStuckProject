@@ -1,4 +1,5 @@
 @model ecommerce_system.ViewModels.HomeViewModel
+
 @{
     ViewData["Title"] = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,6 +7,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Testimonials.css" asp-append-version="true" />
 }
 @* ══════════════════════════════════════════════
      HERO
@@ -233,6 +235,8 @@
         </div>
     </div>
 </section>
+
+<partial name="_Testimonials" model="Model.Testimonials" />
 
 @* ══════════════════════════════════════════════
      NEWSLETTER

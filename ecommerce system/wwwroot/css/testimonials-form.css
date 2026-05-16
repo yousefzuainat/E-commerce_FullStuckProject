@@ -1,0 +1,937 @@
+﻿/* ============================================================
+   VOLTEX — Testimonials Write Form + Admin Manage Panel
+   wwwroot/css/testimonials-form.css
+   ============================================================ */
+
+/* ── Page wrapper ── */
+.tf-page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 80px 52px 120px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Header ── */
+.tf-header {
+    margin-bottom: 52px;
+}
+
+.tf-sub {
+    margin-top: 16px;
+    color: var(--text-sub);
+    max-width: 480px;
+    line-height: 1.85;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tf-sub {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+}
+
+[data-theme="light"] .tf-sub {
+    font-family: 'Crimson Pro', serif;
+    font-size: 17px;
+    font-style: italic;
+}
+
+/* ── Alerts ── */
+.tf-alert {
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    letter-spacing: .5px;
+    border-left: 3px solid transparent;
+}
+
+[data-theme="dark"] .tf-alert {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tf-alert {
+    font-family: 'Jost', sans-serif;
+    border-radius: 4px;
+}
+
+.tf-alert-success {
+    border-left-color: var(--accent2);
+    background: rgba(212,247,0,.06);
+    color: var(--accent2);
+}
+
+.tf-alert-error {
+    border-left-color: var(--accent);
+    background: rgba(255,106,0,.06);
+    color: var(--accent);
+}
+
+/* ── Card wrapper (form) ── */
+[data-theme="dark"] .tf-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+    [data-theme="dark"] .tf-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+[data-theme="light"] .tf-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 48px 44px;
+    box-shadow: 0 4px 32px rgba(0,0,0,.05);
+}
+
+/* ── Fields ── */
+.tf-field {
+    margin-bottom: 32px;
+}
+
+.tf-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--text);
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tf-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+[data-theme="light"] .tf-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.tf-req {
+    color: var(--accent);
+}
+
+.tf-label-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: none;
+    letter-spacing: .5px;
+    transition: color .5s;
+}
+
+/* ── Star picker ── */
+.tf-stars {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.tf-star {
+    font-size: 32px;
+    color: var(--border);
+    cursor: pointer;
+    transition: color .15s, transform .15s;
+    line-height: 1;
+}
+
+    .tf-star.hovered,
+    .tf-star.selected {
+        color: var(--accent);
+        transform: scale(1.15);
+    }
+
+.tf-star-hint {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color .2s;
+}
+
+[data-theme="dark"] .tf-star-hint {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .tf-star-hint {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+}
+
+/* ── Textarea ── */
+.tf-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 16px 18px;
+    outline: none;
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.7;
+    transition: border-color .2s, background .5s, color .5s;
+}
+
+[data-theme="dark"] .tf-textarea {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+}
+
+[data-theme="light"] .tf-textarea {
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.tf-textarea::placeholder {
+    color: var(--text-dim);
+}
+
+.tf-textarea:focus {
+    border-color: var(--accent);
+}
+
+.tf-char-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.tf-char-count {
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    transition: color .3s;
+}
+
+[data-theme="dark"] .tf-char-count {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .tf-char-count {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+}
+
+/* ── Submit button ── */
+.tf-submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+/* ── Note ── */
+.tf-note {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tf-note {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tf-note {
+    font-family: 'Jost', sans-serif;
+}
+
+
+/* ============================================================
+   ADMIN MANAGE PANEL
+   ============================================================ */
+
+.tf-page.manage {
+    max-width: 1100px;
+}
+
+/* ── Stats bar ── */
+.tm-stats {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 64px;
+}
+
+[data-theme="dark"] .tm-stat {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+[data-theme="light"] .tm-stat {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tm-stat-n {
+    font-family: var(--heading);
+    color: var(--accent);
+    transition: font-family .5s, color .5s;
+}
+
+[data-theme="dark"] .tm-stat-n {
+    font-size: 48px;
+    letter-spacing: 2px;
+}
+
+[data-theme="light"] .tm-stat-n {
+    font-size: 44px;
+    font-weight: 800;
+}
+
+.tm-stat-l {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tm-stat-l {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .tm-stat-l {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+}
+
+/* ── Section blocks ── */
+.tm-section {
+    margin-bottom: 72px;
+}
+
+.tm-section-hd {
+    margin-bottom: 28px;
+}
+
+.tm-section-ttl {
+    font-family: var(--heading);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: font-family .5s, color .5s;
+}
+
+[data-theme="dark"] .tm-section-ttl {
+    font-size: 32px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+[data-theme="light"] .tm-section-ttl {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.tm-count-badge {
+    font-size: 13px;
+    padding: 3px 12px;
+    background: var(--accent);
+    color: var(--btn1-fg);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    vertical-align: middle;
+}
+
+[data-theme="light"] .tm-count-badge {
+    border-radius: 99px;
+    font-family: 'Jost', sans-serif;
+}
+
+.tm-count-live {
+    background: var(--accent2);
+}
+
+[data-theme="light"] .tm-count-live {
+    color: #1a1814;
+}
+
+/* ── Card grid ── */
+.tm-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* ── Individual card ── */
+[data-theme="dark"] .tm-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px 28px 22px;
+    position: relative;
+    transition: border-color .25s, background .5s;
+}
+
+[data-theme="light"] .tm-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 28px 22px;
+    transition: border-color .25s, background .5s;
+}
+
+[data-theme="dark"] .tm-card-pending {
+    border-top: 2px solid var(--accent);
+}
+
+[data-theme="light"] .tm-card-pending {
+    border-left: 3px solid var(--accent);
+}
+
+[data-theme="dark"] .tm-card-approved {
+    border-top: 2px solid var(--accent2);
+    opacity: .8;
+}
+
+[data-theme="light"] .tm-card-approved {
+    border-left: 3px solid var(--accent2);
+    opacity: .85;
+}
+
+/* ── Card head row ── */
+.tm-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.tm-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* ── Body ── */
+.tm-card-body {
+    color: var(--text-sub);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-size: 14px;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tm-card-body {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tm-card-body {
+    font-family: 'Jost', sans-serif;
+}
+
+/* ── Live badge ── */
+.tm-live-badge {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+[data-theme="dark"] .tm-live-badge {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tm-live-badge {
+    font-family: 'Jost', sans-serif;
+}
+
+/* ── Action buttons ── */
+.tm-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    transition: border-color .5s;
+}
+
+.tm-btn {
+    flex: 1;
+    padding: 11px 0;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: opacity .2s, transform .15s;
+}
+
+[data-theme="dark"] .tm-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+}
+
+[data-theme="light"] .tm-btn {
+    font-family: 'Jost', sans-serif;
+    border-radius: 3px;
+}
+
+.tm-btn:hover {
+    opacity: .88;
+    transform: translateY(-2px);
+}
+
+.tm-btn-approve {
+    background: var(--accent);
+    color: var(--btn1-fg);
+}
+
+.tm-btn-reject {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-dim);
+}
+
+    .tm-btn-reject:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+/* ── Empty state ── */
+.tm-empty {
+    padding: 48px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 2;
+}
+
+[data-theme="dark"] .tm-empty {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tm-empty {
+    font-family: 'Jost', sans-serif;
+    border-radius: 4px;
+}
+
+.tm-empty span {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: .5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .tf-page {
+        padding: 60px 24px 80px;
+    }
+
+    .tf-card {
+        padding: 32px 24px;
+    }
+
+    .tm-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tm-stats {
+        flex-direction: column;
+    }
+}
+
+
+/* ============================================================
+   TOAST  (shared with reviews — paste into products.css too
+   if you want it there; or keep here for the testimonials page)
+   ============================================================ */
+.vx-toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px 14px 16px;
+    min-width: 280px;
+    max-width: 420px;
+    border-left: 3px solid transparent;
+    backdrop-filter: blur(16px);
+    animation: toastIn .35s cubic-bezier(.4,0,.2,1) forwards;
+    transition: opacity .4s, transform .4s;
+}
+
+[data-theme="dark"] .vx-toast {
+    background: rgba(11,14,34,.92);
+    border: 1px solid var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+[data-theme="light"] .vx-toast {
+    background: rgba(255,255,255,.95);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.1);
+}
+
+.vx-toast-success {
+    border-left-color: var(--accent2);
+}
+
+.vx-toast-error {
+    border-left-color: var(--accent);
+}
+
+.vx-toast-info {
+    border-left-color: var(--accent3);
+}
+
+.vx-toast-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.vx-toast-success .vx-toast-icon {
+    color: var(--accent2);
+}
+
+.vx-toast-error .vx-toast-icon {
+    color: var(--accent);
+}
+
+.vx-toast-info .vx-toast-icon {
+    color: var(--accent3);
+}
+
+.vx-toast-msg {
+    flex: 1;
+    color: var(--text);
+    line-height: 1.5;
+    transition: color .5s;
+}
+
+.vx-toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    transition: color .2s;
+    line-height: 1;
+}
+
+    .vx-toast-close:hover {
+        color: var(--accent);
+    }
+
+.vx-toast-hide {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── One-review notice ── */
+.tf-one-notice {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tf-one-notice {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+[data-theme="light"] .tf-one-notice {
+    font-family: 'Jost', sans-serif;
+}
+
+/* ── Status card (already submitted) ── */
+.tf-status-card {
+    position: relative;
+}
+
+.tf-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tf-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 5px 14px;
+}
+
+[data-theme="dark"] .tf-status-badge {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tf-status-badge {
+    font-family: 'Jost', sans-serif;
+    border-radius: 99px;
+}
+
+.tf-status-live {
+    background: rgba(212,247,0,.08);
+    color: var(--accent2);
+    border: 1px solid rgba(212,247,0,.2);
+}
+
+[data-theme="light"] .tf-status-live {
+    background: rgba(77,140,111,.08);
+    color: var(--accent2);
+    border-color: rgba(77,140,111,.25);
+}
+
+.tf-status-pending {
+    background: rgba(255,106,0,.08);
+    color: var(--accent);
+    border: 1px solid rgba(255,106,0,.2);
+}
+
+.tf-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.tf-status-live .tf-status-dot {
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.tf-status-pending .tf-status-dot {
+    animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%,100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: .5;
+        transform: scale(.7);
+    }
+}
+
+.tf-status-date {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tf-status-date {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+[data-theme="light"] .tf-status-date {
+    font-family: 'Jost', sans-serif;
+}
+
+/* Read-only stars (no pointer) */
+.tf-stars-ro .tf-star {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Existing testimonial body */
+.tf-existing-body {
+    color: var(--text-sub);
+    line-height: 1.85;
+    margin: 20px 0 28px;
+    transition: color .5s;
+}
+
+[data-theme="dark"] .tf-existing-body {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+}
+
+[data-theme="light"] .tf-existing-body {
+    font-family: 'Crimson Pro', serif;
+    font-size: 17px;
+    font-style: italic;
+}
+
+/* Edit + Delete button row */
+.tf-existing-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    transition: border-color .5s;
+}
+
+/* Delete button slight red tint on hover */
+.tf-delete-btn:hover {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+/* ── Modal (reused from reviews) ── */
+.vx-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+
+    .vx-modal-backdrop.open {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+.vx-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -48%);
+    z-index: 201;
+    width: min(560px, calc(100vw - 32px));
+    max-height: 90vh;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, transform .3s cubic-bezier(.4,0,.2,1);
+}
+
+    .vx-modal.open {
+        opacity: 1;
+        pointer-events: all;
+        transform: translate(-50%, -50%);
+    }
+
+[data-theme="dark"] .vx-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 36px 32px;
+}
+
+[data-theme="light"] .vx-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 36px 32px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.15);
+}
+
+.vx-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.vx-modal-ttl {
+    font-family: var(--heading);
+    color: var(--text);
+    transition: font-family .5s, color .5s;
+}
+
+[data-theme="dark"] .vx-modal-ttl {
+    font-size: 22px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+[data-theme="light"] .vx-modal-ttl {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.vx-modal-cls {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .2s, color .2s;
+}
+
+[data-theme="light"] .vx-modal-cls {
+    border-radius: 4px;
+}
+
+.vx-modal-cls:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.vx-modal-foot {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    transition: border-color .5s;
+}

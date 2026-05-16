@@ -16,6 +16,8 @@
     @* Shared theme CSS *@
     <link rel="stylesheet" href="~/css/voltex.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/voltex-auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/testimonials-form.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Testimonials.css" asp-append-version="true" />
 
     @RenderSection("Styles", required: false)
     @Html.AntiForgeryToken()
@@ -51,6 +53,12 @@
             <li>
                 <a asp-area="" class="v-link @(currentController == "Proudects" && currentAction == "Deals" ? "active" : "")" asp-controller="Proudects" asp-action="Deals">DEALS</a>
             </li>
+            <li>
+                <a asp-controller="Testimonials" asp-action="Write"
+                       class="@(currentController == "Testimonials" && currentAction == "Write" ? "active" : "")">
+                    Reviews
+                </a>
+            </li>
         </ul>
 
         <div class="nav-r">
@@ -85,6 +93,12 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                                 Admin Panel
                             </a>
+                            <a asp-controller="Testimonials" asp-area="" asp-action="Manage" class="nav-drop-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M8 10h8M8 14h5M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                                </svg>
+                                Testimonials
+                            </a>
                             <div class="nav-drop-divider"></div>
                         }
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-drop-item">
@@ -101,6 +115,9 @@
                                 
                         <a class="nav-drop-item" asp-controller="UserOrders" asp-area="" asp-action="Index">
                             <span class="v-drop-icon">📦</span> ORDER HISTORY
+                        </a>
+                        <a class="nav-drop-item" asp-controller="Testimonials" asp-area="" asp-action="Write">
+                            <span class="v-drop-icon">✍</span> WRITE A REVIEW
                         </a>
                         <div class="nav-drop-divider"></div>
                         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">

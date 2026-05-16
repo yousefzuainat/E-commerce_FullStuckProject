@@ -11,6 +11,7 @@ namespace ecommerce_system.ViewModels
         public List<ProductCard> FeaturedProducts { get; set; }
         public FlashSale FlashSale { get; set; }
         public List<string> PartnerBrands { get; set; }
+        public TestimonialsSection Testimonials { get; set; } = new();
     }
 
     public class HeroStats
@@ -61,5 +62,20 @@ namespace ecommerce_system.ViewModels
         public string TitleLine2 { get; set; }
         public string Subtitle { get; set; }
         public DateTime EndTime { get; set; }
+    }
+
+    public class TestimonialsSection
+    {
+        public List<TestimonialItem> Items { get; set; } = new();
+    }
+
+    public class TestimonialItem
+    {
+        public string AuthorName { get; set; } = "";
+        public string Content { get; set; } = "";
+        public int Rating { get; set; }
+        public string TimeAgo { get; set; } = "";
+        /// <summary>Initials shown in the avatar circle when no photo is available.</summary>
+        public string Initials { get; set; } = "";
     }
 }
