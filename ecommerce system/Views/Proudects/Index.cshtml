@@ -14,7 +14,22 @@
 </div>
 
 @* ... Keep Filter Bar code here ... *@
-
+@if (ViewBag.CurrentSearch != null)
+{
+    <div class="search-center-wrapper">
+        <div class="search-result-frame reveal">
+            <div class="search-frame-content">
+                <span class="search-frame-label">FILTER ACTIVE</span>
+                <span class="search-frame-text">
+                    Showing results for <strong class="search-frame-keyword">"@ViewBag.CurrentSearch"</strong>
+                </span>
+            </div>
+            <a href="/Proudects" class="search-frame-clear" aria-label="Clear search">
+                Clear <span class="clear-cross">✕</span>
+            </a>
+        </div>
+    </div>
+}
 @if (!Model.Any())
 {
     <div class="prod-empty reveal">
