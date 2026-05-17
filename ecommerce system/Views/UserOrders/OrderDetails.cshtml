@@ -8,6 +8,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/orderconfirm.css" asp-append-version="true" />
 }
+
 <div class="pd-page">
     @* ── Breadcrumb ── *@
     <div class="pd-crumb">
@@ -15,8 +16,6 @@
         <span class="pd-crumb-sep">/</span>
         <span class="pd-crumb-cur">#VOLT-@Model.Id.ToString("D5")</span>
     </div>
-    
-
 
     <div class="co-layout">
         @* ── Left Side: Items List ── *@
@@ -62,10 +61,13 @@
                 <div class="co-sum-row">
                     <span>Status</span>
                     @{
-                        var statusClass = Model.Status?.ToLower() switch
+                        // FIX: Directly switch against the OrderStatus enum values instead of strings
+                        var statusClass = Model.Status switch
                         {
-                            "paid" => "status-success",
-                            "cancelled" => "status-cancelled",
+                            ecommerce_system.Models.OrderStatus.Paid => "status-paid",
+                            ecommerce_system.Models.OrderStatus.Processing => "status-processing",
+                            ecommerce_system.Models.OrderStatus.Completed => "status-completed",
+                            ecommerce_system.Models.OrderStatus.Cancelled => "status-cancelled",
                             _ => "status-pending"
                         };
                     }

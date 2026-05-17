@@ -38,11 +38,12 @@ namespace ecommerce_system.Data
             modelBuilder.Entity<Proudect>()
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
-
+            // ── THE ENUM STRING FIX ──
+            // Forces EF Core to save/load OrderStatus as a String matching your DB database text values
             modelBuilder.Entity<order>()
-                .Property(o => o.tootal_amount)
-                .HasColumnType("decimal(18,2)");
-
+                .Property(o => o.Status)
+                .HasConversion<string>(); 
+            
             modelBuilder.Entity<Discount>()
                 .Property(d => d.DiscountPercent)
                 .HasColumnType("decimal(18,2)");

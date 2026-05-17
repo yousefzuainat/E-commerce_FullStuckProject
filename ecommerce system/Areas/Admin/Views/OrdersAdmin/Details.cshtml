@@ -4,7 +4,6 @@
     Layout = "_AdminLayout";
 }
 
-<!-- Page Header -->
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
     <div>
         <h1 class="text-3xl font-black text-white">Order Details</h1>
@@ -45,14 +44,14 @@
                 </div>
             </div>
 
-            <!-- Right Column -->
             <div class="space-y-6 bg-white/2 p-6 rounded-xl border border-white/5">
                 <div>
                     <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Current Status</p>
                     @{
-                        var statusClass = Model.Status == "Completed" ? "bg-green-500/10 text-green-400 border-green-500/20" :
-                                          Model.Status == "Pending" ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" :
-                                          Model.Status == "Cancelled" ? "bg-red-500/10 text-red-400 border-red-500/20" :
+                        // FIX: Explicitly compare against the OrderStatus enum types
+                        var statusClass = Model.Status == ecommerce_system.Models.OrderStatus.Completed ? "bg-green-500/10 text-green-400 border-green-500/20" :
+                                          Model.Status == ecommerce_system.Models.OrderStatus.Pending ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" :
+                                          Model.Status == ecommerce_system.Models.OrderStatus.Cancelled ? "bg-red-500/10 text-red-400 border-red-500/20" :
                                           "bg-blue-500/10 text-blue-400 border-blue-500/20";
                     }
                     <span class="inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-full font-bold border @statusClass">
@@ -77,7 +76,6 @@
     </div>
 </div>
 
-<!-- Order Items Card -->
 <div class="admin-card rounded-2xl overflow-hidden">
     <div class="px-6 py-5 border-b border-white/5 bg-white/2">
         <h3 class="text-lg font-bold text-white">Order Items</h3>

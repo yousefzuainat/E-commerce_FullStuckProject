@@ -54,7 +54,7 @@ namespace ecommerce_system.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int id, string status)
+        public async Task<IActionResult> UpdateStatus(int id, OrderStatus status)
         {
             var order = await _context.orders.FindAsync(id);
 
