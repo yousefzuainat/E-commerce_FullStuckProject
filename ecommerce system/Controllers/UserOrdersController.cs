@@ -59,7 +59,7 @@ namespace ecommerce_system.Controllers
 
             var order = await _context.orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Proudect)
+                .ThenInclude(oi => oi.Proudect)
                 .Include(o => o.Payment)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
@@ -74,7 +74,7 @@ namespace ecommerce_system.Controllers
 
             var order = await _context.orders
                 .Include(o => o.OrderItems!)
-                    .ThenInclude(oi => oi.Proudect) // Get product info (Img, Name)
+                    .ThenInclude(oi => oi.Proudect) 
                 .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null) return NotFound();

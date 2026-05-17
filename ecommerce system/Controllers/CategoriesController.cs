@@ -22,7 +22,6 @@ namespace ecommerce_system.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            // Use .Include to "Eager Load" the related products
             var categoriesWithProducts = await _context.categories
                 .Include(c => c.Proudects)
                 .ToListAsync();
@@ -51,11 +50,8 @@ namespace ecommerce_system.Controllers
         }
 
         // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // Added IFormFile imageFile to receive the actual file from the form
         public async Task<IActionResult> Create([Bind("Id,Name")] Category category, IFormFile? imageFile)
         {
             if (ModelState.IsValid)
@@ -103,8 +99,6 @@ namespace ecommerce_system.Controllers
         }
 
         // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Img")] Category category, IFormFile? imageFile)
