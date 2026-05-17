@@ -95,7 +95,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,tootal_amount,Status,UserId")] order order)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,tootal_amount,Status,UserId")] order order)
         {
             if (id != order.Id)
             {

@@ -38,6 +38,25 @@
                         </div>
                     </div>
                 </div>
+                @if (!string.IsNullOrEmpty(Model.Address))
+                {
+                    var parts = Model.Address.Split('|');
+                    var gov = parts.ElementAtOrDefault(0)?.Trim() ?? "";
+                    var street = parts.ElementAtOrDefault(1)?.Trim() ?? "";
+                    var phone = parts.ElementAtOrDefault(2)?.Trim() ?? "";
+
+                    <div>
+                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Shipping Information</p>
+                        <div class="bg-white/2 border border-white/5 rounded-xl p-4 mt-2 space-y-2">
+                            <p class="text-white text-sm"><span class="text-gray-400">Governorate:</span> <strong class="text-primary font-bold">@gov</strong></p>
+                            <p class="text-white text-sm"><span class="text-gray-400">Street / Details:</span> @street</p>
+                            @if (!string.IsNullOrEmpty(phone))
+                            {
+                                <p class="text-white text-sm"><span class="text-gray-400">Receiver Phone:</span> @phone</p>
+                            }
+                        </div>
+                    </div>
+                }
                 <div>
                     <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Total Amount</p>
                     <p class="text-3xl font-black text-primary mt-1">@Model.tootal_amount.ToString("C")</p>

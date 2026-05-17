@@ -1,4 +1,4 @@
-﻿using ecommerce_system.Data;
+using ecommerce_system.Data;
 using ecommerce_system.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -91,7 +91,7 @@ namespace ecommerce_system.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("Id,Name,tootal_amount,Status,UserId")] order order)
+            [Bind("Id,Name,Address,tootal_amount,Status,UserId")] order order)
         {
             if (id != order.Id) return NotFound();
 
