@@ -375,7 +375,7 @@
                             <div class="det-rev-head">
                                 <div>
                                     <div class="det-rev-author">
-                                        @(rv.User?.FullName ?? rv.User?.UserName ?? "Anonymous")
+                                        @(rv.User?.FullName ?? rv.User?.UserName ?? rv.User?.Email ?? "Verified Buyer")         
                                         @if (isOwner)
                                         {
                                             <span class="det-rev-you">You</span>

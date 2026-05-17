@@ -51,6 +51,7 @@ namespace ecommerce_system.Controllers
                 .Include(p => p.Images)
                 .Include(p => p.Discounts)
                 .Include(p => p.Reviews)
+                .ThenInclude(r=>r.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (product == null) return NotFound();
@@ -235,6 +236,7 @@ namespace ecommerce_system.Controllers
                 .Include(p => p.Category)
                 .Include(p => p.Discounts)
                 .Include(p => p.Reviews!)           // Load the collection
+                .ThenInclude(r => r.User)
                 .Where(p => p.Discounts != null && p.Discounts.Any())
                 .ToListAsync();
 
