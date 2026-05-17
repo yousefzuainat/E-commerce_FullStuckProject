@@ -128,7 +128,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdentityUser");
+                    b.ToTable("IdentityUser", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
@@ -312,7 +312,7 @@ namespace ecommerce_system.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("cart");
+                    b.ToTable("cart", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.CartItem", b =>
@@ -338,7 +338,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("ProudectId");
 
-                    b.ToTable("cartItems");
+                    b.ToTable("cartItems", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.Category", b =>
@@ -359,7 +359,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("categories");
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.Discount", b =>
@@ -391,7 +391,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("ProudectId");
 
-                    b.ToTable("discounts");
+                    b.ToTable("discounts", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.OrderItem", b =>
@@ -420,7 +420,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("ProudectId");
 
-                    b.ToTable("orderItems");
+                    b.ToTable("orderItems", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.ProductImage", b =>
@@ -442,7 +442,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("ProudectId");
 
-                    b.ToTable("productImages");
+                    b.ToTable("productImages", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.Proudect", b =>
@@ -476,7 +476,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("proudects");
+                    b.ToTable("proudects", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.Review", b =>
@@ -511,7 +511,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("review");
+                    b.ToTable("review", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.Testimonials", b =>
@@ -543,7 +543,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Testimonials");
+                    b.ToTable("Testimonials", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.WishList", b =>
@@ -563,7 +563,7 @@ namespace ecommerce_system.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("wishList");
+                    b.ToTable("wishList", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.WishListItem", b =>
@@ -586,7 +586,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("WishListId");
 
-                    b.ToTable("wishListItems");
+                    b.ToTable("wishListItems", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.order", b =>
@@ -620,7 +620,7 @@ namespace ecommerce_system.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("orders");
+                    b.ToTable("orders", (string)null);
                 });
 
             modelBuilder.Entity("ecommerce_system.Models.payment", b =>
@@ -649,7 +649,7 @@ namespace ecommerce_system.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("payment");
+                    b.ToTable("payment", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

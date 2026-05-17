@@ -902,3 +902,139 @@ footer {
     width: 14px;
     display: inline-block;
 }
+
+/* ── Auth trigger button ── */
+.nav-auth-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1.5px solid var(--accent, #f60);
+    border-radius: 0;
+    clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%);
+    color: var(--fg, #fff);
+    font-family: inherit;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    white-space: nowrap;
+}
+
+    .nav-auth-trigger:hover,
+    .nav-auth-trigger.is-open {
+        background: var(--accent, #f60);
+        color: #000;
+    }
+
+/* Light mode: darken the accent slightly for readability */
+[data-theme="light"] .nav-auth-trigger {
+    border-color: #c84a00;
+    color: var(--fg);
+}
+
+    [data-theme="light"] .nav-auth-trigger:hover,
+    [data-theme="light"] .nav-auth-trigger.is-open {
+        background: #c84a00;
+        color: #fff;
+    }
+
+/* ── Auth dropdown panel ── */
+.nav-auth-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 230px;
+    background: var(--card-bg, #111);
+    border: 1px solid var(--border, rgba(255,255,255,.1));
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.45);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: opacity .22s, transform .22s;
+    z-index: 999;
+}
+
+    .nav-auth-dropdown.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+/* Light mode dropdown */
+[data-theme="light"] .nav-auth-dropdown {
+    background: #fff;
+    border-color: rgba(0,0,0,.1);
+    box-shadow: 0 12px 36px rgba(0,0,0,.12);
+}
+
+[data-theme="light"] .auth-drop-heading {
+    color: #9a8878;
+    border-bottom-color: rgba(0,0,0,.07);
+}
+
+[data-theme="light"] .auth-drop-item {
+    color: var(--fg);
+}
+
+    [data-theme="light"] .auth-drop-item:hover {
+        background: rgba(0,0,0,.04);
+    }
+
+[data-theme="light"] .auth-drop-divider {
+    background: rgba(0,0,0,.07);
+}
+
+/* CTA button inside dropdown — same clip-path style */
+.auth-drop-primary {
+    background: var(--accent, #f60) !important;
+    color: #000 !important;
+    font-weight: 800;
+    justify-content: center;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    padding: 10px 12px;
+    border-radius: 0 !important;
+    clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%) !important;
+}
+
+[data-theme="light"] .auth-drop-primary {
+    background: #c84a00 !important;
+    color: #fff !important;
+}
+
+.auth-drop-primary:hover {
+    filter: brightness(1.08);
+}
+
+[data-theme="light"] .nav-dropdown {
+    background: #fff;
+    border-color: rgba(0,0,0,.1);
+    box-shadow: 0 12px 36px rgba(0,0,0,.12);
+}
+
+[data-theme="light"] .nav-drop-header {
+    border-bottom-color: rgba(0,0,0,.07);
+}
+
+[data-theme="light"] .nav-drop-item {
+    color: var(--fg);
+}
+
+    [data-theme="light"] .nav-drop-item:hover {
+        background: rgba(0,0,0,.04);
+    }
+
+[data-theme="light"] .nav-drop-divider {
+    background: rgba(0,0,0,.07);
+}
+
+[data-theme="light"] .nav-drop-name {
+    color: var(--fg);
+}

@@ -22,138 +22,271 @@
     @RenderSection("Styles", required: false)
     @Html.AntiForgeryToken()
 
-    @* <style>
-            /* ═══════════════════════════════════════════════
-                NAVBAR — improved layout & UX
-            ════════════════════════════════════════════════ */
-
-            /* Make the right-side cluster tighter */
+    <style>
+            /* ═══════════════════════════════════════════════════
+                        NAVBAR — right cluster
+                    ═══════════════════════════════════════════════════ */
             .nav-r {
                 display: flex;
                 align-items: center;
-                gap: 6px;          /* was probably ~12px — tighter is cleaner */
+                gap: 6px;
             }
 
-            /* ── Auth dropdown (guest) ── */
-            .nav-auth-menu {
-                position: relative;
-            }
-
-            /* The small trigger button when NOT signed in */
-            .nav-auth-trigger {
-                display: flex;
+            /* ─────────────────────────────────────────────────
+                        ACCOUNT BUTTON  (guest trigger + signed-in btn)
+                       Both use the Voltex clip-path skewed style
+                    ───────────────────────────────────────────────── */
+            .nav-auth-trigger,
+            .nav-profile-btn {
+                display: inline-flex;
                 align-items: center;
-                gap: 5px;
-                padding: 5px 10px;
+                gap: 6px;
+                padding: 6px 14px;
                 background: transparent;
-                border: 1px solid var(--accent, #f60);
-                border-radius: 6px;
+                border: 1.5px solid var(--accent, #f60);
+                border-radius: 0;
+                clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%);
                 color: var(--fg, #fff);
                 font-family: inherit;
-                font-size: 0.72rem;
-                font-weight: 600;
-                letter-spacing: .08em;
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: .12em;
                 text-transform: uppercase;
                 cursor: pointer;
                 transition: background .2s, color .2s;
                 white-space: nowrap;
             }
-            .nav-auth-trigger:hover,
-            .nav-auth-trigger.is-open {
-                background: var(--accent, #f60);
-                color: #000;
-            }
-            .nav-auth-trigger svg {
-                width: 15px;
-                height: 15px;
-                flex-shrink: 0;
-            }
-            /* chevron rotates when open */
-            .nav-auth-trigger .auth-chev {
-                transition: transform .25s;
-            }
-            .nav-auth-trigger.is-open .auth-chev {
-                transform: rotate(180deg);
+
+                .nav-auth-trigger:hover,
+                .nav-auth-trigger.is-open,
+                .nav-profile-btn:hover,
+                .nav-profile-btn.is-open {
+                    background: var(--accent, #f60);
+                    color: #000;
+                }
+
+                .nav-auth-trigger svg,
+                .nav-profile-btn svg {
+                    width: 15px;
+                    height: 15px;
+                    flex-shrink: 0;
+                }
+                /* chevron animation */
+                .nav-auth-trigger .auth-chev {
+                    transition: transform .25s;
+                }
+
+                .nav-auth-trigger.is-open .auth-chev {
+                    transform: rotate(180deg);
+                }
+
+            /* light mode overrides for both buttons */
+            [data-theme="light"] .nav-auth-trigger,
+            [data-theme="light"] .nav-profile-btn {
+                border-color: #c84a00;
+                color: var(--fg, #1a1a1a);
+                font-family: 'Libre Baskerville', Georgia, serif;
             }
 
-            /* The dropdown panel */
+                [data-theme="light"] .nav-auth-trigger:hover,
+                [data-theme="light"] .nav-auth-trigger.is-open,
+                [data-theme="light"] .nav-profile-btn:hover,
+                [data-theme="light"] .nav-profile-btn.is-open {
+                    background: #c84a00;
+                    color: #fff;
+                }
+
+            /* ─────────────────────────────────────────────────
+                        SHARED DROPDOWN BASE
+                       Used by both .nav-dropdown (signed-in)
+                       and .nav-auth-dropdown (guest)
+                    ───────────────────────────────────────────────── */
+            .nav-dropdown,
             .nav-auth-dropdown {
                 position: absolute;
                 top: calc(100% + 10px);
                 right: 0;
-                min-width: 230px;
+                min-width: 240px;
                 background: var(--card-bg, #111);
                 border: 1px solid var(--border, rgba(255,255,255,.1));
                 border-radius: 12px;
                 padding: 8px;
-                box-shadow: 0 16px 48px rgba(0,0,0,.45);
+                box-shadow: 0 16px 48px rgba(0,0,0,.5);
                 opacity: 0;
                 pointer-events: none;
                 transform: translateY(-6px);
                 transition: opacity .22s, transform .22s;
-                z-index: 999;
-            }
-            .nav-auth-dropdown.open {
-                opacity: 1;
-                pointer-events: auto;
-                transform: translateY(0);
+                z-index: 1000;
             }
 
-            /* Header inside the auth dropdown */
+                .nav-dropdown.open,
+                .nav-auth-dropdown.open {
+                    opacity: 1;
+                    pointer-events: auto;
+                    transform: translateY(0);
+                }
+
+            /* light mode dropdown panel */
+            [data-theme="light"] .nav-dropdown,
+            [data-theme="light"] .nav-auth-dropdown {
+                background: #fff;
+                border-color: rgba(0,0,0,.1);
+                box-shadow: 0 12px 36px rgba(0,0,0,.12);
+            }
+
+            /* wrapper must be position:relative for absolute dropdown */
+            .nav-user-menu,
+            .nav-auth-menu {
+                position: relative;
+            }
+
+            /* ─────────────────────────────────────────────────
+                        DROPDOWN HEADER  (username / "Welcome")
+                    ───────────────────────────────────────────────── */
+            .nav-drop-header,
             .auth-drop-heading {
                 padding: 8px 12px 10px;
                 font-size: 0.68rem;
                 letter-spacing: .1em;
                 text-transform: uppercase;
                 color: var(--muted, #888);
-                border-bottom: 1px solid var(--border, rgba(255,255,255,.07));
-                margin-bottom: 6px;
+                border-bottom: 1px solid rgba(255,255,255,.07);
+                margin-bottom: 4px;
             }
 
-            /* Individual items inside the auth dropdown */
+            .nav-drop-name {
+                font-size: 0.82rem;
+                font-weight: 700;
+                letter-spacing: .06em;
+                color: var(--fg, #fff);
+                text-transform: none;
+                display: block;
+            }
+
+            [data-theme="light"] .nav-drop-header,
+            [data-theme="light"] .auth-drop-heading {
+                border-bottom-color: rgba(0,0,0,.07);
+                color: #9a8878;
+            }
+
+            [data-theme="light"] .nav-drop-name {
+                color: var(--fg, #1a1a1a);
+            }
+
+            /* ─────────────────────────────────────────────────
+                        DROPDOWN ITEMS
+                    ───────────────────────────────────────────────── */
+            .nav-drop-item,
             .auth-drop-item {
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                padding: 11px 12px;
+                padding: 10px 12px;
                 border-radius: 8px;
                 font-size: 0.82rem;
                 font-weight: 500;
+                letter-spacing: .04em;
                 color: var(--fg, #fff);
                 text-decoration: none;
-                transition: background .15s;
-                cursor: pointer;
-                width: 100%;
-                border: none;
                 background: transparent;
+                border: none;
+                width: 100%;
                 font-family: inherit;
-                letter-spacing: .04em;
+                cursor: pointer;
+                transition: background .15s;
+                box-sizing: border-box;
             }
-            .auth-drop-item:hover {
-                background: var(--hover, rgba(255,255,255,.06));
+
+                .nav-drop-item:hover,
+                .auth-drop-item:hover {
+                    background: rgba(255,255,255,.06);
+                }
+
+            [data-theme="light"] .nav-drop-item,
+            [data-theme="light"] .auth-drop-item {
+                color: var(--fg, #1a1a1a);
+                font-family: 'Libre Baskerville', Georgia, serif;
             }
+
+                [data-theme="light"] .nav-drop-item:hover,
+                [data-theme="light"] .auth-drop-item:hover {
+                    background: rgba(0,0,0,.04);
+                }
+
+            /* icon span inside items */
+            .nav-drop-item svg {
+                width: 16px;
+                height: 16px;
+                flex-shrink: 0;
+                opacity: .7;
+            }
+
+            .v-drop-icon {
+                width: 16px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+
+            /* Admin item accent */
+            .nav-drop-admin {
+                color: var(--accent, #f60) !important;
+            }
+
+                .nav-drop-admin svg {
+                    opacity: 1;
+                }
+
+            /* Logout item */
+            .nav-drop-logout {
+                color: #ff5a5a !important;
+            }
+
+                .nav-drop-logout svg {
+                    opacity: 1;
+                }
+
+            /* Divider */
+            .nav-drop-divider,
             .auth-drop-divider {
                 height: 1px;
-                background: var(--border, rgba(255,255,255,.07));
-                margin: 6px 0;
+                background: rgba(255,255,255,.07);
+                margin: 4px 0;
             }
 
-            /* Primary CTA inside the dropdown (Register) */
+            [data-theme="light"] .nav-drop-divider,
+            [data-theme="light"] .auth-drop-divider {
+                background: rgba(0,0,0,.07);
+            }
+
+            /* ─────────────────────────────────────────────────
+                        PRIMARY CTA inside guest dropdown (Register)
+                    ───────────────────────────────────────────────── */
             .auth-drop-primary {
+                justify-content: center;
                 background: var(--accent, #f60) !important;
                 color: #000 !important;
-                font-weight: 700;
-                justify-content: center;
-                letter-spacing: .08em;
+                font-weight: 800;
+                letter-spacing: .1em;
                 text-transform: uppercase;
-                margin-top: 4px;
-                border-radius: 8px;
-            }
-            .auth-drop-primary:hover {
-                filter: brightness(1.1);
+                font-size: 0.72rem;
+                border-radius: 0 !important;
+                clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%);
+                margin: 4px 0;
             }
 
-            /* Theme toggle inside the auth dropdown */
+                .auth-drop-primary:hover {
+                    filter: brightness(1.08);
+                    background: var(--accent, #f60) !important;
+                }
+
+            [data-theme="light"] .auth-drop-primary {
+                background: #c84a00 !important;
+                color: #fff !important;
+            }
+
+            /* ─────────────────────────────────────────────────
+                        THEME TOGGLE ROW inside dropdowns
+                    ───────────────────────────────────────────────── */
             .auth-drop-theme-row {
                 display: flex;
                 align-items: center;
@@ -163,47 +296,59 @@
                 color: var(--muted, #888);
             }
 
-            /* ── Card: fixed-size description with …Read More ── */
+            [data-theme="light"] .auth-drop-theme-row {
+                color: #9a8878;
+            }
+            /* Scale the toggle down so it fits neatly in the dropdown row */
+            .nav-drop-theme-row .tog,
+            .auth-drop-theme-row .tog {
+                transform: scale(0.72);
+                transform-origin: right center;
+            }
+
+            /* ─────────────────────────────────────────────────
+                        PRODUCT CARD helpers (keep equal-height cards)
+                    ───────────────────────────────────────────────── */
+            .pag-card {
+                display: flex;
+                flex-direction: column;
+            }
+
+                .pag-card .prod-card-link {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .pag-card .pag-body {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .pag-card .pag-foot {
+                    margin-top: auto;
+                }
+
             .pag-desc-wrap {
                 font-size: 0.8rem;
                 line-height: 1.5;
                 color: var(--muted, #888);
-                /* exactly 3 lines visible */
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                min-height: 3.6em;   /* prevents cards from shrinking when desc is short */
+                min-height: 3.6em;
                 margin-bottom: 8px;
             }
+
             .pag-read-more {
                 color: var(--accent, #f60);
                 font-weight: 600;
                 font-size: 0.78rem;
                 white-space: nowrap;
             }
-
-            /* Force all pag-cards to the same height */
-            .pag-card {
-                display: flex;
-                flex-direction: column;
-            }
-            /* The clickable area stretches, pushing buttons to the bottom */
-            .pag-card .prod-card-link {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-            .pag-card .pag-body {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-            /* Push price+buttons to the very bottom */
-            .pag-card .pag-foot {
-                margin-top: auto;
-            }
-    </style> *@
+    </style>
 </head>
 <body>
 
@@ -246,31 +391,39 @@
             </li>
         </ul>
 
-        @* Right cluster *@
+        @* ── Right cluster ── *@
         <div class="nav-r">
 
-            @* Search *@
+            @* Search icon *@
             <button class="icon-btn" onclick="openS()" aria-label="Search">⌕</button>
 
             @if (SignInManager.IsSignedIn(User))
             {
-                @* ── SIGNED IN: cart + profile dropdown ── *@
+                @* ══ SIGNED IN ══ *@
+
+                @* Cart *@
                 <a href="/Cart" class="cart-btn">
                     <span id="cLbl">CART</span>
                     <span class="cart-n" id="cartCount">0</span>
                 </a>
 
+                @* Profile dropdown *@
                 <div class="nav-user-menu">
-                    <button class="nav-profile-btn" onclick="toggleUserMenu()" aria-label="Account menu">
+                    <button class="nav-profile-btn" id="profileTrigger" onclick="toggleUserMenu()" aria-label="Account menu">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <circle cx="12" cy="8" r="4" />
                             <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                        </svg>
+                        @UserManager.GetUserName(User)
+                        <svg class="auth-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9" />
                         </svg>
                     </button>
 
                     <div class="nav-dropdown" id="userDropdown">
                         <div class="nav-drop-header">
                             <span class="nav-drop-name">@UserManager.GetUserName(User)</span>
+                            Signed in
                         </div>
 
                         @if (User.IsInRole("Admin"))
@@ -293,9 +446,10 @@
                             <div class="nav-drop-divider"></div>
                         }
 
-                        @* Theme toggle *@
-                        <div class="nav-drop-item">
-                            <label class="tog" aria-label="Toggle theme">
+                        @* Theme toggle — compact inline row *@
+                        <div class="nav-drop-item nav-drop-theme-row" style="cursor:default;">
+                            <span style="flex:1;">🌙 Theme</span>
+                            <label class="tog" aria-label="Toggle theme" style="cursor:pointer;flex-shrink:0;">
                                 <input type="checkbox" id="togIn" onchange="setTheme(this.checked ? 'light' : 'dark')" />
                                 <div class="tog-track">
                                     <div class="tog-icons"><span>🌙</span><span>☀</span></div>
@@ -303,6 +457,8 @@
                                 <div class="tog-thumb"></div>
                             </label>
                         </div>
+
+                        <div class="nav-drop-divider"></div>
 
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-drop-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -323,7 +479,6 @@
 
                         <div class="nav-drop-divider"></div>
 
-                        @* FIX: Routed away from scaffold Identity mapping to target our session clearing controller action *@
                         <form asp-area="" asp-controller="Cart" asp-action="Logout" method="post">
                             <button type="submit" class="nav-drop-item nav-drop-logout">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -339,16 +494,16 @@
             }
             else
             {
-                @* ── GUEST: compact auth dropdown ── *@
+                @* ══ GUEST ══ *@
+
+                @* Account dropdown trigger *@
                 <div class="nav-auth-menu">
                     <button class="nav-auth-trigger" id="authTrigger" onclick="toggleAuthMenu()" aria-label="Sign in or register">
-                        @* Person icon *@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <circle cx="12" cy="8" r="4" />
                             <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                         </svg>
                         Account
-                        @* Chevron *@
                         <svg class="auth-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
@@ -378,7 +533,7 @@
                         <div class="auth-drop-theme-row">
                             <span>Theme</span>
                             <label class="tog" aria-label="Toggle theme">
-                                <input type="checkbox" id="togIn" onchange="setTheme(this.checked ? 'light' : 'dark')" />
+                                <input type="checkbox" id="togInGuest" onchange="setTheme(this.checked ? 'light' : 'dark')" />
                                 <div class="tog-track">
                                     <div class="tog-icons"><span>🌙</span><span>☀</span></div>
                                 </div>
@@ -388,7 +543,7 @@
                     </div>
                 </div>
 
-                @* Cart always visible *@
+                @* Cart always visible for guests too *@
                 <a href="/Cart" class="cart-btn">
                     <span id="cLbl">CART</span>
                     <span class="cart-n" id="cartCount">0</span>
@@ -461,69 +616,69 @@
     <script src="~/js/voltex.js" asp-append-version="true"></script>
 
     <script>
-        /* ── Signed-in user profile dropdown ── */
+        /* ── Signed-in profile dropdown ── */
         function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            const btn      = document.querySelector('.nav-profile-btn');
-            if (!dropdown) return;
-            const isOpen = dropdown.classList.toggle('open');
-            btn?.classList.toggle('is-open', isOpen);
+        const dropdown = document.getElementById('userDropdown');
+        const btn      = document.getElementById('profileTrigger');
+        if (!dropdown) return;
+        const isOpen = dropdown.classList.toggle('open');
+        btn?.classList.toggle('is-open', isOpen);
+        /* also rotate the chevron */
+        btn?.querySelector('.auth-chev')?.style.setProperty(
+        'transform', isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+        );
         }
 
         /* ── Guest auth dropdown ── */
         function toggleAuthMenu() {
-            const dropdown = document.getElementById('authDropdown');
-            const btn      = document.getElementById('authTrigger');
-            if (!dropdown) return;
-            const isOpen = dropdown.classList.toggle('open');
-            btn?.classList.toggle('is-open', isOpen);
+        const dropdown = document.getElementById('authDropdown');
+        const btn      = document.getElementById('authTrigger');
+        if (!dropdown) return;
+        const isOpen = dropdown.classList.toggle('open');
+        btn?.classList.toggle('is-open', isOpen);
         }
 
-        /* Close all dropdowns when clicking outside */
+        /* ── Close any open dropdown when clicking outside ── */
         document.addEventListener('click', function (e) {
-            const userMenu = document.querySelector('.nav-user-menu');
-            if (userMenu && !userMenu.contains(e.target)) {
-                document.getElementById('userDropdown')?.classList.remove('open');
-                document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
-            }
-            const authMenu = document.querySelector('.nav-auth-menu');
-            if (authMenu && !authMenu.contains(e.target)) {
-                document.getElementById('authDropdown')?.classList.remove('open');
-                document.getElementById('authTrigger')?.classList.remove('is-open');
-            }
+        /* signed-in */
+        const userMenu = document.querySelector('.nav-user-menu');
+        if (userMenu && !userMenu.contains(e.target)) {
+        document.getElementById('userDropdown')?.classList.remove('open');
+        const pb = document.getElementById('profileTrigger');
+        pb?.classList.remove('is-open');
+        pb?.querySelector('.auth-chev')?.style.setProperty('transform', 'rotate(0deg)');
+        }
+        /* guest */
+        const authMenu = document.querySelector('.nav-auth-menu');
+        if (authMenu && !authMenu.contains(e.target)) {
+        document.getElementById('authDropdown')?.classList.remove('open');
+        document.getElementById('authTrigger')?.classList.remove('is-open');
+        }
+        });
+
+        /* ── Sync theme toggle checkbox state on load ── */
+        document.addEventListener('DOMContentLoaded', function () {
+        const theme = document.documentElement.getAttribute('data-theme');
+        document.querySelectorAll('#togIn, #togInGuest').forEach(cb => {
+        cb.checked = (theme === 'light');
+        });
         });
     </script>
 
- <script>
-    /* Load cart count from session on every page */
-    (async function () {
+    <script>
+        /* ── Load cart count from session on every page ── */
+        (async function () {
         try {
-            // FIX 4: Appended '?t=' timestamp cache-buster so the browser is forced to query the server
-            const res   = await fetch('/Cart/Count?t=' + new Date().getTime());
-            const data  = await res.json();
-            const count = data.cartCount || 0;
-            document.querySelectorAll('.cart-n').forEach(el => {
-                el.textContent = count;
-                el.classList.toggle('cart-n-active', count > 0); 
-            });
-        } catch (e) {}
-    })();
-    document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById('sIn');
-    
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                const query = this.value.trim();
-                if (query.length > 0) {
-                    // Redirects to your products index with the search term encoded safely
-                    window.location.href = '/Proudects?search=' + encodeURIComponent(query);
-                }
-            }
+        const res   = await fetch('/Cart/Count?t=' + Date.now());
+        const data  = await res.json();
+        const count = data.cartCount || 0;
+        document.querySelectorAll('.cart-n').forEach(el => {
+        el.textContent = count;
+        el.classList.toggle('cart-n-active', count > 0);
         });
-    }
-});
-</script>
+        } catch (e) {}
+        })();
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>
