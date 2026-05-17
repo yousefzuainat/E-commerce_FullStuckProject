@@ -22,7 +22,7 @@
     @RenderSection("Styles", required: false)
     @Html.AntiForgeryToken()
 
-    <style>
+    @* <style>
             /* ═══════════════════════════════════════════════
                 NAVBAR — improved layout & UX
             ════════════════════════════════════════════════ */
@@ -203,7 +203,7 @@
             .pag-card .pag-foot {
                 margin-top: auto;
             }
-    </style>
+    </style> *@
 </head>
 <body>
 
@@ -508,6 +508,21 @@
             });
         } catch (e) {}
     })();
+    document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById('sIn');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    // Redirects to your products index with the search term encoded safely
+                    window.location.href = '/Proudects?search=' + encodeURIComponent(query);
+                }
+            }
+        });
+    }
+});
 </script>
 
     @RenderSection("Scripts", required: false)
