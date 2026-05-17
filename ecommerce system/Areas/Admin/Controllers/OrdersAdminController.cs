@@ -57,10 +57,10 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
             return View(order);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int id, string status)
+        public async Task<IActionResult> UpdateStatus(int id, OrderStatus status)
         {
             var order = await _context.orders.FindAsync(id);
             if (order == null)
@@ -68,15 +68,9 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (Enum.TryParse<OrderStatus>(status, out var orderStatus))
-            {
-                order.Status = orderStatus.ToString();
-            }
-            else
-            {
-                order.Status = status;
-            }
-            
+            // Direct assignment works cleanly now that they match types
+            order.Status = status;
+
             await _context.SaveChangesAsync();
             TempData["success"] = $"Order #{order.Id} status updated to {order.Status}.";
             return RedirectToAction(nameof(Index));

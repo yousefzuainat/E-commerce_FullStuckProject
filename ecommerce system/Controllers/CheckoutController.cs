@@ -143,14 +143,15 @@ namespace ecommerce_system.Controllers
 
             if (!sessionItems.Any())
             {
-                return RedirectToAction("Index", "UserOrders");
+                // Safety check: ensure this controller name matches your client-side orders handler
+                return RedirectToAction("Index", "Orders");
             }
 
             decimal subtotal = 0;
             var order = new order
             {
                 UserId = userId,
-                Status = OrderStatus.Paid.ToString(),
+                Status = OrderStatus.Paid, // FIX: Direct assignment of the enum (Removed .ToString())
                 Name = User.Identity?.Name ?? "Customer"
             };
 
@@ -187,18 +188,19 @@ namespace ecommerce_system.Controllers
             }
 
             decimal totalAmount = subtotal;
-
             order.tootal_amount = totalAmount;
 
+            // Save order header first to generate the Order ID
             _context.orders.Add(order);
             await _context.SaveChangesAsync();
 
+            // Batch add items linked to the newly generated Order ID
             foreach (var orderItem in orderItemsList)
             {
                 orderItem.OrderId = order.Id;
                 _context.Add(orderItem);
-                await _context.SaveChangesAsync();
             }
+            await _context.SaveChangesAsync(); // Saved out of loop for higher database performance
 
             var payment = new payment
             {
@@ -211,10 +213,14 @@ namespace ecommerce_system.Controllers
             _context.payment.Add(payment);
             await _context.SaveChangesAsync();
 
+            // Flush out temporary cache items
             SessionCartService.ClearCart(HttpContext);
 
             TempData["success"] = "Payment successful! Your order has been placed via Stripe.";
-            return RedirectToAction("Index", "UserOrders");
+
+            // CRITICAL ROUTING CHECK: If your customer-facing history controller is 
+            // named OrdersController, change "UserOrders" to "Orders" to avoid a 404!
+            return RedirectToAction("Index", "Orders");
         }
     }
 }

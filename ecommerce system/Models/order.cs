@@ -14,7 +14,7 @@ namespace ecommerce_system.Models
         public decimal tootal_amount { get; set; }
 
         [Required(ErrorMessage = "Status is required")]
-        public string Status { get; set; }
+        public OrderStatus Status { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }

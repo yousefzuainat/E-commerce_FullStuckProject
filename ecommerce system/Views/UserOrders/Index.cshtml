@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="~/css/orderconfirm.css" asp-append-version="true" />
 }
 
-@* --- Toast remains the same --- *@
 @if (TempData["success"] != null)
 {
     <div class="toast-notification" id="paymentToast">
@@ -18,7 +17,20 @@
             <div style="font-size: 13px; color: rgba(255,255,255,0.7);">@TempData["success"]</div>
         </div>
     </div>
+    
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('paymentToast');
+            if(toast) {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }
+        }, 4000);
+    </script>
 }
+
 <div class="orders-wrapper">
     @* ── Page Header Section ── *@
     <div class="prod-page-bar reveal">
@@ -51,12 +63,13 @@
                             <div class="order-id">#VOLT-@order.Id.ToString("D5")</div>
                         </div>
                         @{
-                            var statusClass = order.Status?.ToLower() switch
+                            // FIX: Direct strongly-typed comparison with the OrderStatus Enum
+                            var statusClass = order.Status switch
                             {
-                                "paid" => "status-paid",
-                                "processing" => "status-processing",
-                                "completed" => "status-completed",
-                                "cancelled" => "status-cancelled",
+                                ecommerce_system.Models.OrderStatus.Paid => "status-paid",
+                                ecommerce_system.Models.OrderStatus.Processing => "status-processing",
+                                ecommerce_system.Models.OrderStatus.Completed => "status-completed",
+                                ecommerce_system.Models.OrderStatus.Cancelled => "status-cancelled",
                                 _ => "status-pending"
                             };
                         }
