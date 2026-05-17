@@ -144,7 +144,7 @@ namespace ecommerce_system.Controllers
             if (!sessionItems.Any())
             {
                 // Safety check: ensure this controller name matches your client-side orders handler
-                return RedirectToAction("Index", "Orders");
+                return RedirectToAction("Index", "UserOrers");
             }
 
             decimal subtotal = 0;
@@ -220,7 +220,7 @@ namespace ecommerce_system.Controllers
 
             // CRITICAL ROUTING CHECK: If your customer-facing history controller is 
             // named OrdersController, change "UserOrders" to "Orders" to avoid a 404!
-            return RedirectToAction("Index", "Orders");
+            return RedirectToAction("Index", "UserOrders");
         }
     }
 }
