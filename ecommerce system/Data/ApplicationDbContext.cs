@@ -26,6 +26,7 @@ namespace ecommerce_system.Data
         public DbSet<OrderItem> orderItems { get; set; }
         public DbSet<CartItem> cartItems { get; set; }
         public DbSet<WishListItem> wishListItems { get; set; }
+        public string? Address { get; set; }
         public DbSet<Testimonials> Testimonials { get; set; }
 
         // 3. MODEL CONFIGURATION
