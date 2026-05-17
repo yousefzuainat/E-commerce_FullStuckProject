@@ -1,0 +1,94 @@
+@model ecommerce_system.Models.order
+
+@{
+    ViewData["Title"] = "Edit Order";
+    Layout = "_AdminLayout";
+}
+
+<div class="flex items-center gap-4 mb-8">
+    <a asp-action="Index" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div>
+        <h1 class="text-3xl font-black text-white">Edit Order</h1>
+        <p class="text-gray-400 text-sm mt-0.5">Order #@Model.Id</p>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-red-400 text-sm mb-4"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div class="xl:col-span-2 space-y-6">
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">receipt_long</span>
+                    Order Details
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label asp-for="Name" class="admin-label">Order Name</label>
+                        <input asp-for="Name" class="admin-input" placeholder="e.g., Purchase from Store" />
+                        <span asp-validation-for="Name" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label asp-for="tootal_amount" class="admin-label">Total Amount</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                                <input asp-for="tootal_amount" class="admin-input pl-8" />
+                            </div>
+                            <span asp-validation-for="tootal_amount" class="text-red-400 text-xs mt-1 block"></span>
+                        </div>
+                        
+                        <div>
+                            <label asp-for="UserId" class="admin-label">Customer</label>
+                            <select asp-for="UserId" class="admin-input" asp-items="ViewBag.UserId">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                            <span asp-validation-for="UserId" class="text-red-400 text-xs mt-1 block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="admin-card rounded-2xl p-6">
+                <h2 class="text-sm font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-admin-accent text-lg">sync</span>
+                    Order Status
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label asp-for="Status" class="admin-label">Current Status</label>
+                        <select asp-for="Status" class="admin-input" asp-items="Html.GetEnumSelectList<ecommerce_system.Models.OrderStatus>()">
+                        </select>
+                        <span asp-validation-for="Status" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card rounded-2xl p-6">
+                <button type="submit" class="admin-btn-primary w-full justify-center py-3">
+                    <span class="material-symbols-outlined">save</span>
+                    Save Changes
+                </button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="admin-btn-secondary w-full justify-center py-3 mt-3">
+                    <span class="material-symbols-outlined">visibility</span>
+                    View Details
+                </a>
+                <a asp-action="Index" class="admin-btn-secondary w-full justify-center py-3 mt-3">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

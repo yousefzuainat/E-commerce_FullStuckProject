@@ -1,0 +1,110 @@
+﻿@page
+@model ecommerce_system.Areas.Identity.Pages.Account.Manage.PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — VOLTEX</title>
+    <link rel="stylesheet" href="~/css/voltex.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/voltex-auth.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;700&family=Syne:wght@400;700;800&family=Jost:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <a href="~/" class="logo">
+            <span class="logo-mark">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <span>VOLTEX</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="~/">Home</a></li>
+            <li><a href="~/Shop">Shop</a></li>
+            <li><a href="~/Account/Manage" class="active">Account</a></li>
+        </ul>
+        <div class="nav-r">
+            <label class="tog" title="Toggle theme">
+                <input type="checkbox" id="themeToggle">
+                <div class="tog-track"></div>
+                <div class="tog-icons"><span>☾</span><span>☀</span></div>
+                <div class="tog-thumb"></div>
+            </label>
+            <div class="nav-user-menu">
+                <button class="nav-profile-btn" id="profileBtn" aria-label="Open user menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+                <div class="nav-dropdown" id="userDropdown">
+                    <div class="nav-drop-header"><span class="nav-drop-name">Account Settings</span></div>
+                    <a class="nav-drop-item" href="~/Account/Manage">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Profile
+                    </a>
+                    <a class="nav-drop-item" href="~/Account/Manage/ChangePassword">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Password
+                    </a>
+                    <a class="nav-drop-item" href="~/Account/Manage/TwoFactorAuthentication">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Two-Factor Auth
+                    </a>
+                    <div class="nav-drop-divider"></div>
+                    <form method="post" action="~/Account/Logout" style="margin:0">
+                        <button type="submit" class="nav-drop-item nav-drop-logout">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Sign Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="auth-wrap">
+            <div class="auth-card">
+                <span class="auth-eye">Privacy</span>
+                <h1 class="auth-heading">Personal Data</h1>
+                <p class="auth-sub">Your account contains personal data that you have provided to us. You can download or permanently delete this data below.</p>
+
+                <div style="background:var(--bg2);border:1px solid var(--border);padding:1.25rem;margin-bottom:2rem;transition:background .5s,border-color .5s;">
+                    <p style="font-size:13px;color:var(--text-sub);line-height:1.8;margin:0;">
+                        Deleting this data will permanently remove your account and all associated information from our systems. 
+                        <strong style="color:var(--text);">This action cannot be undone.</strong>
+                    </p>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:.8rem;">
+                    <form id="download-data" action="~/Account/Manage/DownloadPersonalData" method="post" style="margin:0;">
+                        <button type="submit" class="btn-p" style="width:100%;justify-content:center;">Download Personal Data</button>
+                    </form>
+                    <a href="~/Account/Manage/DeletePersonalData" class="btn-g" style="justify-content:center;color:#ff5555;border-color:rgba(255,60,60,.3);">Delete Account & Data</a>
+                </div>
+
+                <div class="auth-links" style="margin-top:2rem;">
+                    <a href="~/Account/Manage">← Back to Account Overview</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('voltex-theme');
+        if (saved === 'light') { html.setAttribute('data-theme', 'light'); toggle.checked = true; }
+        toggle.addEventListener('change', () => {
+            const theme = toggle.checked ? 'light' : 'dark';
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('voltex-theme', theme);
+        });
+        const profileBtn = document.getElementById('profileBtn');
+        const dropdown = document.getElementById('userDropdown');
+        profileBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('open'); profileBtn.classList.toggle('is-open'); });
+        document.addEventListener('click', () => { dropdown.classList.remove('open'); profileBtn.classList.remove('is-open'); });
+    </script>
+</body>
+</html>

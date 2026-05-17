@@ -119,189 +119,186 @@
     background: rgba(255,106,0,.04);
 }
 
-/* ============================================================
-   PRODUCT ADMIN GRID (4 col)
+/* ============================================================ 
+   GLOBAL PRODUCT CARD SYSTEM 
    ============================================================ */
+
 .prod-admin-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 4px;
-    padding: 0 52px;
-    position: relative; z-index: 1;
-    transition: all .3s;
-}
-.prod-admin-grid.list-view {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 52px;
 }
 
-/* ── Card ── */
+/* ── The Card Container ── */
 .pag-card {
-    position: relative; overflow: hidden;
-    cursor: pointer;
-    transition: border-color .25s, box-shadow .25s, background .5s, transform .25s;
-}
-[data-theme="dark"] .pag-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Forces all cards in a row to be equal height */
     background: var(--surface);
     border: 1px solid var(--border);
+    transition: all .3s ease;
+    position: relative;
 }
-[data-theme="dark"] .pag-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transform: scaleX(0); transform-origin: left;
-    transition: transform .3s; z-index: 2;
-}
-[data-theme="dark"] .pag-card:hover {
-    border-color: rgba(255,106,0,.4);
-    box-shadow: 0 0 30px rgba(255,106,0,.1), 0 20px 40px rgba(0,0,0,.3);
-}
-[data-theme="dark"] .pag-card:hover::before { transform: scaleX(1); }
 
 [data-theme="light"] .pag-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: 8px;
 }
-[data-theme="light"] .pag-card:hover {
+
+.pag-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     border-color: var(--accent);
-    box-shadow: 0 12px 40px rgba(224,92,58,.12), 0 2px 8px rgba(0,0,0,.06);
-    transform: translateY(-4px);
 }
 
-/* Thumb */
+/* ── The Image (No Cropping) ── */
 .pag-thumb {
-    aspect-ratio: 1;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 80px; position: relative; overflow: hidden;
+    aspect-ratio: 1 / 1;
     background: var(--surface2);
-    transition: background .5s;
-}
-.prod-admin-grid.list-view .pag-thumb {
-    aspect-ratio: unset;
-    width: 160px; min-height: 140px;
-    flex-shrink: 0;
-    font-size: 60px;
-}
-.pag-thumb-img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform .5s ease;
-}
-.pag-card:hover .pag-thumb-img { transform: scale(1.06); }
-.pag-thumb-emoji { transition: transform .4s ease; display: block; }
-.pag-card:hover .pag-thumb-emoji { transform: scale(1.1) translateY(-5px); }
-
-/* Badge */
-.pag-badge {
-    position: absolute; top: 12px; left: 12px;
-    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-    padding: 4px 10px; font-weight: 700; z-index: 1;
-}
-[data-theme="dark"] .pag-badge {
-    font-family: 'Space Grotesk', sans-serif;
-    clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);
-}
-[data-theme="light"] .pag-badge { font-family: 'Jost', sans-serif; border-radius: 3px; }
-.badge-new  { background: var(--badge-new-bg);  color: var(--badge-new-fg); }
-.badge-hot  { background: var(--badge-hot-bg);  color: var(--badge-hot-fg); }
-.badge-sale { background: var(--badge-sale-bg); color: var(--badge-sale-fg); }
-.badge-out  { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
-
-/* Stock indicator dot */
-.pag-stock-dot {
-    position: absolute; top: 12px; right: 12px;
-    width: 8px; height: 8px; border-radius: 50%; z-index: 1;
-}
-.pag-stock-dot.in  { background: var(--accent2); box-shadow: 0 0 8px var(--accent2); }
-.pag-stock-dot.low { background: var(--accent);  box-shadow: 0 0 8px var(--accent); }
-.pag-stock-dot.out { background: var(--text-dim); }
-
-/* Body */
-.pag-body { padding: 18px 20px 20px; }
-.prod-admin-grid.list-view .pag-card {
     display: flex;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 15px; /* Padding ensures product edges are visible */
 }
-.prod-admin-grid.list-view .pag-body {
-    flex: 1;
+
+.pag-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* CRITICAL: Shows full image without cutting */
+    transition: transform .5s;
+}
+
+/* ── The Content Body ── */
+.pag-body {
+    padding: 20px;
+    flex-grow: 1; /* Pushes action buttons to the bottom */
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
-
-.pag-brand {
-    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--text-dim); margin-bottom: 5px; transition: color .5s;
-}
-[data-theme="dark"] .pag-brand { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
-[data-theme="light"] .pag-brand { font-family: 'Jost', sans-serif; font-weight: 500; }
 
 .pag-name {
-    font-size: 14px; line-height: 1.4; color: var(--text);
-    transition: color .5s; margin-bottom: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
-[data-theme="dark"] .pag-name { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
-[data-theme="light"] .pag-name { font-family: 'Jost', sans-serif; font-weight: 400; }
 
-.pag-cat {
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--accent3); margin-bottom: 8px; transition: color .5s;
+/* Darker, Uniform Description */
+.pag-desc-preview {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text); /* Darker for better readability */
+    opacity: 0.85;
+    margin-bottom: 15px;
+    /* Auto-ellipsis logic for 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 3em;
 }
-[data-theme="dark"] .pag-cat { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
-[data-theme="light"] .pag-cat { font-family: 'Jost', sans-serif; font-weight: 500; }
+/* ── Unified Badge System ── */
+.p-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px; /* Standardized to Top-Right */
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    font-weight: 700;
+    z-index: 5;
+    pointer-events: none;
+}
 
-.pag-stars { font-size: 11px; color: var(--accent); letter-spacing: 1px; margin-bottom: 2px; }
-.pag-rc    { color: var(--text-dim); font-size: 10px; letter-spacing: 1px; }
+[data-theme="dark"] .p-badge {
+    font-family: 'Space Grotesk', sans-serif;
+    background: #000;
+    color: #fff;
+    /* Clipped edges for Sci-Fi look */
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+}
 
-/* Footer row inside card */
+[data-theme="light"] .p-badge {
+    font-family: 'Jost', sans-serif;
+    background: #000;
+    color: #fff;
+    border-radius: 50px; /* Pill shape for clean look */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Color Variants */
+.badge-new {
+    background: var(--badge-new-bg) !important;
+    color: var(--badge-new-fg) !important;
+}
+
+.badge-hot {
+    background: var(--badge-hot-bg) !important;
+    color: var(--badge-hot-fg) !important;
+}
+
+.badge-sale {
+    background: #ef4444 !important;
+    color: #ef4444 !important;
+}
+/* Black badge for sales */}
+/* ── Footer & Price ── */
 .pag-foot {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 14px; padding-top: 14px;
-    border-top: 1px solid var(--border); transition: border-color .5s;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
+
 .pag-price {
-    font-family: var(--heading); color: var(--text);
-    transition: font-family .5s, color .5s;
-}
-[data-theme="dark"] .pag-price { font-size: 24px; letter-spacing: 1px; }
-[data-theme="light"] .pag-price { font-size: 22px; font-weight: 800; }
-.pag-old {
-    font-size: 11px; color: var(--text-dim); text-decoration: line-through;
-    margin-left: 6px; font-family: 'Space Grotesk', sans-serif;
-    font-weight: 400; vertical-align: middle;
+    font-size: 18px !important; /* Smaller, cleaner price */
+    font-weight: 800;
+    color: var(--accent);
 }
 
-/* Action buttons row */
+/* ── Action Buttons ── */
 .pag-actions {
-    display: flex; gap: 4px;
-    padding: 10px 20px 16px;
-    border-top: 1px solid var(--border); transition: border-color .5s;
+    padding: 0 20px 20px;
+    display: flex;
+    gap: 8px;
 }
-.prod-admin-grid.list-view .pag-actions {
-    border-top: none;
-    border-left: 1px solid var(--border);
-    padding: 16px;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 120px;
-}
-.pag-btn {
-    flex: 1; padding: 9px 6px;
-    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-    text-decoration: none; text-align: center;
-    display: flex; align-items: center; justify-content: center; gap: 4px;
-    cursor: pointer; border: 1px solid var(--border);
-    transition: background .2s, border-color .2s, color .2s;
-}
-[data-theme="dark"] .pag-btn { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
-[data-theme="light"] .pag-btn { font-family: 'Jost', sans-serif; font-weight: 500; border-radius: 3px; }
-.pag-btn-ghost { background: transparent; color: var(--text-sub); }
-.pag-btn-ghost:hover { border-color: var(--accent3); color: var(--accent3); background: rgba(0,194,255,.05); }
-.pag-btn-primary { background: transparent; color: var(--accent); border-color: rgba(255,106,0,.3); }
-.pag-btn-primary:hover { background: var(--accent); color: var(--btn1-fg); border-color: var(--accent); }
-.pag-btn-danger { background: transparent; color: var(--text-dim); }
-.pag-btn-danger:hover { border-color: var(--accent); color: var(--accent); background: rgba(255,106,0,.05); }
 
-/* ── Empty state ── */
+.pag-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+
+.pag-btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+}
+
+.pag-btn-danger {
+    color: #ef4444;
+    background: rgba(239,68,68,0.05);
+}
+
+    .pag-btn-danger:hover {
+        background: #ef4444;
+        color: white;
+    }/* ── Empty state ── */
 .prod-empty {
     text-align: center; padding: 96px 52px;
     display: flex; flex-direction: column; align-items: center; gap: 16px;
@@ -711,3 +708,348 @@
 }
 [data-theme="dark"] .pag-no-review { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
 [data-theme="light"] .pag-no-review { font-family: 'Jost', sans-serif; font-weight: 500; }
+/* --- Price Side-by-Side --- */
+.price-container {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.pag-price {
+    font-size: 20px !important;
+    font-weight: 800;
+    color: var(--accent); /* Matches your orange-red theme */
+}
+
+.pag-old {
+    font-size: 14px;
+    color: #888;
+    text-decoration: line-through;
+}
+/* ── Category Tag Styling ── */
+.pag-cat {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent); /* Uses your theme's orange/red accent */
+    margin-bottom: 6px;
+    display: block;
+}
+
+[data-theme="dark"] .pag-cat {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+[data-theme="light"] .pag-cat {
+    font-family: 'Jost', sans-serif;
+    font-weight: 600;
+    opacity: 0.8;
+}
+/* --- Black Pill Badge (For Sales) --- */
+.p-badge.badge-sale {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ef4444 !important;
+    color: #fff !important;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 50px;
+    letter-spacing: 1px;
+    z-index: 5;
+}
+
+/* --- NEW Badge (Green/Neon style) --- */
+.p-badge.badge-new {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #4d8c6f; /* Green from your screenshot */
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* --- Dark Mode Description --- */
+[data-theme="dark"] .pag-desc-preview {
+    color: #ffffff !important;
+    opacity: 0.95;
+}
+
+
+/* 1. Remove link styling */
+.prod-card-link {
+    text-decoration: none !important;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+    .prod-card-link:hover {
+        text-decoration: none !important;
+    }
+
+/* 2. Prevent the buttons from being "swallowed" by the main link */
+.pag-actions {
+    position: relative;
+    z-index: 10; /* Ensures buttons stay on top */
+}
+
+/* 3. Ensure the title doesn't turn blue or underline */
+[data-theme="dark"] .pag-name {
+    text-decoration: none !important;
+    color: var(--accent); /* Or your preferred color */
+}
+[data-theme="light"] .pag-name {
+    text-decoration: none !important;
+    color: var(--accent); /* Or your preferred color */
+}
+.prod-card-link:hover .pag-card {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+}
+
+/* ============================================================
+   REVIEWS — add these styles to your products.css
+   ============================================================ */
+
+/* ── Inline avg-rating bar under product name ── */
+.rv-summary-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -6px 0 14px;
+}
+
+.rv-stars-avg {
+    display: flex;
+    gap: 2px;
+}
+
+.rv-star {
+    font-size: 16px;
+    color: var(--text-dim);
+    opacity: .35;
+}
+
+    .rv-star.filled {
+        color: #f5a623;
+        opacity: 1;
+    }
+
+.rv-avg-num {
+    font-family: var(--head);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.rv-avg-count {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+/* ── Alerts ── */
+.rv-alert {
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 18px;
+    font-family: var(--body);
+    letter-spacing: .4px;
+}
+
+.rv-alert-success {
+    background: rgba(34,197,94,.12);
+    color: #22c55e;
+    border: 1px solid rgba(34,197,94,.25);
+}
+
+.rv-alert-error {
+    background: rgba(239,68,68,.12);
+    color: #ef4444;
+    border: 1px solid rgba(239,68,68,.25);
+}
+
+.rv-alert-info {
+    background: rgba(99,102,241,.12);
+    color: #818cf8;
+    border: 1px solid rgba(99,102,241,.25);
+}
+
+/* ── "You" badge on your own review ── */
+.rv-you-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--body);
+    letter-spacing: 1px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+    text-transform: uppercase;
+}
+
+/* ── Delete review button ── */
+.rv-delete-btn {
+    background: transparent;
+    border: 1px solid rgba(239,68,68,.4);
+    color: #ef4444;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .rv-delete-btn:hover {
+        background: #ef4444;
+        color: #fff;
+    }
+
+/* ── Already reviewed message ── */
+.rv-already-msg {
+    margin-top: 28px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.2);
+    color: #22c55e;
+    font-size: 13px;
+    font-family: var(--body);
+    letter-spacing: .4px;
+}
+
+/* ── Review form wrapper ── */
+.rv-form-wrap {
+    margin-top: 28px;
+    padding: 28px;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+}
+
+.rv-field {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.rv-label {
+    display: block;
+    font-family: var(--body);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+}
+
+.rv-req {
+    color: var(--accent);
+}
+
+/* ── Interactive star picker ── */
+.rv-star-picker {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.rv-star-pick {
+    font-size: 28px;
+    color: var(--text-dim);
+    opacity: .3;
+    cursor: pointer;
+    transition: opacity .15s, transform .15s, color .15s;
+    user-select: none;
+}
+
+    .rv-star-pick.hovered,
+    .rv-star-pick.selected {
+        color: #f5a623;
+        opacity: 1;
+        transform: scale(1.15);
+    }
+
+.rv-star-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--body);
+    letter-spacing: 1px;
+    transition: color .2s;
+}
+
+/* ── Textarea ── */
+.rv-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 14px;
+    padding: 14px 16px;
+    resize: vertical;
+    transition: border-color .2s;
+    box-sizing: border-box;
+}
+
+    .rv-textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+.rv-char-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+    pointer-events: none;
+}
+
+/* ── Submit button ── */
+.rv-submit-btn {
+    margin-top: 8px;
+    padding: 12px 32px;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+/* ── Login prompt ── */
+.rv-login-prompt {
+    margin-top: 28px;
+    padding: 18px 24px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+    color: var(--text-dim);
+    font-family: var(--body);
+}
+
+    .rv-login-prompt a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color .2s;
+        white-space: nowrap;
+    }
+
+        .rv-login-prompt a:hover {
+            border-color: var(--accent);
+        }

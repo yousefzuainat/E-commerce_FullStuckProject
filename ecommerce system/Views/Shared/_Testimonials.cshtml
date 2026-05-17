@@ -1,0 +1,45 @@
+@model ecommerce_system.ViewModels.TestimonialsSection
+
+@* ── Testimonials Section ─────────────────────────────────────────────── *@
+<section class="sec sec-alt testi-sec reveal">
+
+    <div class="sec-hd">
+        <div>
+            <p class="sec-eye">Real Customers</p>
+            <h2 class="sec-ttl">WHAT PEOPLE<br />ARE SAYING</h2>
+        </div>
+    </div>
+
+    <div class="testi-grid">
+        @foreach (var t in Model.Items)
+        {
+            <article class="testi-card reveal">
+
+                @* Quote icon *@
+                <div class="testi-quote">❝</div>
+
+                @* Stars *@
+                <div class="testi-stars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="@(i <= t.Rating ? "star-on" : "star-off")">★</span>
+                    }
+                </div>
+
+                @* Body *@
+                <p class="testi-body">@t.Content</p>
+
+                @* Author row *@
+                <div class="testi-author">
+                    <div class="testi-avatar">@t.Initials</div>
+                    <div class="testi-meta">
+                        <span class="testi-name">@t.AuthorName</span>
+                        <span class="testi-time">@t.TimeAgo</span>
+                    </div>
+                </div>
+
+            </article>
+        }
+    </div>
+
+</section>

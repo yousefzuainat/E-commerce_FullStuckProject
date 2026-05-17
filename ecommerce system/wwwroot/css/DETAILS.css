@@ -1,0 +1,888 @@
+﻿<style >
+/* ═══════════════════════════════════════════════════
+                   DETAILS PAGE — Theme-Aware Full Overhaul
+                ════════════════════════════════════════════════════ */
+/* ── Theme Variables ── */
+.det-page {
+    --fg: var(--text, #fff);
+    --muted: var(--text-sub, #aaa);
+    --dim: var(--text-dim, #777);
+    --card-bg: var(--surface, #111);
+    --card-bg-sec: var(--surface2, rgba(255,255,255,.04));
+    --border: var(--border-color, rgba(255,255,255,.1));
+    --accent: var(--accent-color, #f60);
+}
+
+[data-theme="light"] .det-page {
+    --fg: var(--text, #1a1814);
+    --muted: var(--text-sub, #555);
+    --dim: var(--text-dim, #999);
+    --card-bg: var(--surface, #fff);
+    --card-bg-sec: var(--surface2, rgba(0,0,0,.04));
+    --border: var(--border-color, rgba(0,0,0,.12));
+    --accent: var(--accent-color, #e05c3a);
+}
+
+/* ── Page shell ── */
+.det-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+}
+
+/* ── Breadcrumb ── */
+.det-crumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 24px 0 32px;
+    font-size: 0.72rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex-wrap: wrap;
+}
+
+    .det-crumb a {
+        color: var(--muted);
+        text-decoration: none;
+        transition: color .15s;
+    }
+
+        .det-crumb a:hover {
+            color: var(--accent);
+        }
+
+.det-crumb-sep {
+    opacity: .35;
+}
+
+.det-crumb-cur {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+                   MAIN LAYOUT: gallery left | info right
+                ═════════════════════════════════════════ */
+.det-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .det-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+/* ════════════════
+                   GALLERY
+                ═══════════════ */
+.det-gallery {
+    position: sticky;
+    top: 90px;
+}
+
+.det-main-img {
+    position: relative;
+    width: 100%;
+    /* ═══ MAIN IMAGE SIZE ═══
+                       Change max-width to make the image smaller/larger.
+                       Change aspect-ratio to 4/3, 3/4, 16/9, etc. for different shapes. */
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    /* ═══════════════════════ */
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .det-main-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 24px;
+        transition: opacity .2s, transform .35s cubic-bezier(.25,.46,.45,.94);
+    }
+
+        .det-main-img img:hover {
+            transform: scale(1.03);
+        }
+
+    .det-main-img .det-main-emoji {
+        font-size: 80px;
+        opacity: .3;
+    }
+
+/* Fade animation on switch */
+.pd-img-fade {
+    opacity: 0 !important;
+}
+
+/* Discount badge on image */
+.det-img-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--accent);
+    color: #000;
+    font-weight: 800;
+    font-size: 0.7rem;
+    letter-spacing: .1em;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* Thumbnails */
+.det-thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    justify-content: center; /* centers thumbs when image is narrower */
+}
+
+.det-thumb-item {
+    width: 68px;
+    height: 68px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background: var(--card-bg);
+    cursor: pointer;
+    padding: 0;
+    transition: border-color .2s, transform .15s;
+    flex-shrink: 0;
+}
+
+    .det-thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .det-thumb-item:hover {
+        border-color: var(--border);
+        transform: scale(1.05);
+    }
+
+    .det-thumb-item.active {
+        border-color: var(--accent);
+    }
+
+/* ════════════════
+                   INFO PANEL
+                ═══════════════ */
+.det-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Eyebrow row: category tag + stock pill */
+.det-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.det-cat-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.det-stock-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #22c55e;
+    background: rgba(34,197,94,.1);
+    border: 1px solid rgba(34,197,94,.25);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.det-stock-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: det-pulse 2s infinite;
+}
+
+@keyframes det-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .4;
+    }
+}
+
+/* Product name */
+.det-name {
+    font-family: var(--display, 'Syne', sans-serif);
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    margin: 0 0 16px;
+    color: var(--fg);
+}
+
+/* Rating row */
+.det-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.det-stars {
+    color: #f5a623;
+    font-size: 1rem;
+    letter-spacing: 2px;
+}
+
+    .det-stars .dim {
+        color: #444;
+    }
+
+.det-rating-num {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--fg);
+}
+
+.det-rating-count {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.det-no-reviews {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* Price block */
+.det-price-block {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.det-price {
+    font-family: var(--display, 'Syne', sans-serif);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--fg);
+    letter-spacing: -.02em;
+}
+
+.det-price-old {
+    font-size: 1.1rem;
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+.det-price-savings {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #22c55e;
+    background: rgba(34,197,94,.1);
+    border: 1px solid rgba(34,197,94,.2);
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: .06em;
+}
+
+/* Description */
+.det-desc {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 24px;
+}
+
+/* Specs mini-grid */
+.det-specs-mini {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+    padding: 20px;
+    background: var(--card-bg-sec);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.det-spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.det-spec-lbl {
+    font-size: 0.65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--dim);
+}
+
+.det-spec-val {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+/* Quantity */
+.det-qty-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.det-qty-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    min-width: 60px;
+}
+
+.det-qty-ctrl {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.det-qty-btn {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+
+    .det-qty-btn:hover {
+        background: var(--accent);
+        color: #000;
+    }
+
+.det-qty-num {
+    width: 48px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    color: var(--fg);
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+    .det-qty-num::-webkit-inner-spin-button,
+    .det-qty-num::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+
+/* CTA row */
+.det-cta-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.det-btn-cart {
+    padding: 15px 28px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--display, 'Syne', sans-serif);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: filter .2s, transform .15s;
+}
+
+    .det-btn-cart:hover {
+        filter: brightness(1.12);
+        transform: translateY(-1px);
+    }
+
+    .det-btn-cart:active {
+        transform: translateY(0);
+    }
+
+.det-btn-wish {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--fg);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s, transform .15s;
+}
+
+    .det-btn-wish:hover,
+    .det-btn-wish.active {
+        background: rgba(239,68,68,.12);
+        border-color: rgba(239,68,68,.4);
+        color: #ef4444;
+        transform: scale(1.08);
+    }
+/* Wish form wrapper */
+.det-wish-form {
+    display: contents;
+}
+
+    .det-wish-form button {
+        width: 52px;
+        height: 52px;
+    }
+
+/* Trust strip */
+.det-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 18px 20px;
+    background: var(--card-bg-sec);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.det-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.det-trust-ico {
+    font-size: 1rem;
+}
+
+.det-trust-item strong {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+                   BOTTOM: Specs table + Reviews, side by side
+                ═════════════════════════════════════════ */
+.det-bottom {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 40px;
+    margin-top: 64px;
+}
+
+@media (max-width: 960px) {
+    .det-bottom {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Section title */
+.det-section-ttl {
+    font-family: var(--display, 'Syne', sans-serif);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--fg);
+}
+
+    .det-section-ttl .det-section-count {
+        font-family: var(--body, 'Jost', sans-serif);
+        font-size: 0.72rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: .1em;
+    }
+
+/* Specs table */
+.det-specs-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.det-spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    gap: 12px;
+    color: var(--fg);
+}
+
+    .det-spec-row:nth-child(even) {
+        background: var(--card-bg-sec);
+    }
+
+.det-spec-k {
+    color: var(--dim);
+    font-weight: 500;
+}
+
+.det-spec-v {
+    font-weight: 600;
+    text-align: right;
+}
+
+/* ── Rating summary bar ── */
+.det-rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: var(--card-bg-sec);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 24px;
+}
+
+.det-rating-big {
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 72px;
+}
+
+.det-rating-big-num {
+    font-family: var(--display, 'Syne', sans-serif);
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--fg);
+}
+
+.det-rating-big-stars {
+    color: #f5a623;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    margin: 4px 0;
+}
+
+.det-rating-big-count {
+    font-size: 0.68rem;
+    color: var(--muted);
+}
+
+.det-rating-bars {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.det-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.det-bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.det-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width .6s cubic-bezier(.25,.46,.45,.94);
+}
+
+.det-bar-cnt {
+    min-width: 20px;
+    text-align: right;
+    color: var(--fg);
+}
+
+/* ── Review cards ── */
+.det-reviews {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.det-review-card {
+    padding: 20px;
+    background: var(--card-bg-sec);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: border-color .2s;
+}
+
+    .det-review-card:hover {
+        border-color: var(--border);
+    }
+
+.det-rev-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+
+.det-rev-author {
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg);
+}
+
+.det-rev-you {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #000;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+.det-rev-stars {
+    color: #f5a623;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin-top: 3px;
+}
+
+    .det-rev-stars .dim {
+        color: #444;
+    }
+
+.det-rev-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.det-rev-date {
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.det-rev-edit-btn, .det-rev-del-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--dim);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, color .15s;
+}
+
+    .det-rev-edit-btn:hover {
+        background: rgba(128,128,128,.1);
+        color: var(--fg);
+    }
+
+    .det-rev-del-btn:hover {
+        background: rgba(239,68,68,.1);
+        color: #ef4444;
+        border-color: rgba(239,68,68,.3);
+    }
+
+.det-rev-text {
+    font-size: 0.83rem;
+    line-height: 1.65;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* Empty reviews state */
+.det-reviews-empty {
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--card-bg-sec);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--muted);
+}
+
+.det-reviews-empty-ico {
+    font-size: 36px;
+    margin-bottom: 10px;
+    opacity: .35;
+}
+
+/* Already reviewed */
+.det-already-msg {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(34,197,94,.07);
+    border: 1px solid rgba(34,197,94,.2);
+    border-radius: 12px;
+    font-size: 0.83rem;
+    color: #22c55e;
+    margin-bottom: 8px;
+}
+
+.det-already-edit {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid rgba(34,197,94,.3);
+    color: #22c55e;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: background .15s;
+    font-family: inherit;
+    letter-spacing: .05em;
+}
+
+    .det-already-edit:hover {
+        background: rgba(34,197,94,.1);
+    }
+
+/* Review form */
+.det-rv-form-wrap {
+    padding: 24px;
+    background: var(--card-bg-sec);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.det-rv-form-ttl {
+    font-family: var(--display, 'Syne', sans-serif);
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: var(--fg);
+}
+
+.det-rv-notice {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+/* Login prompt */
+.det-rv-login-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 20px;
+    background: var(--card-bg-sec);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.83rem;
+    color: var(--muted);
+}
+
+    .det-rv-login-prompt a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.8rem;
+        border: 1px solid var(--accent);
+        padding: 7px 16px;
+        border-radius: 8px;
+        transition: background .15s, color .15s;
+    }
+
+        .det-rv-login-prompt a:hover {
+            background: var(--accent);
+            color: #000;
+        }
+
+/* ── Related Products ── */
+.det-related {
+    margin-top: 72px;
+}
+
+.det-related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 28px;
+}
+
+/* ── Light theme star dimming fix ── */
+[data-theme="light"] .det-stars .dim,
+[data-theme="light"] .det-rev-stars .dim {
+    color: #ccc;
+}
+
+</style >

@@ -11,38 +11,59 @@ namespace ecommerce_system
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // 1. DATABASE CONFIGURATION
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120)));
+                options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120).MaxBatchSize(1)));
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+            // 2. IDENTITY CONFIGURATION (Unified for Roles & UI)
+            // We use AddIdentity instead of AddDefaultIdentity to enable RoleManager support
             builder.Services.AddIdentity<AppliactionUser, IdentityRole>(options =>
-                options.SignIn.RequireConfirmedAccount = false)
+            {
+                options.SignIn.RequireConfirmedAccount = false; // Set to true if using Email confirmation
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddControllersWithViews();
+
+            // Session for guest cart
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(7);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["SecretKey"];
 
             var app = builder.Build();
 
-            // --- SEEDING ROLES AND ADMIN USER ---
+            // 3. SEEDING THE "ADMIN CAPTAIN"
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
-                    // Call the seeding logic here
                     await SeedAdminUserAsync(services);
                 }
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
+                    logger.LogError(ex, "An error occurred while seeding the Admin mission.");
                 }
             }
 
+            // 4. HTTP REQUEST PIPELINE (Middleware)
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -53,36 +74,38 @@ namespace ecommerce_system
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseSession();           // Must be before UseAuthentication
+            app.UseAuthentication(); // Verify Identity
+            app.UseAuthorization();  // Verify Permissions
 
-            app.MapStaticAssets();
-
-            // Admin Area Route
+            // 5. ROUTE MAPPING
+            // Area route (for Admin dashboard)
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
 
+            // Default route
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-            app.MapRazorPages().WithStaticAssets();
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapRazorPages();
 
             app.Run();
         }
 
-        // Helper Method for Seeding
+        // SEEDING LOGIC: Sets up the Admin role and the first "Captain" user
         private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<AppliactionUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // 1. Create Roles if they don't exist
+            // Create Roles if they don't exist
             string[] roles = { "Admin", "User" };
             foreach (var role in roles)
             {
@@ -92,7 +115,7 @@ namespace ecommerce_system
                 }
             }
 
-            // 2. Create the Admin User
+            // Create Admin User if they don't exist
             var adminEmail = "Admin@gmail.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -114,7 +137,7 @@ namespace ecommerce_system
             }
             else
             {
-                // User exists — make sure they have the Admin role
+                // Ensure existing Admin has the Admin role
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");

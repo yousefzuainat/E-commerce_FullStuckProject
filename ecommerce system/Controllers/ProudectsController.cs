@@ -23,17 +23,18 @@ namespace ecommerce_system.Controllers
         }
 
         // GET: Proudects
+        // GET: Proudects
         public async Task<IActionResult> Index(int? categoryId)
         {
-            // Start with all products including category info
-            IQueryable<Proudect> query = _context.proudects.Include(p => p.Category);
+            // 1. Add .Include(p => p.Discounts) and .Include(p => p.Reviews)
+            IQueryable<Proudect> query = _context.proudects
+                .Include(p => p.Category)
+                .Include(p => p.Discounts) // CRITICAL: This enables the badge and sale price logic
+                .Include(p => p.Reviews);   // Enables the star/review counts
 
-            // If a categoryId is provided, filter the list
             if (categoryId != null)
             {
                 query = query.Where(p => p.CategoryId == categoryId);
-
-                // Optional: Pass the category name to the view to show in a heading
                 var category = await _context.categories.FindAsync(categoryId);
                 ViewBag.FilteredCategory = category?.Name;
             }
@@ -43,20 +44,18 @@ namespace ecommerce_system.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var proudect = await _context.proudects
+            var product = await _context.proudects
                 .Include(p => p.Category)
+                .Include(p => p.Images)
+                .Include(p => p.Discounts)
+                .Include(p => p.Reviews)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (proudect == null)
-            {
-                return NotFound();
-            }
 
-            return View(proudect);
+            if (product == null) return NotFound();
+
+            return View(product);
         }
 
         // GET: Proudects/Create
@@ -227,6 +226,19 @@ namespace ecommerce_system.Controllers
         private bool ProudectExists(int id)
         {
             return _context.proudects.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Deals()
+        {
+            var products = await _context.proudects
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Discounts)
+                .Include(p => p.Reviews!)           // Load the collection
+                .Where(p => p.Discounts != null && p.Discounts.Any())
+                .ToListAsync();
+
+            return View(products);
         }
     }
 }

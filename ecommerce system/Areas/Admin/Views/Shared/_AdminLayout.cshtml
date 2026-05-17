@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin Panel | Nexus Commerce</title>
+    <title>@ViewData["Title"] - Admin Panel | VOLTEX</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="icon" type="image/png" href="~/shopping-cart.png">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script id="tailwind-config">
         tailwind.config = {
@@ -50,6 +51,10 @@
         ::-webkit-scrollbar-track { background: #0a0f1a; }
         ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #4d8eff; }
+        select option {
+            background-color: #131d2e;
+            color: #ffffff;
+        }
     </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -69,7 +74,7 @@
                     </div>
                     <div class="hidden sm:block">
                         <p class="text-xs text-admin-accent font-black uppercase tracking-[0.2em]">Admin Panel</p>
-                        <p class="text-sm font-bold text-white leading-none">Nexus Commerce</p>
+                        <p class="text-sm font-bold text-white leading-none">VOLTEX</p>
                     </div>
                 </a>
             </div>
@@ -112,15 +117,22 @@
                 <div class="pt-4 pb-1 px-4">
                     <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">Management</p>
                 </div>
+
                 <a asp-area="Admin" asp-controller="Admin" asp-action="Users"
                    class="admin-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "admin-nav-active" : "")">
                     <span class="material-symbols-outlined text-xl">group</span>
                     <span>Users</span>
                 </a>
-                <a href="#" class="admin-nav-item opacity-50 cursor-not-allowed">
+
+                <a asp-area="Admin" asp-controller="OrdersAdmin" asp-action="Index" 
+                    class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "OrdersAdmin" ? "admin-nav-active" : "")">
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
                     <span>Orders</span>
-                    <span class="ml-auto text-[9px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded font-bold">Soon</span>
+                </a>
+                <a asp-area="Admin" asp-controller="TestimonialsAdmin" asp-action="Index"
+                    class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "TestimonialsAdmin" ? "admin-nav-active" : "")">
+                    <span class="material-symbols-outlined text-xl">rate_review</span>
+                    <span>Testimonials</span>
                 </a>
             </nav>
 

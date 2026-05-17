@@ -1,0 +1,105 @@
+@* ═══════════════════════════════════════════════════════
+     _ProductCard.cshtml  —  Unified product card partial
+     Usage:
+       @await Html.PartialAsync("_ProductCard", item)
+     Model: ecommerce_system.Models.Proudect
+════════════════════════════════════════════════════════ *@
+@model ecommerce_system.Models.Proudect
+
+@{
+    var discount = Model.Discounts?
+        .Select(d => d.DiscountPercent)
+        .DefaultIfEmpty(0m)
+        .Max() ?? 0m;
+
+    var finalPrice = Model.Price * (1 - discount / 100m);
+
+    int totalReviews = Model.Reviews?.Count ?? 0;
+    double avgRating  = totalReviews > 0 ? Model.Reviews!.Average(r => r.Rating) : 0;
+    int    fullStars  = (int)Math.Round(avgRating);
+
+    var shortDesc = (Model.Description?.Length > 90)
+        ? Model.Description.Substring(0, 90)
+        : Model.Description ?? "";
+    bool needsReadMore = (Model.Description?.Length ?? 0) > 90;
+}
+
+<div class="pag-card">
+
+    @* <%-- ── Clickable area ── --%> *@
+    <a asp-action="Details" asp-route-id="@Model.Id" class="prod-card-link">
+
+        @* <%-- Thumbnail --%> *@
+        <div class="pag-thumb">
+            @if (!string.IsNullOrEmpty(Model.Img))
+            {
+                <img src="~@Model.Img" alt="@Model.Name" class="pag-thumb-img" asp-append-version="true" />
+            }
+            else
+            {
+                <span class="pag-thumb-emoji">🛍️</span>
+            }
+
+            @* ── Badge ── *@
+            @if (discount > 0)
+            {
+                <span class="p-badge badge-sale">@discount.ToString("0")% OFF</span>
+            }
+            else if (totalReviews > 5)
+            {
+                <span class="p-badge badge-hot">HOT ★</span>
+            }
+            else
+            {
+                <span class="p-badge badge-new">NEW</span>
+            }
+        </div>
+
+        @* <%-- Body --%> *@
+        <div class="pag-body">
+            <div class="pag-cat">@(Model.Category?.Name ?? "Uncategorized")</div>
+            <div class="pag-name">@Model.Name</div>
+
+            @* <%-- Fixed-height description with ellipsis + Read More --%> *@
+            <div class="pag-desc-wrap">
+                <span class="pag-desc-text">@shortDesc</span>@if (needsReadMore)
+                {<span class="pag-read-more">…Read More</span>}
+            </div>
+
+            @* <%-- Stars --%> *@
+            <p class="p-stars">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span style="color:@(i <= fullStars ? "#f5a623" : "#555");">★</span>
+                }
+                <span class="p-rc">(@totalReviews)</span>
+            </p>
+
+            @* <%-- Price --%> *@
+            <div class="pag-foot">
+                <span class="pag-price">@finalPrice.ToString("C")</span>
+                @if (discount > 0)
+                {
+                    <span class="pag-old">@Model.Price.ToString("C")</span>
+                }
+            </div>
+        </div>
+    </a>
+
+    @* <%-- ── Action buttons ── --%> *@
+    <div class="pag-actions">
+        <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" style="flex:1;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <button type="submit" class="pag-btn pag-btn-ghost">
+                <span>♥</span> WISHLIST
+            </button>
+        </form>
+        <button class="pag-btn pag-btn-danger"
+                data-product-id="@Model.Id"
+                onclick="addToCart(this)">
+            Add To Cart
+        </button>
+    </div>
+
+</div>

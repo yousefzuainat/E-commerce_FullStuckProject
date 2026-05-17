@@ -547,3 +547,19 @@
     color: var(--text-main);
     margin: 5px 0 20px 0;
 }
+
+/* Remove all link styling from the card wrapper */
+.cat-card-wrapper {
+    text-decoration: none !important;
+    color: inherit;
+    display: block; /* Ensures the link covers the whole grid area */
+}
+
+    /* Specifically target the name to ensure no underline appears on hover */
+    .cat-card-wrapper:hover .cag-name {
+        text-decoration: none !important;
+    }
+
+.cag-card {
+    cursor: pointer;
+}

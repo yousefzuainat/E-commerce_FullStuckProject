@@ -1,0 +1,325 @@
+@model ecommerce_system.Models.Testimonials?
+@*
+    Model is null  → user has no testimonial yet  → show write form
+    Model not null → user already submitted        → show status card + edit modal + delete
+*@
+@{
+    ViewData["Title"] = "My Testimonial";
+    bool hasTestimonial = Model != null;
+    var statusLabel = hasTestimonial
+        ? (Model!.IsApproved ? "Live on homepage" : "Pending admin approval")
+        : "";
+    var starLabels = new[] { "", "Poor", "Fair", "Good", "Very Good", "Excellent" };
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/testimonials-form.css" asp-append-version="true" />
+}
+
+@* ══════════════════════════════════════════
+   TOAST  (TempData driven)
+══════════════════════════════════════════ *@
+@{
+    var toastMsg = (TempData["success"] ?? TempData["error"] ?? TempData["info"])?.ToString();
+    var toastType = TempData["success"] != null ? "success"
+                  : TempData["error"] != null ? "error"
+                  : TempData["info"] != null ? "info"
+                  : "";
+    var toastIcon = toastType == "success" ? "✓" : toastType == "error" ? "✕" : "ℹ";
+}
+@if (toastMsg != null)
+{
+    <div class="vx-toast vx-toast-@toastType" id="vxToast">
+        <span class="vx-toast-icon">@toastIcon</span>
+        <span class="vx-toast-msg">@toastMsg</span>
+        <button class="vx-toast-close" onclick="document.getElementById('vxToast').classList.add('vx-toast-hide')" aria-label="Dismiss">✕</button>
+    </div>
+}
+
+@* ══════════════════════════════════════════
+   EDIT MODAL  (only rendered if user has a testimonial)
+══════════════════════════════════════════ *@
+@if (hasTestimonial)
+{
+    <div class="vx-modal-backdrop" id="tfEditBackdrop" onclick="closeTfModal()"></div>
+    <div class="vx-modal" id="tfEditModal" role="dialog" aria-modal="true" aria-label="Edit testimonial">
+
+        <div class="vx-modal-head">
+            <h3 class="vx-modal-ttl">Edit Testimonial</h3>
+            <button class="vx-modal-cls" onclick="closeTfModal()" aria-label="Close">✕</button>
+        </div>
+
+        <form asp-action="Edit" asp-controller="Testimonials" method="post" id="tfEditForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model!.Id" />
+
+            @* Stars *@
+            <div class="tf-field">
+                <label class="tf-label">Rating <span class="tf-req">*</span></label>
+                <div class="tf-stars" id="editTfStars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="tf-star @(i <= Model.Rating ? "selected" : "")"
+                              data-val="@i">★</span>
+                    }
+                </div>
+                <input type="hidden" name="rating" id="editTfRating" value="@Model.Rating" />
+                <span class="tf-star-hint" id="editTfHint">@starLabels[Model.Rating]</span>
+            </div>
+
+            @* Content *@
+            <div class="tf-field">
+                <label class="tf-label" for="editTfContent">
+                    Your Testimonial <span class="tf-req">*</span>
+                    <span class="tf-label-hint">Min 20 characters</span>
+                </label>
+                <textarea id="editTfContent" name="content" class="tf-textarea"
+                          maxlength="600" rows="5">@Model.Content</textarea>
+                <div class="tf-char-row">
+                    <span class="tf-char-count">
+                        <span id="editTfCount">@(Model.Content?.Length ?? 0)</span>/600
+                    </span>
+                </div>
+            </div>
+
+            <p class="tf-note" style="text-align:left;margin-top:0;margin-bottom:20px;">
+                ⚠ Editing will send your testimonial back for admin re-approval.
+            </p>
+
+            <div class="vx-modal-foot">
+                <button type="button" class="btn-g" onclick="closeTfModal()">Cancel</button>
+                <button type="submit" class="btn-p">Save Changes</button>
+            </div>
+        </form>
+    </div>
+}
+
+@* ══════════════════════════════════════════
+   PAGE
+══════════════════════════════════════════ *@
+<div class="tf-page page-content">
+
+    <div class="tf-header reveal">
+        <p class="sec-eye">Your Experience</p>
+        <h1 class="sec-ttl">
+            @(hasTestimonial ? "MY TESTIMONIAL" : "SHARE YOUR STORY")
+        </h1>
+        @if (!hasTestimonial)
+        {
+            <p class="tf-sub">Genuine feedback from real customers helps others make better decisions.</p>
+            <p class="tf-one-notice">You can submit one testimonial. You can edit or delete it anytime.</p>
+        }
+    </div>
+
+    @* ══════════════════════════
+       STATE A — already submitted
+    ══════════════════════════ *@
+    @if (hasTestimonial)
+    {
+        <div class="tf-card reveal tf-status-card">
+
+            @* Status badge *@
+            <div class="tf-status-row">
+                <span class="tf-status-badge tf-status-@(Model!.IsApproved ? "live" : "pending")">
+                    <span class="tf-status-dot"></span>
+                    @statusLabel
+                </span>
+                <span class="tf-status-date">
+                    Submitted @Model.CreatedAt.ToString("MMM dd, yyyy")
+                </span>
+            </div>
+
+            @* Stars (read-only) *@
+            <div class="tf-stars tf-stars-ro">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="tf-star @(i <= Model.Rating ? "selected" : "")">★</span>
+                }
+            </div>
+
+            @* Content *@
+            <p class="tf-existing-body">@Model.Content</p>
+
+            @* Actions *@
+            <div class="tf-existing-actions">
+                <button type="button" class="btn-p" onclick="openTfModal()">
+                    ✎ Edit Testimonial
+                </button>
+                <form asp-action="Delete" asp-controller="Testimonials" method="post"
+                      onsubmit="return confirm('Delete your testimonial? You can write a new one after.')">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn-g tf-delete-btn">✕ Delete</button>
+                </form>
+            </div>
+
+            @if (!Model.IsApproved)
+            {
+                <p class="tf-note" style="margin-top:20px;">
+                    Your testimonial is waiting for admin review. It usually goes live within 24 hours.
+                </p>
+            }
+
+        </div>
+    }
+
+    @* ══════════════════════════
+       STATE B — write form
+    ══════════════════════════ *@
+    else
+    {
+        <div class="tf-card reveal">
+            <form asp-action="Write" asp-controller="Testimonials" method="post" id="tfForm">
+                @Html.AntiForgeryToken()
+
+                @* Stars *@
+                <div class="tf-field">
+                    <label class="tf-label">Overall Rating <span class="tf-req">*</span></label>
+                    <div class="tf-stars" id="tfStars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="tf-star" data-val="@i">★</span>
+                        }
+                    </div>
+                    <input type="hidden" name="rating" id="tfRatingInput" value="0" />
+                    <span class="tf-star-hint" id="tfStarHint">Click to rate</span>
+                </div>
+
+                @* Content *@
+                <div class="tf-field">
+                    <label class="tf-label" for="tfContent">
+                        Your Testimonial <span class="tf-req">*</span>
+                        <span class="tf-label-hint">Min 20 characters</span>
+                    </label>
+                    <textarea id="tfContent" name="content" class="tf-textarea"
+                              placeholder="Tell us about your experience with Voltex — the products, the service, the delivery…"
+                              maxlength="600" rows="5"></textarea>
+                    <div class="tf-char-row">
+                        <span class="tf-char-count"><span id="tfCharCount">0</span>/600</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-p tf-submit">Submit Testimonial →</button>
+
+                <p class="tf-note">
+                    Your testimonial will appear on our homepage after admin review,
+                    usually within 24 hours.
+                </p>
+            </form>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <script>
+        /* ── Toast auto-dismiss ── */
+        const toast = document.getElementById('vxToast');
+        if (toast) setTimeout(() => toast.classList.add('vx-toast-hide'), 4500);
+
+        /* ── Modal helpers ── */
+        function openTfModal() {
+            document.getElementById('tfEditModal')?.classList.add('open');
+            document.getElementById('tfEditBackdrop')?.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeTfModal() {
+            document.getElementById('tfEditModal')?.classList.remove('open');
+            document.getElementById('tfEditBackdrop')?.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTfModal(); });
+
+        const labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+        /* ── Write form stars ── */
+        const wStars = document.querySelectorAll('#tfStars .tf-star');
+        const wInput = document.getElementById('tfRatingInput');
+        const wHint  = document.getElementById('tfStarHint');
+        wStars.forEach(s => {
+            s.addEventListener('mouseenter', () => {
+                const v = +s.dataset.val;
+                wStars.forEach(x => x.classList.toggle('hovered', +x.dataset.val <= v));
+                wHint.textContent = labels[v];
+            });
+            s.addEventListener('mouseleave', () => {
+                wStars.forEach(x => x.classList.remove('hovered'));
+                wHint.textContent = +wInput?.value > 0 ? labels[+wInput.value] : 'Click to rate';
+            });
+            s.addEventListener('click', () => {
+                const v = +s.dataset.val;
+                wInput.value = v;
+                wStars.forEach(x => x.classList.toggle('selected', +x.dataset.val <= v));
+                wHint.textContent = labels[v];
+            });
+        });
+
+        /* ── Write form char counter ── */
+        const wArea = document.getElementById('tfContent');
+        const wCount = document.getElementById('tfCharCount');
+        if (wArea) {
+            wArea.addEventListener('input', () => {
+                wCount.textContent = wArea.value.length;
+                wCount.style.color = wArea.value.length < 20 ? 'var(--accent)' : 'var(--text-dim)';
+            });
+        }
+
+        /* ── Write form validation ── */
+        document.getElementById('tfForm')?.addEventListener('submit', e => {
+            if (+wInput.value === 0) {
+                e.preventDefault();
+                wHint.textContent = 'Please select a rating!';
+                wHint.style.color = 'var(--accent)';
+            }
+            if (wArea.value.trim().length < 20) {
+                e.preventDefault();
+                wCount.style.color = 'var(--accent)';
+            }
+        });
+
+        /* ── Edit modal stars ── */
+        const eStars = document.querySelectorAll('#editTfStars .tf-star');
+        const eInput = document.getElementById('editTfRating');
+        const eHint  = document.getElementById('editTfHint');
+        eStars.forEach(s => {
+            s.addEventListener('mouseenter', () => {
+                const v = +s.dataset.val;
+                eStars.forEach(x => x.classList.toggle('hovered', +x.dataset.val <= v));
+                eHint.textContent = labels[v];
+            });
+            s.addEventListener('mouseleave', () => {
+                eStars.forEach(x => x.classList.remove('hovered'));
+                eHint.textContent = labels[+eInput?.value] || 'Click to rate';
+            });
+            s.addEventListener('click', () => {
+                const v = +s.dataset.val;
+                eInput.value = v;
+                eStars.forEach(x => x.classList.toggle('selected', +x.dataset.val <= v));
+                eHint.textContent = labels[v];
+            });
+        });
+
+        /* ── Edit modal char counter ── */
+        const eArea  = document.getElementById('editTfContent');
+        const eCount = document.getElementById('editTfCount');
+        if (eArea) {
+            eArea.addEventListener('input', () => {
+                eCount.textContent = eArea.value.length;
+                eCount.style.color = eArea.value.length < 20 ? 'var(--accent)' : 'var(--text-dim)';
+            });
+        }
+
+        /* ── Edit modal validation ── */
+        document.getElementById('tfEditForm')?.addEventListener('submit', e => {
+            if (+eInput.value === 0) {
+                e.preventDefault();
+                eHint.textContent = 'Please select a rating!';
+                eHint.style.color = 'var(--accent)';
+            }
+            if (eArea.value.trim().length < 20) {
+                e.preventDefault();
+                eCount.style.color = 'var(--accent)';
+            }
+        });
+    </script>
+}

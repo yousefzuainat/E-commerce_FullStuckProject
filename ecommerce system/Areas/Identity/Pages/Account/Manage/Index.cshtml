@@ -1,0 +1,54 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Account Settings";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<link rel="stylesheet" href="~/css/voltex-auth.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/voltex.css" asp-append-version="true" />
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <span class="auth-eye">User Control</span>
+        <h2 class="auth-heading">@ViewData["Title"]</h2>
+        <p class="auth-sub">Update your personal account details and contact information below.</p>
+
+        <partial name="_StatusMessage" for="StatusMessage" />
+
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="auth-error" role="alert"></div>
+
+            <div class="auth-field">
+                <label asp-for="Username" class="auth-label"></label>
+                <input asp-for="Username" class="auth-input" placeholder="Username" disabled />
+            </div>
+
+            @*<div class="auth-field">
+                <label asp-for="Input.FullName" class="auth-label"></label>
+                <input asp-for="Input.FullName" class="auth-input" placeholder="Your Name" />
+                <span asp-validation-for="Input.FullName" class="auth-field-err"></span>
+            </div> 
+            *@
+
+            <div class="auth-field">
+                <label asp-for="Input.PhoneNumber" class="auth-label"></label>
+                <input asp-for="Input.PhoneNumber" class="auth-input" placeholder="Enter phone number" />
+                <span asp-validation-for="Input.PhoneNumber" class="auth-field-err"></span>
+            </div>
+
+            <button id="update-profile-button" type="submit" class="auth-submit">
+                Save Changes
+            </button>
+
+            <div class="auth-links">
+                <a asp-page="./ChangePassword">Change your password</a>
+                <a asp-page="./PersonalData" class="auth-link-primary">Manage Personal Data</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

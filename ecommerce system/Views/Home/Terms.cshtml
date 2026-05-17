@@ -1,0 +1,171 @@
+@{
+    ViewData["Title"] = "Terms of Service";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/voltex-info.css" asp-append-version="true" />
+}
+
+@* ══════════════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════════════ *@
+<div class="page-content">
+    <div class="info-hero">
+        <span class="info-eye">// Legal</span>
+        <h1 class="info-title">TERMS OF<br /><em>SERVICE</em></h1>
+        <p class="info-sub">
+            Plain-language terms governing your use of the Voltex platform.
+            By creating an account or placing an order, you agree to these terms.
+        </p>
+    </div>
+
+    <div class="legal-layout">
+
+        @* ── Sticky TOC ── *@
+        <aside class="legal-toc">
+            <span class="legal-toc-lbl">On This Page</span>
+            <ul>
+                <li><a href="#accounts">Accounts</a></li>
+                <li><a href="#orders">Orders &amp; Payments</a></li>
+                <li><a href="#shipping">Shipping</a></li>
+                <li><a href="#returns">Returns</a></li>
+                <li><a href="#conduct">Conduct</a></li>
+                <li><a href="#ip">Intellectual Property</a></li>
+                <li><a href="#liability">Liability</a></li>
+                <li><a href="#changes">Changes</a></li>
+            </ul>
+        </aside>
+
+        @* ── Content ── *@
+        <div class="legal-content">
+            <span class="legal-badge">Last updated — May 2026</span>
+
+            <section id="accounts">
+                <h2 class="legal-h2">Accounts</h2>
+                <p class="info-p">
+                    To place orders or write reviews, you need a Voltex account. You are responsible for
+                    keeping your login credentials secure.
+                </p>
+                <ul class="legal-list">
+                    <li>You must be 18 or older, or have parental consent, to create an account.</li>
+                    <li>One account per person. Duplicate accounts may be suspended.</li>
+                    <li>You are responsible for all activity that occurs under your account.</li>
+                    <li>We reserve the right to suspend accounts that violate these terms.</li>
+                </ul>
+            </section>
+
+            <section id="orders">
+                <h2 class="legal-h2">Orders &amp; Payments</h2>
+                <p class="info-p">
+                    All prices on Voltex are listed in Jordanian Dinar (JOD) unless stated otherwise.
+                    Prices include applicable VAT.
+                </p>
+                <ul class="legal-list">
+                    <li>Orders are confirmed only after successful payment processing.</li>
+                    <li>We reserve the right to cancel orders with pricing errors or suspected fraud.</li>
+                    <li>Payment is processed securely via our certified payment gateway. Voltex does not store card numbers.</li>
+                    <li>In-stock items typically ship within 1–2 business days of order confirmation.</li>
+                    <li>Pre-order items will show an estimated dispatch date on the product page.</li>
+                </ul>
+            </section>
+
+            <section id="shipping">
+                <h2 class="legal-h2">Shipping</h2>
+                <p class="info-p">
+                    We ship across Jordan. Delivery timelines are estimates and may vary due to courier delays.
+                </p>
+                <ul class="legal-list">
+                    <li>Standard delivery: 2–5 business days.</li>
+                    <li>Express delivery: next-day in Amman (order before 2 PM).</li>
+                    <li>Free shipping on orders over 75 JOD.</li>
+                    <li>Risk of loss transfers to you upon delivery confirmation.</li>
+                    <li>If a package is lost in transit, contact us within 7 days of the expected delivery date.</li>
+                </ul>
+            </section>
+
+            <section id="returns">
+                <h2 class="legal-h2">Returns &amp; Refunds</h2>
+                <p class="info-p">
+                    We offer a 30-day return window on most items. Some categories are excluded.
+                </p>
+                <ul class="legal-list">
+                    <li>Items must be unused, in original packaging, with all accessories included.</li>
+                    <li>Open-box software, consumables, and hygiene items are non-returnable.</li>
+                    <li>Initiate a return via your account dashboard. We'll email you a return label.</li>
+                    <li>Refunds are issued to the original payment method within 5–7 business days of receiving the return.</li>
+                    <li>Defective items are covered under manufacturer warranty — contact our support team for assistance.</li>
+                </ul>
+            </section>
+
+            <section id="conduct">
+                <h2 class="legal-h2">Conduct</h2>
+                <p class="info-p">
+                    Voltex is a community platform. You agree not to:
+                </p>
+                <ul class="legal-list">
+                    <li>Post false, misleading, or fraudulent reviews.</li>
+                    <li>Attempt to access systems or data you are not authorised to access.</li>
+                    <li>Use automated tools to scrape or abuse the platform.</li>
+                    <li>Harass or threaten other users or staff.</li>
+                    <li>Use Voltex for any unlawful purpose under Jordanian law.</li>
+                </ul>
+                <p class="info-p">
+                    Violations may result in immediate account suspension and, where applicable, referral to authorities.
+                </p>
+            </section>
+
+            <section id="ip">
+                <h2 class="legal-h2">Intellectual Property</h2>
+                <p class="info-p">
+                    All content on Voltex — including the name, logo, design system, and product copy — is owned by Voltex or licensed to us.
+                    You may not reproduce, distribute, or create derivative works without written permission.
+                </p>
+                <p class="info-p">
+                    Product images and brand names belong to their respective manufacturers and are used with permission.
+                </p>
+            </section>
+
+            <section id="liability">
+                <h2 class="legal-h2">Liability</h2>
+                <p class="info-p">
+                    Voltex provides the platform on an "as is" basis. We do not guarantee uninterrupted service and are not
+                    liable for indirect, consequential, or incidental damages arising from use of the platform.
+                </p>
+                <p class="info-p">
+                    Our liability for any claim arising from a purchase is limited to the amount paid for the relevant order.
+                </p>
+            </section>
+
+            <section id="changes">
+                <h2 class="legal-h2">Changes to These Terms</h2>
+                <p class="info-p">
+                    We may update these terms as the platform evolves. When we make material changes, we'll notify you
+                    via email and update the "Last updated" date above.
+                </p>
+                <p class="info-p">
+                    Continued use of Voltex after changes are posted constitutes acceptance of the updated terms.
+                    If you disagree, you may close your account at any time.
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // TOC active state on scroll
+        const sections = document.querySelectorAll('.legal-content section[id]');
+        const links = document.querySelectorAll('.legal-toc a');
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const link = document.querySelector('.legal-toc a[href="#' + e.target.id + '"]');
+                    if (link) link.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+        sections.forEach(s => io.observe(s));
+    </script>
+}

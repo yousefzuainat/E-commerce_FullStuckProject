@@ -1,0 +1,33 @@
+﻿@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout != null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        // Points to your main site layout to keep the navbar/footer
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<link rel="stylesheet" href="~/css/voltex-auth.css" asp-append-version="true" />
+
+<div class="auth-wrap">
+    <div class="auth-card" style="max-width: 900px;">
+        <span class="auth-eye">Account Security</span>
+        <h2 class="auth-heading">Settings</h2>
+        <p class="auth-sub">Manage your profile, security, and external logins.</p>
+
+        <div class="auth-links" style="display: flex; flex-direction: row; gap: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1rem;">
+            <partial name="_ManageNav" />
+        </div>
+
+        <div class="auth-content-body">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

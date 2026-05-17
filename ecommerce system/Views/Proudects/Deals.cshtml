@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ecommerce_system.Models.Proudect>
+@{
+    ViewData["Title"] = "Deals";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
+}
+
+<div class="prod-page-bar">
+    <div class="prod-page-bar-inner">
+        <div>
+            <p class="sec-eye">Limited Time</p>
+            <h1 class="sec-ttl">HOT<br />DEALS</h1>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="prod-empty">
+        <div class="prod-empty-ico">🏷️</div>
+        <h3 class="prod-empty-ttl">No Deals Right Now</h3>
+        <p class="prod-empty-sub">Check back later for discounts.</p>
+    </div>
+}
+else
+{
+    <div class="prod-admin-grid">
+        @foreach (var item in Model)
+        {
+            @await Html.PartialAsync("_ProductCard", item)
+        }
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/products.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
+}

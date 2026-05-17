@@ -1,6 +1,154 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/voltex-info.css" asp-append-version="true" />
+}
+
+@* ══════════════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════════════ *@
+<div class="page-content">
+    <div class="info-hero">
+        <span class="info-eye">// Legal</span>
+        <h1 class="info-title">PRIVACY<br /><em>POLICY</em></h1>
+        <p class="info-sub">
+            We believe privacy is a right, not a feature. Here's exactly what we collect,
+            why we collect it, and how we protect it.
+        </p>
+    </div>
+
+    <div class="legal-layout">
+
+        @* ── Sticky TOC ── *@
+        <aside class="legal-toc">
+            <span class="legal-toc-lbl">On This Page</span>
+            <ul>
+                <li><a href="#collection">Data We Collect</a></li>
+                <li><a href="#use">How We Use It</a></li>
+                <li><a href="#sharing">Sharing</a></li>
+                <li><a href="#cookies">Cookies</a></li>
+                <li><a href="#security">Security</a></li>
+                <li><a href="#rights">Your Rights</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </aside>
+
+        @* ── Content ── *@
+        <div class="legal-content">
+            <span class="legal-badge">Last updated — May 2026</span>
+
+            <section id="collection">
+                <h2 class="legal-h2">Data We Collect</h2>
+                <p class="info-p">
+                    We only collect what's necessary to run your account and deliver your orders.
+                    No unnecessary tracking. No selling your data.
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Account info</strong> — name, email address, hashed password.</li>
+                    <li><strong>Order info</strong> — shipping address, items purchased, payment confirmation (we never store card numbers).</li>
+                    <li><strong>Usage data</strong> — pages visited, cart interactions, session duration. Used only to improve site performance.</li>
+                    <li><strong>Device info</strong> — browser type, OS, screen size. Used for layout compatibility.</li>
+                </ul>
+            </section>
+
+            <section id="use">
+                <h2 class="legal-h2">How We Use It</h2>
+                <p class="info-p">Your data is used strictly to operate the platform and improve your experience.</p>
+                <ul class="legal-list">
+                    <li>Process and fulfil your orders.</li>
+                    <li>Send transactional emails (order confirmations, shipping updates).</li>
+                    <li>Prevent fraud and protect account security.</li>
+                    <li>Improve site features based on aggregate usage patterns.</li>
+                    <li>Send marketing emails only if you've opted in — you can unsubscribe at any time.</li>
+                </ul>
+            </section>
+
+            <section id="sharing">
+                <h2 class="legal-h2">Sharing</h2>
+                <p class="info-p">
+                    We do not sell, rent, or trade your personal data. We share only what's necessary with trusted service providers:
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Shipping partners</strong> — your name and delivery address to fulfil orders.</li>
+                    <li><strong>Payment processors</strong> — payment data goes directly to our certified payment gateway. We never see full card numbers.</li>
+                    <li><strong>Analytics tools</strong> — aggregated, anonymised usage data only. No personal identifiers.</li>
+                    <li><strong>Legal obligations</strong> — we may disclose data if required by Jordanian law or valid legal process.</li>
+                </ul>
+            </section>
+
+            <section id="cookies">
+                <h2 class="legal-h2">Cookies</h2>
+                <p class="info-p">
+                    We use cookies to keep you logged in, remember your cart, and save your theme preference.
+                    No third-party ad cookies are used on Voltex.
+                </p>
+                <ul class="legal-list">
+                    <li><strong>Session cookie</strong> — keeps your login active during your visit.</li>
+                    <li><strong>Cart cookie</strong> — preserves your cart items between sessions.</li>
+                    <li><strong>Theme cookie</strong> — remembers your dark/light mode preference.</li>
+                </ul>
+                <p class="info-p">
+                    You can clear or block cookies via your browser settings. This may affect login and cart functionality.
+                </p>
+            </section>
+
+            <section id="security">
+                <h2 class="legal-h2">Security</h2>
+                <p class="info-p">
+                    Voltex uses industry-standard security practices to protect your data:
+                </p>
+                <ul class="legal-list">
+                    <li>All traffic encrypted over HTTPS (TLS 1.2+).</li>
+                    <li>Passwords hashed with ASP.NET Core Identity (PBKDF2).</li>
+                    <li>Role-based access control — only authorised staff can access order data.</li>
+                    <li>Regular security reviews and dependency updates.</li>
+                </ul>
+                <p class="info-p">
+                    In the event of a data breach that affects your personal information, we will notify you within 72 hours via the email on your account.
+                </p>
+            </section>
+
+            <section id="rights">
+                <h2 class="legal-h2">Your Rights</h2>
+                <p class="info-p">You have the right to:</p>
+                <ul class="legal-list">
+                    <li><strong>Access</strong> — request a copy of the data we hold about you.</li>
+                    <li><strong>Correct</strong> — update inaccurate information via your account settings.</li>
+                    <li><strong>Delete</strong> — request permanent deletion of your account and associated data.</li>
+                    <li><strong>Opt out</strong> — unsubscribe from marketing emails at any time.</li>
+                    <li><strong>Portability</strong> — request your data in a portable format.</li>
+                </ul>
+            </section>
+
+            <section id="contact">
+                <h2 class="legal-h2">Contact</h2>
+                <p class="info-p">
+                    For any privacy questions or requests, email us at
+                    <strong style="color: var(--accent);">privacy@@voltex.jo</strong>.
+                    We aim to respond within 5 business days.
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // TOC active state on scroll
+        const sections = document.querySelectorAll('.legal-content section[id]');
+        const links = document.querySelectorAll('.legal-toc a');
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const link = document.querySelector('.legal-toc a[href="#' + e.target.id + '"]');
+                    if (link) link.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+        sections.forEach(s => io.observe(s));
+    </script>
+}

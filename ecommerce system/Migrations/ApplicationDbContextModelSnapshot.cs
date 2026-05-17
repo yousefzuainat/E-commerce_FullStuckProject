@@ -483,6 +483,9 @@ namespace ecommerce_system.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
                     b.Property<int>("ProudectId")
                         .HasColumnType("int");
 

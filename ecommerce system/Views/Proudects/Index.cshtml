@@ -1,93 +1,25 @@
 @model IEnumerable<ecommerce_system.Models.Proudect>
-@{
-    ViewData["Title"] = "Products";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
-    var categories = Model
-        .Where(p => p.Category != null)
-        .Select(p => p.Category!.Name)
-        .Distinct()
-        .OrderBy(n => n)
-        .ToList();
-
-    int     total    = Model.Count();
-    int     reviewed = Model.Count(p => p.Reviews != null && p.Reviews.Any());
-    decimal avgPrice = Model.Any() ? Model.Average(p => p.Price) : 0;
-}
 
 @section Styles {
     <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
 
-@* {{!-- ══ Top bar ══ --}} *@
 <div class="prod-page-bar reveal">
     <div class="prod-page-bar-inner">
         <div>
             <p class="sec-eye">Manage Store</p>
             <h1 class="sec-ttl">ALL<br />PRODUCTS</h1>
         </div>
-        <a asp-action="Create" class="btn-p btn-add-cat">
-            <span>+</span> Add Product
-        </a>
     </div>
 </div>
 
-@* {{!-- ══ Stats ══ --}} *@
-<div class="prod-stats reveal">
-    <div class="prod-stat-card">
-        <div class="psc-num">@total</div>
-        <div class="psc-lbl">Total Products</div>
-    </div>
-    <div class="prod-stat-card">
-        <div class="psc-num a2">@categories.Count</div>
-        <div class="psc-lbl">Categories</div>
-    </div>
-    <div class="prod-stat-card">
-        <div class="psc-num a3">@reviewed</div>
-        <div class="psc-lbl">Have Reviews</div>
-    </div>
-    <div class="prod-stat-card">
-        <div class="psc-num at">@(total > 0 ? "$" + avgPrice.ToString("0.00") : "—")</div>
-        <div class="psc-lbl">Avg. Price</div>
-    </div>
-</div>
+@* ... Keep Filter Bar code here ... *@
 
-@* {{!-- ══ Filter bar ══ --}} *@
-<div class="prod-filter-bar reveal">
-    <div class="prod-search-wrap">
-        <span class="ps-icon">⌕</span>
-        <input type="text" id="prodSearch" placeholder="Search products…" class="prod-search-input" />
-    </div>
-
-    <select id="prodCatFilter" class="prod-select">
-        <option value="">All Categories</option>
-        @foreach (var cat in categories)
-        {
-            <option value="@cat.ToLower()">@cat</option>
-        }
-    </select>
-
-    <select id="prodSort" class="prod-select">
-        <option value="name">Name A–Z</option>
-        <option value="name-desc">Name Z–A</option>
-        <option value="price-asc">Price: Low → High</option>
-        <option value="price-desc">Price: High → Low</option>
-    </select>
-
-    <div class="view-toggle">
-        <button class="view-btn active" id="viewGrid" title="Grid view">⊞</button>
-        <button class="view-btn"        id="viewList" title="List view">☰</button>
-    </div>
-</div>
-
-@* {{!-- ══ Grid / Empty ══ --}} *@
 @if (!Model.Any())
 {
     <div class="prod-empty reveal">
         <div class="prod-empty-ico">📦</div>
         <div class="prod-empty-ttl">No products yet</div>
-        <p class="prod-empty-sub">Add your first product to start building your catalogue.</p>
-        <a asp-action="Create" class="btn-p">+ Add Product</a>
     </div>
 }
 else
@@ -95,32 +27,40 @@ else
     <div class="prod-admin-grid reveal" id="prodGrid">
         @foreach (var p in Model)
         {
-            int reviewCount = p.Reviews?.Count ?? 0;
+            // 1. Calculate Discount and Price Logic
+            var discountPercent = p.Discounts?.Select(d => d.DiscountPercent).DefaultIfEmpty(0m).Max() ?? 0m;
+            var finalPrice = p.Price * (1 - discountPercent / 100m);
 
-            <div class="pag-card"
-                 data-name="@p.Name.ToLower()"
-                 data-category="@(p.Category?.Name?.ToLower() ?? "")"
-                 data-price="@p.Price">
+            // Calculate Stars safely
+            int totalReviews = p.Reviews?.Count ?? 0;
+            double avgRating = totalReviews > 0 ? p.Reviews!.Average(r => r.Rating) : 0;
+            int fullStars = (int)Math.Round(avgRating);
+            <div class="pag-card" data-name="@p.Name.ToLower()" data-category="@(p.Category?.Name?.ToLower() ?? "")" data-price="@finalPrice">
+                
+                <a asp-action="Details" asp-route-id="@p.Id" class="prod-card-link">
+                    <div class="pag-thumb">
+                        @if (!string.IsNullOrEmpty(p.Img))
+                        {
+                            <img src="~@p.Img" alt="@p.Name" class="pag-thumb-img" asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <span class="pag-thumb-emoji">🛍️</span>
+                        }
 
-                @* {{!-- Thumbnail --}} *@
-                <div class="pag-thumb">
-                    @if (!string.IsNullOrEmpty(p.Img))
-                    {
-                        @* Ensure the path starts at the wwwroot folder using the ~/ operator *@
-                        <img src="~/images/products/@p.Img" alt="@p.Name" class="cag-img" asp-append-version="true" />
-                    }
-                    else
-                    {
-                        <span class="pag-thumb-emoji">🛍️</span>
-                    }
-
-                    @if (reviewCount > 0)
-                    {
-                        <span class="pag-badge badge-new">@reviewCount ★</span>
-                    }
-                </div>
-
-                @* {{!-- Body --}} *@
+                        @* 2. The Black Pill Badge (Matches Deals/Screenshots) *@
+                        @if (discountPercent > 0)
+                        {
+                            <span class="p-badge badge-sale">@discountPercent.ToString("0")% OFF</span>
+                        }
+                        else if (p.Id < 10)
+                        {
+                            @* Neon New Badge fallback *@
+                            <span class="p-badge badge-new">NEW</span>
+                        }
+                    </div>
+                </a>
+             
                 <div class="pag-body">
                     <div class="pag-name">@p.Name</div>
 
@@ -128,45 +68,101 @@ else
                     {
                         <div class="pag-cat">@p.Category.Name</div>
                     }
+                    @* 2. Star Display Section *@
+                    <p class="p-stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= fullStars)
+                            {
+                                <span style="color: #f5a623;">★</span>
+                            }
+                            else
+                            {
+                                <span style="color: #ccc;">★</span>
+                            }
+                        }
+                        <span class="p-rc">(@totalReviews)</span>
+                    </p>
 
                     @if (!string.IsNullOrEmpty(p.Description))
                     {
-                        <div class="pag-desc-preview">
-                            @(p.Description.Length > 72 ? p.Description[..72] + "…" : p.Description)
-                        </div>
+                        <div class="pag-desc-preview">@p.Description</div>
                     }
-
+                        
                     <div class="pag-foot">
-                        <span class="pag-price">$@p.Price.ToString("0.00")</span>
-                        @if (reviewCount > 0)
+                        @* 3. Side-by-Side Price Container *@
+                        <div class="price-container">
+                            <span class="pag-price">@finalPrice.ToString("C")</span>
+                            @if (discountPercent > 0)
+                            {
+                                <span class="pag-old">@p.Price.ToString("C")</span>
+                            }
+                        </div>
+
+                        @if (totalReviews > 0)
                         {
-                            <span class="pag-review-pill">💬 @reviewCount</span>
-                        }
-                        else
-                        {
-                            <span class="pag-no-review">No reviews</span>
+                            <span class="pag-review-pill">💬 @totalReviews</span>
                         }
                     </div>
                 </div>
-
-                @* {{!-- Actions --}} *@
+                
                 <div class="pag-actions">
-                    <a asp-action="Details" asp-route-id="@p.Id" class="pag-btn pag-btn-ghost">👁 View</a>
-                    <a asp-action="Edit"    asp-route-id="@p.Id" class="pag-btn pag-btn-ghost">✏ Edit</a>
-                    <a asp-action="Delete"  asp-route-id="@p.Id" class="pag-btn pag-btn-danger">✕ Del</a>
+                    <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" class="action-form" data-ajax="true" style="flex:1;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@p.Id" />
+                        <button type="submit" class="pag-btn pag-btn-ghost">
+                            <span>♥</span> Wishlist
+                        </button>
+                    </form>
+                    <button class="pag-btn pag-btn-danger" data-product-id="@p.Id" onclick="addToCart(this)" style="flex:1;">
+                        <span>🛒</span> Cart
+                    </button>
                 </div>
-
             </div>
         }
     </div>
-
-    <div style="padding: 40px"></div>
-    <div class="prod-no-results" id="prodNoResults" style="display:none;">
-        <div class="prod-empty-ico">🔍</div>
-        <p class="prod-empty-ttl">No results found</p>
-    </div>
 }
-
 @section Scripts {
+
     <script src="~/js/products.js" asp-append-version="true"></script>
+    <script src="~/js/Cart.js" asp-append-version="true"></script>
+
+    @* <script>
+        // Existing AJAX script remains the same...
+        document.querySelectorAll('form[data-ajax]').forEach(form => {
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                const original = btn.innerHTML;
+
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span> Adding…';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        btn.innerHTML = '<span>✓</span> Added';
+                        // Feedback loop
+                        setTimeout(() => {
+                            btn.innerHTML = original;
+                            btn.disabled = false;
+                        }, 2000);
+                    } else { throw new Error(); }
+                } catch {
+                    btn.innerHTML = '<span>❌</span> Failed';
+                    setTimeout(() => {
+                        btn.innerHTML = original;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            });
+        });
+
+    </script> *@
 }

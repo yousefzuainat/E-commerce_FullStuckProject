@@ -23,11 +23,13 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <PackageReference Include="NuGet.Packaging" Version="7.3.1" />
     <PackageReference Include="NuGet.Protocol" Version="7.3.1" />
+    <PackageReference Include="Stripe.net" Version="51.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="testtt\" />
-    <Folder Include="wwwroot\images\Categories\" />
+    <Folder Include="Views\Cart\" />
+    <Folder Include="Views\OrderUser\" />
   </ItemGroup>
 
 </Project>

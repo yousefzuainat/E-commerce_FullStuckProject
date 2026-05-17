@@ -17,9 +17,10 @@ namespace ecommerce_system.Areas.Admin.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? searchTerm)
+        public async Task<IActionResult> Index(string? searchTerm) 
         {
             IQueryable<Category> query = _context.categories.Include(c => c.Proudects);
+            //نبني Query :  using IQueryable
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -27,7 +28,8 @@ namespace ecommerce_system.Areas.Admin.Controllers
             }
 
             ViewBag.SearchTerm = searchTerm;
-            ViewBag.TotalCategories = await _context.categories.CountAsync();
+
+            ViewBag.TotalCategories = await _context.categories.CountAsync(); 
 
             return View(await query.ToListAsync());
         }
@@ -36,10 +38,10 @@ namespace ecommerce_system.Areas.Admin.Controllers
         {
             if (id == null) return NotFound();
 
-            var category = await _context.categories
+            var category = await _context.categories 
                 .Include(c => c.Proudects)
                     .ThenInclude(p => p.Images)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                        .FirstOrDefaultAsync(m => m.Id == id);
 
             if (category == null) return NotFound();
 
@@ -48,11 +50,12 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return View(); //  open page بس 
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category, IFormFile? imageFile)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Category category, IFormFile? imageFile) //just bind the id , name 
         {
             if (ModelState.IsValid)
             {
@@ -118,6 +121,15 @@ namespace ecommerce_system.Areas.Admin.Controllers
                             return View(category);
                         }
 
+                        // Delete old image from disk
+                        var existingCategory = await _context.categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+                        if (existingCategory != null && !string.IsNullOrEmpty(existingCategory.Img))
+                        {
+                            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Categories", existingCategory.Img);
+                            if (System.IO.File.Exists(oldImagePath))
+                                System.IO.File.Delete(oldImagePath);
+                        }
+
                         var folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/Categories");
                         Directory.CreateDirectory(folder);
                         var fileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
@@ -170,6 +182,13 @@ namespace ecommerce_system.Areas.Admin.Controllers
             var category = await _context.categories.FindAsync(id);
             if (category != null)
             {
+                if (!string.IsNullOrEmpty(category.Img))
+                {
+                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Categories", category.Img);
+                    if (System.IO.File.Exists(imagePath))
+                        System.IO.File.Delete(imagePath);
+                }
+
                 _context.categories.Remove(category);
             }
 

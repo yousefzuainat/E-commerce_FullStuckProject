@@ -1,0 +1,328 @@
+@{
+    ViewData["Title"] = "Q&A";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/voltex-info.css" asp-append-version="true" />
+}
+
+@* ══════════════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════════════ *@
+<div class="page-content">
+    <div class="info-hero reveal">
+        <span class="info-eye">// Help Centre</span>
+        <h1 class="info-title">Q<em>&amp;</em>A</h1>
+        <p class="info-sub">
+            Quick answers to the questions we hear most. Can't find what you're looking for?
+            Reach out — we're real people and we respond fast.
+        </p>
+    </div>
+
+    <div class="info-body">
+
+        @* ── Category filter buttons ── *@
+        <div class="qa-cats reveal">
+            <button class="qa-cat-btn active" data-cat="all">All</button>
+            <button class="qa-cat-btn" data-cat="orders">Orders</button>
+            <button class="qa-cat-btn" data-cat="shipping">Shipping</button>
+            <button class="qa-cat-btn" data-cat="returns">Returns</button>
+            <button class="qa-cat-btn" data-cat="account">Account</button>
+            <button class="qa-cat-btn" data-cat="products">Products</button>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             ORDERS
+        ══════════════════════════════════════════════ *@
+        <div class="qa-group reveal" data-group="orders">
+            <span class="qa-group-ttl">// Orders</span>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">How do I place an order?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Browse products, add items to your cart, and proceed to checkout.
+                        You'll need a Voltex account to complete a purchase. Once payment is confirmed,
+                        you'll receive a confirmation email with your order number.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">Can I modify or cancel an order after placing it?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Orders can be modified or cancelled within 2 hours of placement, before they enter
+                        the fulfilment queue. After that, wait for delivery and initiate a return from your account.
+                        Contact support as quickly as possible for urgent cancellations.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">What payment methods do you accept?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        We accept Visa, Mastercard, and cash on delivery for most addresses in Jordan.
+                        Payment is processed securely — we never store your card number.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">Why was my order cancelled automatically?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Orders may be cancelled if payment fails, an item goes out of stock after checkout,
+                        or our fraud detection flags unusual activity. You'll receive an email with the reason.
+                        Contact us if you think it was a mistake.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             SHIPPING
+        ══════════════════════════════════════════════ *@
+        <div class="qa-group reveal" data-group="shipping">
+            <span class="qa-group-ttl">// Shipping</span>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">How long does delivery take?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Standard delivery across Jordan takes 2–5 business days. Express next-day delivery
+                        is available in Amman for orders placed before 2 PM. Estimated delivery dates are
+                        shown at checkout before you confirm.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">Do you offer free shipping?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Yes — free standard shipping on all orders over 75 JOD. For orders below that,
+                        a flat shipping fee is applied and shown at checkout before payment.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">How do I track my order?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Once your order ships, you'll receive a tracking link via email. You can also
+                        check your order status at any time from the Orders section in your account dashboard.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             RETURNS
+        ══════════════════════════════════════════════ *@
+        <div class="qa-group reveal" data-group="returns">
+            <span class="qa-group-ttl">// Returns</span>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">What is your return policy?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        We offer a 30-day no-hassle return window. Items must be unused, in original packaging,
+                        with all accessories included. Some items (open software, consumables) are excluded —
+                        this is noted on the product page.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">How do I start a return?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Go to your account dashboard, find the order, and click "Return Item".
+                        We'll email you a prepaid return label. Drop the package at any partner courier location.
+                        Refunds are processed within 5–7 business days of receiving the return.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">What if my item arrived damaged?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Take photos of the damage and the packaging, then contact our support team within 48 hours
+                        of delivery. We'll arrange a replacement or full refund with no return shipping required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             ACCOUNT
+        ══════════════════════════════════════════════ *@
+        <div class="qa-group reveal" data-group="account">
+            <span class="qa-group-ttl">// Account</span>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">How do I reset my password?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        On the login page, click "Forgot password?" and enter your registered email.
+                        You'll receive a reset link within a few minutes. Check your spam folder if it doesn't arrive.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">How do I delete my account?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Email us at support@@voltex.jo with the subject "Account Deletion Request".
+                        We'll process it within 5 business days and send a confirmation.
+                        Note: any open orders must be completed or cancelled first.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ══════════════════════════════════════════════
+             PRODUCTS
+        ══════════════════════════════════════════════ *@
+        <div class="qa-group reveal" data-group="products">
+            <span class="qa-group-ttl">// Products</span>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">Are all products genuine?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        100%. Every product on Voltex is sourced directly from authorised distributors or brands.
+                        We never sell grey-market or counterfeit goods. All items include the manufacturer's
+                        official warranty.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">Can I request a product that isn't listed?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Yes. Send us a request at support@@voltex.jo with the product name and model.
+                        We review requests weekly and add popular items to our catalogue. We'll notify you
+                        if we're able to source it.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <button class="qa-q" aria-expanded="false">
+                    <span class="qa-q-txt">Do products come with a warranty?</span>
+                    <span class="qa-q-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="qa-a" role="region">
+                    <div class="qa-a-inner">
+                        Yes — all products include the manufacturer's standard warranty, shown on each
+                        product page. For warranty claims, contact our support team and we'll coordinate
+                        with the brand on your behalf.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ── Contact strip ── *@
+        <div class="qa-contact reveal">
+            <div class="qa-contact-l">
+                <p>// Still have questions?</p>
+                <p>WE'RE HERE TO HELP</p>
+            </div>
+            <a href="mailto:support@voltex.jo" class="btn-p">Email Support →</a>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Accordion
+        document.querySelectorAll('.qa-q').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.qa-item');
+                const isOpen = item.classList.contains('open');
+                // close all
+                document.querySelectorAll('.qa-item.open').forEach(el => {
+                    el.classList.remove('open');
+                    el.querySelector('.qa-q').setAttribute('aria-expanded', 'false');
+                });
+                if (!isOpen) {
+                    item.classList.add('open');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        // Category filter
+        const catBtns = document.querySelectorAll('.qa-cat-btn');
+        const groups  = document.querySelectorAll('.qa-group');
+
+        catBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                catBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const cat = btn.dataset.cat;
+                groups.forEach(g => {
+                    g.style.display = (cat === 'all' || g.dataset.group === cat) ? '' : 'none';
+                });
+            });
+        });
+
+        // Reveal on scroll
+        const revealEls = document.querySelectorAll('.reveal');
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.06 });
+        revealEls.forEach(el => io.observe(el));
+    </script>
+}

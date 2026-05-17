@@ -1,0 +1,188 @@
+@model IEnumerable<ecommerce_system.Models.Testimonials>
+@{
+    ViewData["Title"] = "Manage Testimonials";
+    var pending  = Model.Where(t => !t.IsApproved).ToList();
+    var approved = Model.Where(t =>  t.IsApproved).ToList();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/testimonials-form.css" asp-append-version="true" />
+}
+
+<div class="tf-page page-content">
+
+    @* ── Header ── *@
+    <div class="tf-header reveal">
+        <p class="sec-eye">Admin Panel</p>
+        <h1 class="sec-ttl">TESTIMONIAL<br />MODERATION</h1>
+    </div>
+
+    @* ── Alerts ── *@
+    @if (TempData["success"] != null)
+    {
+        <div class="tf-alert tf-alert-success reveal">✓ @TempData["success"]</div>
+    }
+
+    @* ── Stats bar ── *@
+    <div class="tm-stats reveal">
+        <div class="tm-stat">
+            <span class="tm-stat-n">@pending.Count</span>
+            <span class="tm-stat-l">Pending</span>
+        </div>
+        <div class="tm-stat">
+            <span class="tm-stat-n">@approved.Count</span>
+            <span class="tm-stat-l">Live</span>
+        </div>
+        <div class="tm-stat">
+            <span class="tm-stat-n">@Model.Count()</span>
+            <span class="tm-stat-l">Total</span>
+        </div>
+    </div>
+
+    @* ══════════════════════════════
+       PENDING
+    ══════════════════════════════ *@
+    <div class="tm-section reveal">
+        <div class="tm-section-hd">
+            <span class="sec-eye">Awaiting Review</span>
+            <h2 class="tm-section-ttl">PENDING <span class="tm-count-badge">@pending.Count</span></h2>
+        </div>
+
+        @if (!pending.Any())
+        {
+            <div class="tm-empty">
+                <span>🎉</span>
+                <p>No pending testimonials. All caught up!</p>
+            </div>
+        }
+        else
+        {
+            <div class="tm-grid">
+                @foreach (var t in pending)
+                {
+                    <div class="tm-card tm-card-pending reveal">
+
+                        @* Author + meta *@
+                        <div class="tm-card-head">
+                            <div class="testi-avatar">
+                                @{
+                                    var name = t.User?.FullName ?? t.User?.UserName ?? "??";
+                                    var parts = name.Trim().Split(' ');
+                                    var initials = parts.Length >= 2
+                                        ? $"{parts[0][0]}{parts[^1][0]}".ToUpper()
+                                        : name.Length >= 2 ? name[..2].ToUpper() : name.ToUpper();
+                                }
+                                @initials
+                            </div>
+                            <div class="tm-card-meta">
+                                <span class="testi-name">@name</span>
+                                <span class="testi-time">@t.CreatedAt.ToString("MMM dd, yyyy · HH:mm")</span>
+                            </div>
+                            <div class="testi-stars" style="margin-left:auto;">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="@(i <= t.Rating ? "star-on" : "star-off")">★</span>
+                                }
+                            </div>
+                        </div>
+
+                        @* Content *@
+                        <p class="tm-card-body">@t.Content</p>
+
+                        @* Actions *@
+                        <div class="tm-actions">
+                            <form asp-action="Approve" asp-controller="Testimonials"
+                                  method="post" style="flex:1;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+                                <button type="submit" class="tm-btn tm-btn-approve">
+                                    ✓ Approve &amp; Publish
+                                </button>
+                            </form>
+                            <form asp-action="Reject" asp-controller="Testimonials"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this testimonial? This cannot be undone.')">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+                                <button type="submit" class="tm-btn tm-btn-reject">
+                                    ✕ Reject
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @* ══════════════════════════════
+       APPROVED / LIVE
+    ══════════════════════════════ *@
+    <div class="tm-section reveal">
+        <div class="tm-section-hd">
+            <span class="sec-eye">Currently Live</span>
+            <h2 class="tm-section-ttl">APPROVED <span class="tm-count-badge tm-count-live">@approved.Count</span></h2>
+        </div>
+
+        @if (!approved.Any())
+        {
+            <div class="tm-empty">
+                <span>📋</span>
+                <p>No approved testimonials yet. Approve some above to go live.</p>
+            </div>
+        }
+        else
+        {
+            <div class="tm-grid">
+                @foreach (var t in approved)
+                {
+                    <div class="tm-card tm-card-approved reveal">
+
+                        <div class="tm-card-head">
+                            <div class="testi-avatar">
+                                @{
+                                    var aname = t.User?.FullName ?? t.User?.UserName ?? "??";
+                                    var aparts = aname.Trim().Split(' ');
+                                    var ainitials = aparts.Length >= 2
+                                        ? $"{aparts[0][0]}{aparts[^1][0]}".ToUpper()
+                                        : aname.Length >= 2 ? aname[..2].ToUpper() : aname.ToUpper();
+                                }
+                                @ainitials
+                            </div>
+                            <div class="tm-card-meta">
+                                <span class="testi-name">@aname</span>
+                                <span class="testi-time">@t.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div class="testi-stars" style="margin-left:auto;">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="@(i <= t.Rating ? "star-on" : "star-off")">★</span>
+                                }
+                            </div>
+                        </div>
+
+                        <p class="tm-card-body">@t.Content</p>
+
+                        <div class="tm-live-badge">● LIVE</div>
+
+                        @* Admin can still remove approved ones *@
+                        <div class="tm-actions">
+                            <form asp-action="Reject" asp-controller="Testimonials"
+                                  method="post"
+                                  onsubmit="return confirm('Remove this approved testimonial?')">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+                                <button type="submit" class="tm-btn tm-btn-reject">
+                                    ✕ Remove
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</div>

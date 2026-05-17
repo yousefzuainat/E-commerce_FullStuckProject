@@ -1,0 +1,85 @@
+@model IEnumerable<ecommerce_system.Models.order>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/orderconfirm.css" asp-append-version="true" />
+}
+
+@* --- Toast remains the same --- *@
+@if (TempData["success"] != null)
+{
+    <div class="toast-notification" id="paymentToast">
+        <div class="toast-icon">✓</div>
+        <div>
+            <div style="font-weight: 600; font-size: 14px;">Success</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.7);">@TempData["success"]</div>
+        </div>
+    </div>
+}
+<div class="orders-wrapper">
+    @* ── Page Header Section ── *@
+    <div class="prod-page-bar reveal">
+        <div class="prod-page-bar-inner">
+            <div>
+                <p class="co-eye">Account</p>
+                <h1 class="co-title">ORDER <span class="co-title-accent">HISTORY</span></h1>
+                <p class="co-sub-lbl">View and track your previous purchases</p>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <h3>No orders yet</h3>
+            <p>You haven't placed any orders. Start exploring our premium gear.</p>
+            <a asp-controller="Proudects" asp-action="Index" class="btn-shop">Explore Products</a>
+        </div>
+    }
+    else
+    {
+        <div class="orders-grid-two">
+            @foreach (var order in Model.OrderByDescending(o => o.Id))
+            {
+                <div class="order-card-v2 reveal">
+                    <div class="oc-v2-header">
+                        <div class="oc-v2-id-wrap">
+                            <span class="oc-v2-icon">📦</span>
+                            <div class="order-id">#VOLT-@order.Id.ToString("D5")</div>
+                        </div>
+                        @{
+                            var statusClass = order.Status?.ToLower() switch
+                            {
+                                "paid" => "status-paid",
+                                "processing" => "status-processing",
+                                "completed" => "status-completed",
+                                "cancelled" => "status-cancelled",
+                                _ => "status-pending"
+                            };
+                        }
+                        <span class="status-badge @statusClass">@order.Status</span>
+                    </div>
+
+                    <div class="oc-v2-body">
+                        <div class="detail-row">
+                            <span class="detail-label">Items Count</span>
+                            <span class="detail-value">@((order.OrderItems?.Count ?? 0)) Units</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Order Type</span>
+                            <span class="detail-value">Standard Shipping</span>
+                        </div>
+                    </div>
+
+                    <div class="oc-v2-footer">
+                        <div class="ocr-price">@order.tootal_amount.ToString("C")</div>
+                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="ocr-view-btn">VIEW DETAILS</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
