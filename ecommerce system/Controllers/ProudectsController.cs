@@ -23,15 +23,16 @@ namespace ecommerce_system.Controllers
         }
 
         // GET: Proudects
-        // GET: Proudects
-        public async Task<IActionResult> Index(int? categoryId)
+        // This single unified method handles standard page views, category filters, and global queries safely.
+        public async Task<IActionResult> Index(int? categoryId, string? search)
         {
-            // 1. Add .Include(p => p.Discounts) and .Include(p => p.Reviews)
+            // 1. Staging baseline query with essential relational references
             IQueryable<Proudect> query = _context.proudects
                 .Include(p => p.Category)
-                .Include(p => p.Discounts) // CRITICAL: This enables the badge and sale price logic
-                .Include(p => p.Reviews);   // Enables the star/review counts
+                .Include(p => p.Discounts)
+                .Include(p => p.Reviews);
 
+            // 2. Apply Category filtering context constraints
             if (categoryId != null)
             {
                 query = query.Where(p => p.CategoryId == categoryId);
@@ -39,9 +40,22 @@ namespace ecommerce_system.Controllers
                 ViewBag.FilteredCategory = category?.Name;
             }
 
+            // 3. Apply Cross-Table Global Textual Search constraints
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(p => p.Name.Contains(search)
+                                      || (p.Description != null && p.Description.Contains(search))
+                                      || (p.Category != null && p.Category.Name.Contains(search)));
+
+                ViewBag.CurrentSearch = search;
+            }
+
             return View(await query.ToListAsync());
         }
 
+        // GET: Proudects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -51,7 +65,7 @@ namespace ecommerce_system.Controllers
                 .Include(p => p.Images)
                 .Include(p => p.Discounts)
                 .Include(p => p.Reviews)
-                .ThenInclude(r=>r.User)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (product == null) return NotFound();
@@ -65,7 +79,6 @@ namespace ecommerce_system.Controllers
             ViewData["CategoryId"] = new SelectList(_context.categories, dataValueField: "Id", dataTextField: "Name");
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -105,6 +118,7 @@ namespace ecommerce_system.Controllers
             return View(model);
         }
 
+        // GET: Proudects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -191,6 +205,7 @@ namespace ecommerce_system.Controllers
             return View(model);
         }
 
+        // GET: Proudects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -229,13 +244,14 @@ namespace ecommerce_system.Controllers
             return _context.proudects.Any(e => e.Id == id);
         }
 
+        // GET: Proudects/Deals
         public async Task<IActionResult> Deals()
         {
             var products = await _context.proudects
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Discounts)
-                .Include(p => p.Reviews!)           // Load the collection
+                .Include(p => p.Reviews!)
                 .ThenInclude(r => r.User)
                 .Where(p => p.Discounts != null && p.Discounts.Any())
                 .ToListAsync();
