@@ -9,6 +9,10 @@ namespace ecommerce_system.Models
 
         public string? Name { get; set; }
 
+        [Required(ErrorMessage = "Shipping Address is required")]
+        [StringLength(255)]
+        public string Address { get; set; }
+
         [Required]
         [Range(0, 1000000)]
         public decimal tootal_amount { get; set; }

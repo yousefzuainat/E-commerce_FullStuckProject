@@ -33,6 +33,12 @@
                         <span asp-validation-for="Name" class="text-red-400 text-xs mt-1 block"></span>
                     </div>
                     
+                    <div>
+                        <label asp-for="Address" class="admin-label">Shipping Details (Governorate | Details | Phone)</label>
+                        <input asp-for="Address" class="admin-input" placeholder="e.g., Amman | Sport Street | Phone: +962..." />
+                        <span asp-validation-for="Address" class="text-red-400 text-xs mt-1 block"></span>
+                    </div>
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label asp-for="tootal_amount" class="admin-label">Total Amount</label>

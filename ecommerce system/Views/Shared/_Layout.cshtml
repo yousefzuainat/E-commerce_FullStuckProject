@@ -24,7 +24,7 @@
 
     <style>
             /* ═══════════════════════════════════════════════
-               NAVBAR — improved layout & UX
+                NAVBAR — improved layout & UX
             ════════════════════════════════════════════════ */
 
             /* Make the right-side cluster tighter */
@@ -314,7 +314,7 @@
                         <a class="nav-drop-item" asp-controller="WishListItems" asp-area="" asp-action="Index">
                             <span class="v-drop-icon">♥</span> My Wishlist
                         </a>
-                        <a class="nav-drop-item" asp-controller="UserOrders" asp-area="" asp-action="Index">
+                        <a class="nav-drop-item" asp-controller="Orders" asp-area="" asp-action="Index">
                             <span class="v-drop-icon">📦</span> Order History
                         </a>
                         <a class="nav-drop-item" asp-controller="Testimonials" asp-area="" asp-action="Write">
@@ -323,7 +323,8 @@
 
                         <div class="nav-drop-divider"></div>
 
-                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+                        @* FIX: Routed away from scaffold Identity mapping to target our session clearing controller action *@
+                        <form asp-area="" asp-controller="Cart" asp-action="Logout" method="post">
                             <button type="submit" class="nav-drop-item nav-drop-logout">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
@@ -462,53 +463,52 @@
     <script>
         /* ── Signed-in user profile dropdown ── */
         function toggleUserMenu() {
-        const dropdown = document.getElementById('userDropdown');
-        const btn      = document.querySelector('.nav-profile-btn');
-        if (!dropdown) return;
-        const isOpen = dropdown.classList.toggle('open');
-        btn?.classList.toggle('is-open', isOpen);
+            const dropdown = document.getElementById('userDropdown');
+            const btn      = document.querySelector('.nav-profile-btn');
+            if (!dropdown) return;
+            const isOpen = dropdown.classList.toggle('open');
+            btn?.classList.toggle('is-open', isOpen);
         }
 
         /* ── Guest auth dropdown ── */
         function toggleAuthMenu() {
-        const dropdown = document.getElementById('authDropdown');
-        const btn      = document.getElementById('authTrigger');
-        if (!dropdown) return;
-        const isOpen = dropdown.classList.toggle('open');
-        btn?.classList.toggle('is-open', isOpen);
+            const dropdown = document.getElementById('authDropdown');
+            const btn      = document.getElementById('authTrigger');
+            if (!dropdown) return;
+            const isOpen = dropdown.classList.toggle('open');
+            btn?.classList.toggle('is-open', isOpen);
         }
 
         /* Close all dropdowns when clicking outside */
         document.addEventListener('click', function (e) {
-        // profile
-        const userMenu = document.querySelector('.nav-user-menu');
-        if (userMenu && !userMenu.contains(e.target)) {
-        document.getElementById('userDropdown')?.classList.remove('open');
-        document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
-        }
-        // auth
-        const authMenu = document.querySelector('.nav-auth-menu');
-        if (authMenu && !authMenu.contains(e.target)) {
-        document.getElementById('authDropdown')?.classList.remove('open');
-        document.getElementById('authTrigger')?.classList.remove('is-open');
-        }
+            const userMenu = document.querySelector('.nav-user-menu');
+            if (userMenu && !userMenu.contains(e.target)) {
+                document.getElementById('userDropdown')?.classList.remove('open');
+                document.querySelector('.nav-profile-btn')?.classList.remove('is-open');
+            }
+            const authMenu = document.querySelector('.nav-auth-menu');
+            if (authMenu && !authMenu.contains(e.target)) {
+                document.getElementById('authDropdown')?.classList.remove('open');
+                document.getElementById('authTrigger')?.classList.remove('is-open');
+            }
         });
     </script>
 
-    <script>
-        /* Load cart count from session on every page */
-        (async function () {
+ <script>
+    /* Load cart count from session on every page */
+    (async function () {
         try {
-        const res   = await fetch('/Cart/Count');
-        const data  = await res.json();
-        const count = data.cartCount || 0;
-        document.querySelectorAll('.cart-n').forEach(el => {
-        el.textContent = count;
-        if (count > 0) el.classList.add('cart-n-active');
-        });
+            // FIX 4: Appended '?t=' timestamp cache-buster so the browser is forced to query the server
+            const res   = await fetch('/Cart/Count?t=' + new Date().getTime());
+            const data  = await res.json();
+            const count = data.cartCount || 0;
+            document.querySelectorAll('.cart-n').forEach(el => {
+                el.textContent = count;
+                el.classList.toggle('cart-n-active', count > 0); 
+            });
         } catch (e) {}
-        })();
-    </script>
+    })();
+</script>
 
     @RenderSection("Scripts", required: false)
 </body>

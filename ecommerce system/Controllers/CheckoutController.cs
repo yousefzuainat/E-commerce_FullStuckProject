@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ecommerce_system.Services;
 using Stripe.Checkout;
+using Microsoft.AspNetCore.Http;
 
 namespace ecommerce_system.Controllers
 {
@@ -68,7 +69,11 @@ namespace ecommerce_system.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPayment()
+        public async Task<IActionResult> ProcessPayment(
+            string shippingName,
+            string shippingPhone,
+            string shippingGovernorate,
+            string shippingAddress)
         {
             var userId = _userManager.GetUserId(User);
             var sessionItems = SessionCartService.GetCart(HttpContext);
@@ -77,6 +82,12 @@ namespace ecommerce_system.Controllers
             {
                 return RedirectToAction("Index", "Cart");
             }
+
+            // Store shipping details in session
+            HttpContext.Session.SetString("ShippingName", shippingName ?? "");
+            HttpContext.Session.SetString("ShippingPhone", shippingPhone ?? "");
+            HttpContext.Session.SetString("ShippingGovernorate", shippingGovernorate ?? "");
+            HttpContext.Session.SetString("ShippingAddress", shippingAddress ?? "");
 
             var domain = $"{Request.Scheme}://{Request.Host}";
             var options = new SessionCreateOptions
@@ -143,16 +154,21 @@ namespace ecommerce_system.Controllers
 
             if (!sessionItems.Any())
             {
-                // Safety check: ensure this controller name matches your client-side orders handler
                 return RedirectToAction("Index", "UserOrers");
             }
+
+            var sName = HttpContext.Session.GetString("ShippingName") ?? User.Identity?.Name ?? "Customer";
+            var sPhone = HttpContext.Session.GetString("ShippingPhone") ?? "";
+            var sGov = HttpContext.Session.GetString("ShippingGovernorate") ?? "";
+            var sAddr = HttpContext.Session.GetString("ShippingAddress") ?? "";
 
             decimal subtotal = 0;
             var order = new order
             {
                 UserId = userId,
-                Status = OrderStatus.Paid, // FIX: Direct assignment of the enum (Removed .ToString())
-                Name = User.Identity?.Name ?? "Customer"
+                Status = OrderStatus.Paid, 
+                Name = sName,
+                Address = $"{sGov} | {sAddr} | Phone: {sPhone}"
             };
 
             var orderItemsList = new List<OrderItem>();
@@ -215,6 +231,10 @@ namespace ecommerce_system.Controllers
 
             // Flush out temporary cache items
             SessionCartService.ClearCart(HttpContext);
+            HttpContext.Session.Remove("ShippingName");
+            HttpContext.Session.Remove("ShippingPhone");
+            HttpContext.Session.Remove("ShippingGovernorate");
+            HttpContext.Session.Remove("ShippingAddress");
 
             TempData["success"] = "Payment successful! Your order has been placed via Stripe.";
 

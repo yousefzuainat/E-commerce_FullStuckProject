@@ -54,101 +54,189 @@
         <div class="co-alert">⚠ @TempData["error"]</div>
     }
 
-    <div class="co-layout">
+    <style>
+        .co-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .co-label {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .co-input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: border-color .2s, box-shadow .2s;
+            width: 100%;
+            outline: none;
+            box-sizing: border-box;
+        }
+        [data-theme="light"] .co-input {
+            background: #fdfdfd;
+            border-radius: 4px;
+        }
+        .co-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 8px rgba(255, 106, 0, 0.15);
+        }
+        .co-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff6a00'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+        .co-textarea {
+            resize: vertical;
+        }
+    </style>
 
-        <div>
-            <div class="co-panel">
-                <div class="co-panel-hd">
-                    <span class="co-panel-ttl">Order Items</span>
-                    <span class="co-panel-count">@Model.CartItems.Count() item@(Model.CartItems.Count() != 1 ? "s" : "")</span>
+    <form asp-action="ProcessPayment" method="post">
+        @Html.AntiForgeryToken()
+        
+        <div class="co-layout">
+
+            <div>
+                <div class="co-panel">
+                    <div class="co-panel-hd">
+                        <span class="co-panel-ttl">Order Items</span>
+                        <span class="co-panel-count">@Model.CartItems.Count() item@(Model.CartItems.Count() != 1 ? "s" : "")</span>
+                    </div>
+
+                    @foreach (var item in Model.CartItems)
+                    {
+                        if (item.Proudect == null) continue;
+                        var lineTotal = item.Quantity * item.Proudect.Price;
+
+                        <div class="co-item">
+                            <div class="co-item-img">
+                                @{
+                                    var img = item.Proudect.Img ?? "";
+                                    if (img.StartsWith("/") || img.StartsWith("http"))
+                                    {
+                                        <img src="@img" alt="@item.Proudect.Name" />
+                                    }
+                                    else
+                                    {
+                                        <span class="co-item-emoji">@(string.IsNullOrEmpty(img) ? "📦" : img)</span>
+                                    }
+                                }
+                            </div>
+                            <div>
+                                <p class="co-item-brand">@(item.Proudect.Name.Split(' ').FirstOrDefault() ?? "")</p>
+                                <p class="co-item-name">@item.Proudect.Name</p>
+                                <span class="co-item-qty">QTY: @item.Quantity</span>
+                            </div>
+                            <div class="co-item-price-col">
+                                <p class="co-item-unit">$@item.Proudect.Price.ToString("F2") / ea</p>
+                                <p class="co-item-line">$@lineTotal.ToString("F2")</p>
+                            </div>
+                        </div>
+                    }
                 </div>
 
-                @foreach (var item in Model.CartItems)
-                {
-                    if (item.Proudect == null) continue;
-                    var lineTotal = item.Quantity * item.Proudect.Price;
-
-                    <div class="co-item">
-                        <div class="co-item-img">
-                            @{
-                                var img = item.Proudect.Img ?? "";
-                                if (img.StartsWith("/") || img.StartsWith("http"))
-                                {
-                                    <img src="@img" alt="@item.Proudect.Name" />
-                                }
-                                else
-                                {
-                                    <span class="co-item-emoji">@(string.IsNullOrEmpty(img) ? "📦" : img)</span>
-                                }
-                            }
+                <!-- Shipping details panel added here -->
+                <div class="co-panel" style="margin-top:24px;">
+                    <div class="co-panel-hd">
+                        <span class="co-panel-ttl">Shipping Address</span>
+                        <span class="co-panel-count">Delivery Details</span>
+                    </div>
+                    <div style="padding: 24px 28px; display: grid; gap: 20px;">
+                        <div class="co-field">
+                            <label class="co-label" for="shippingName">Receiver Full Name</label>
+                            <input class="co-input" type="text" id="shippingName" name="shippingName" required placeholder="John Doe" value="@User.Identity?.Name" />
                         </div>
-                        <div>
-                            <p class="co-item-brand">@(item.Proudect.Name.Split(' ').FirstOrDefault() ?? "")</p>
-                            <p class="co-item-name">@item.Proudect.Name</p>
-                            <span class="co-item-qty">QTY: @item.Quantity</span>
+                        <div class="co-field">
+                            <label class="co-label" for="shippingPhone">Receiver Phone Number</label>
+                            <input class="co-input" type="tel" id="shippingPhone" name="shippingPhone" required placeholder="+962 7 XXXXXXXX" />
                         </div>
-                        <div class="co-item-price-col">
-                            <p class="co-item-unit">$@item.Proudect.Price.ToString("F2") / ea</p>
-                            <p class="co-item-line">$@lineTotal.ToString("F2")</p>
+                        <div class="co-field">
+                            <label class="co-label" for="shippingGovernorate">Governorate</label>
+                            <select class="co-input co-select" id="shippingGovernorate" name="shippingGovernorate" required>
+                                <option value="">— Select your governorate —</option>
+                                <option value="Amman">Amman</option>
+                                <option value="Zarqa">Zarqa</option>
+                                <option value="Irbid">Irbid</option>
+                                <option value="Aqaba">Aqaba</option>
+                                <option value="Mafraq">Mafraq</option>
+                                <option value="Balqa">Balqa</option>
+                                <option value="Madaba">Madaba</option>
+                                <option value="Karak">Karak</option>
+                                <option value="Tafilah">Tafilah</option>
+                                <option value="Ma'an">Ma'an</option>
+                                <option value="Jerash">Jerash</option>
+                                <option value="Ajloun">Ajloun</option>
+                            </select>
+                        </div>
+                        <div class="co-field">
+                            <label class="co-label" for="shippingAddress">Street Details & Address Description</label>
+                            <textarea class="co-input co-textarea" id="shippingAddress" name="shippingAddress" required placeholder="Street name, building number, apartment..." rows="3"></textarea>
                         </div>
                     </div>
-                }
+                </div>
+
+                <div style="margin-top:16px; padding:16px 28px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:space-between;">
+                    <a href="/Cart" style="font-size:12px; color:var(--text-dim); text-decoration:none; letter-spacing:1px; transition:color .2s;"
+                       onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'">
+                        ← Edit Cart
+                    </a>
+                    <span style="font-size:11px; color:var(--text-dim); letter-spacing:.5px;">
+                        🛒 Ready to complete
+                    </span>
+                </div>
             </div>
 
-            <div style="margin-top:16px; padding:16px 28px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:space-between;">
-                <a href="/Cart" style="font-size:12px; color:var(--text-dim); text-decoration:none; letter-spacing:1px; transition:color .2s;"
-                   onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'">
-                    ← Edit Cart
-                </a>
-                <span style="font-size:11px; color:var(--text-dim); letter-spacing:.5px;">
-                    🛒 Ready to complete
-                </span>
-            </div>
-        </div>
+            <div class="co-summary">
+                <div class="co-summary-inner">
+                    <h2 class="co-sum-ttl">Order Summary</h2>
 
-        <div class="co-summary">
-            <div class="co-summary-inner">
-                <h2 class="co-sum-ttl">Order Summary</h2>
+                    <div class="co-sum-row">
+                        <span>Subtotal (@Model.CartItems.Sum(i => i.Quantity) items)</span>
+                        <span>$@subtotal.ToString("F2")</span>
+                    </div>
+                    <div class="co-sum-row">
+                        <span>Tax</span>
+                        <span>Calculated at payment</span>
+                    </div>
 
+                    <div class="co-sum-div"></div>
 
-                <div class="co-sum-row">
-                    <span>Subtotal (@Model.CartItems.Sum(i => i.Quantity) items)</span>
-                    <span>$@subtotal.ToString("F2")</span>
-                </div>
-                <div class="co-sum-row">
-                    <span>Tax</span>
-                    <span>Calculated at payment</span>
-                </div>
+                    <div class="co-sum-row co-sum-total">
+                        <span>Total</span>
+                        <span>$@total.ToString("F2")</span>
+                    </div>
 
-                <div class="co-sum-div"></div>
-
-                <div class="co-sum-row co-sum-total">
-                    <span>Total</span>
-                    <span>$@total.ToString("F2")</span>
-                </div>
-
-                <form asp-action="ProcessPayment" method="post">
-                    @Html.AntiForgeryToken()
                     <button type="submit" class="co-pay-btn">
                         Confirm Order - $@total.ToString("F2")
                     </button>
-                </form>
 
-                <a href="/Cart" class="co-back-link">← Return to Cart</a>
+                    <a href="/Cart" class="co-back-link">← Return to Cart</a>
 
-                <div class="co-secure">
-                    <div class="co-secure-item">
-                        <span>🚀</span><span>Fast Order Processing</span>
-                    </div>
-                    <div class="co-secure-item">
-                        <span>↩</span><span>30-Day Return Policy</span>
-                    </div>
-                    <div class="co-secure-item">
-                        <span>📦</span><span>Fast & Tracked Shipping</span>
+                    <div class="co-secure">
+                        <div class="co-secure-item">
+                            <span>🚀</span><span>Fast Order Processing</span>
+                        </div>
+                        <div class="co-secure-item">
+                            <span>↩</span><span>30-Day Return Policy</span>
+                        </div>
+                        <div class="co-secure-item">
+                            <span>📦</span><span>Fast & Tracked Shipping</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+        </div>
+    </form>
 </div>
