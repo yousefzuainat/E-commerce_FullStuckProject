@@ -110,3 +110,59 @@ function initImagePreview(inputId, previewId, placeholderId, secondaryPreviewId)
         }
     });
 }
+
+                    // ── Wishlist toggle (no redirect, AJAX + toast) ──
+async function toggleWishlist(btn) {
+    const productId = btn.dataset.productId;
+    const isWished  = btn.classList.contains('wished');
+
+    // Optimistic UI
+    btn.classList.toggle('wished');
+    btn.innerHTML = btn.classList.contains('wished') ? '♥' : '♡';
+
+    try {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        const res = await fetch('/WishListItems/AddToWishlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': token ?? ''
+            },
+            body: `productId=${productId}`
+        });
+
+        if (!res.ok) throw new Error('failed');
+
+        if (!isWished) showToast('♥ Added to wishlist');
+    } catch {
+        // Roll back on error
+        btn.classList.toggle('wished');
+        btn.innerHTML = isWished ? '♥' : '♡';
+        showToast('Could not update wishlist');
+    }
+}
+
+// ── Tiny toast helper ──
+function showToast(msg) {
+    let t = document.getElementById('vx-toast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = 'vx-toast';
+        t.style.cssText = `
+            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+            background: var(--card-bg, #111); border: 1px solid var(--border, rgba(255,255,255,.12));
+            color: var(--fg, #fff); font-size: 13px; padding: 10px 18px;
+            border-radius: 8px; letter-spacing: .04em; font-family: inherit;
+            display: flex; align-items: center; gap: 7px;
+            opacity: 0; transform: translateY(8px);
+            transition: opacity .3s, transform .3s; pointer-events: none;
+        `;
+        document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1'; t.style.transform = 'translateY(0)';
+    clearTimeout(t._hide);
+    t._hide = setTimeout(() => {
+        t.style.opacity = '0'; t.style.transform = 'translateY(8px)';
+    }, 2200);
+}

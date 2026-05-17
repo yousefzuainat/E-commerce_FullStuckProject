@@ -5,9 +5,100 @@
      Model: ecommerce_system.Models.Proudect
 ════════════════════════════════════════════════════════ *@
 @model ecommerce_system.Models.Proudect
-@section Styles {
-    <link rel="stylesheet" href="~/css/_productcard-wish.css" asp-append-version="true" />
-}
+
+<style>
+    /* ── Card action row ── */
+    .pag-actions {
+        display: flex;
+        gap: 8px;
+        padding: 0 12px 14px;
+    }
+
+    /* Wishlist icon button */
+    .pag-btn-wish {
+        flex: 0 0 40px;
+        height: 40px;
+        background: transparent;
+        border: 1.5px solid var(--border, rgba(255,255,255,.2));
+        border-radius: 0;
+        clip-path: polygon(5px 0%, 100% 0%, calc(100% - 5px) 100%, 0% 100%);
+        color: var(--muted, #888);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .2s, border-color .2s, color .2s;
+    }
+
+        .pag-btn-wish:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            background: rgba(255,107,107,.1);
+        }
+
+        .pag-btn-wish.wished {
+            border-color: #ff4040;
+            color: #ff4040;
+            background: rgba(255,64,64,.12);
+        }
+
+    [data-theme="light"] .pag-btn-wish {
+        border-color: rgba(0,0,0,.18);
+        color: #999;
+    }
+
+        [data-theme="light"] .pag-btn-wish:hover {
+            border-color: #c84a00;
+            color: #c84a00;
+            background: rgba(200,74,0,.08);
+        }
+
+        [data-theme="light"] .pag-btn-wish.wished {
+            border-color: #c84a00;
+            color: #c84a00;
+        }
+
+    /* Cart button — stretches to fill remaining space */
+    .pag-btn-danger {
+        flex: 1;
+        height: 40px;
+        background: var(--accent, #f60);
+        border: none;
+        color: #000;
+        border-radius: 0;
+        clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: background .2s;
+    }
+
+        .pag-btn-danger:hover {
+            background: #ff7a1a;
+        }
+
+        .pag-btn-danger.added {
+            background: #2a9a4a !important;
+            color: #fff;
+        }
+
+    [data-theme="light"] .pag-btn-danger {
+        background: #c84a00;
+        color: #fff;
+    }
+
+        [data-theme="light"] .pag-btn-danger:hover {
+            background: #a63a00;
+        }
+</style>
 
 @{
     var discount = Model.Discounts?
@@ -91,13 +182,16 @@
 
     @* <%-- ── Action buttons ── --%> *@
     <div class="pag-actions">
-        <form asp-action="AddToWishlist" asp-controller="WishListItems" method="post" style="flex:1;">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="productId" value="@Model.Id" />
-            <button type="submit" class="pag-btn pag-btn-ghost">
-                <span>♥</span> WISHLIST
-            </button>
-        </form>
+        @* Wishlist — no form, AJAX only, shows toast *@
+        <button type="button"
+                class="pag-btn pag-btn-wish"
+                data-product-id="@Model.Id"
+                onclick="toggleWishlist(this)"
+                title="Add to Wishlist"
+                aria-label="Add to wishlist">
+            ♥
+        </button>
+
         <button class="pag-btn pag-btn-danger"
                 data-product-id="@Model.Id"
                 onclick="addToCart(this)">
