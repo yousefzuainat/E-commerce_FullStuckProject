@@ -554,3 +554,169 @@
 .auth-link-primary {
     color: var(--accent) !important;
 }
+/* ============================================================
+   VOLTEX — DUAL-PANEL SIDEBAR ADDITION
+   ============================================================ */
+
+/* 1. Turns the container wrapper into a modern split display box */
+.auth-split-card {
+    display: grid;
+    grid-template-columns: 420px 460px; /* Aligns side panel alongside original card size */
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .auth-split-card {
+    clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+    box-shadow: 0 0 60px rgba(255, 106, 0, 0.04);
+}
+
+[data-theme="light"] .auth-split-card {
+    border-radius: 8px;
+}
+
+/* Strips individual card overrides so it fits the main container */
+.auth-split-card .auth-card {
+    border: none !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+    background: transparent !important;
+}
+
+/* 2. Brand panel container matching style guidelines */
+.auth-brand-panel {
+    background: linear-gradient(135deg, var(--surface2) 0%, rgba(255, 106, 0, 0.02) 100%);
+    padding: 3rem 2.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--border);
+    position: relative;
+}
+
+    .auth-brand-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--accent);
+    }
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-logo {
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--text);
+}
+
+.accent-dot {
+    color: var(--accent);
+}
+
+.panel-sys-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+}
+
+.panel-body-content {
+    margin: 40px 0;
+}
+
+.panel-eyebrow {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.panel-display-title {
+    font-family: var(--heading);
+    color: var(--text);
+    line-height: 0.95;
+    margin: 0 0 20px;
+}
+
+[data-theme="dark"] .panel-display-title {
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+[data-theme="light"] .panel-display-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.highlight-text {
+    color: var(--accent);
+    font-style: italic;
+}
+
+.panel-narrative {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-sub);
+}
+
+/* Integrated Matrix Panel Footer */
+.panel-footer-matrix {
+    display: flex;
+    gap: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.matrix-stat {
+    display: block;
+    font-family: var(--heading);
+    color: var(--text);
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+[data-theme="light"] .matrix-stat {
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.matrix-label {
+    display: block;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* 3. Responsive Adaptations */
+@media (max-width: 900px) {
+    .auth-split-card {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-brand-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .auth-brand-panel::before {
+            width: 100%;
+            height: 4px;
+            inset: 0 0 auto 0;
+        }
+}

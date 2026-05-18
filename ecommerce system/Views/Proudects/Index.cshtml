@@ -1,5 +1,10 @@
 @model IEnumerable<ecommerce_system.Models.Proudect>
 
+@{
+    ViewData["Title"] = "All Products";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
 @section Styles {
     <link rel="stylesheet" href="~/css/products.css" asp-append-version="true" />
 }
@@ -19,7 +24,35 @@
     </div>
 </div>
 
-@* ... Keep Filter Bar code here ... *@
+@* ── Synchronized Filter & Search Bar Zone ── *@
+<div class="prod-filter-bar reveal">
+    @* Search Input Wrapper targeting .prod-search-wrap *@
+    <div class="prod-search-wrap">
+        <span class="ps-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="Search product names..." class="prod-search-input" />
+    </div>
+
+    @* Category Dropdown targeting .prod-select *@
+    <select id="categoryFilter" class="prod-select">
+        <option value="">All Categories</option>
+        @if (Model.Any())
+        {
+            @foreach (var cat in Model.Where(p => p.Category != null).Select(p => p.Category!.Name).Distinct())
+            {
+                <option value="@cat.ToLower()">@cat</option>
+            }
+        }
+    </select>
+
+    @* Sorting Dropdown targeting .prod-select *@
+    <select id="priceSort" class="prod-select">
+        <option value="">Sort Products</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name-asc">Name: A to Z</option>
+    </select>
+</div>
+
 @if (ViewBag.CurrentSearch != null)
 {
     <div class="search-center-wrapper">
@@ -36,6 +69,7 @@
         </div>
     </div>
 }
+
 @if (!Model.Any())
 {
     <div class="prod-empty reveal">
@@ -48,15 +82,16 @@ else
     <div class="prod-admin-grid reveal" id="prodGrid">
         @foreach (var p in Model)
         {
-            // 1. Calculate Discount and Price Logic
+            // Calculate Discount and Price Logic
             var discountPercent = p.Discounts?.Select(d => d.DiscountPercent).DefaultIfEmpty(0m).Max() ?? 0m;
             var finalPrice = p.Price * (1 - discountPercent / 100m);
-
+            
             // Calculate Stars safely
             int totalReviews = p.Reviews?.Count ?? 0;
             double avgRating = totalReviews > 0 ? p.Reviews!.Average(r => r.Rating) : 0;
             int fullStars = (int)Math.Round(avgRating);
-            <div class="pag-card" data-name="@p.Name.ToLower()" data-category="@(p.Category?.Name?.ToLower() ?? "")" data-price="@finalPrice">
+            
+            <div class="pag-card" data-name="@p.Name.ToLower()" data-category="@(p.Category?.Name?.ToLower() ?? "")" data-price="@finalPrice.ToString("F2")">
                 
                 <a asp-action="Details" asp-route-id="@p.Id" class="prod-card-link">
                     <div class="pag-thumb">
@@ -69,14 +104,12 @@ else
                             <span class="pag-thumb-emoji">🛍️</span>
                         }
 
-                        @* 2. The Black Pill Badge (Matches Deals/Screenshots) *@
                         @if (discountPercent > 0)
                         {
                             <span class="p-badge badge-sale">@discountPercent.ToString("0")% OFF</span>
                         }
                         else if (p.Id < 10)
                         {
-                            @* Neon New Badge fallback *@
                             <span class="p-badge badge-new">NEW</span>
                         }
                     </div>
@@ -89,7 +122,7 @@ else
                     {
                         <div class="pag-cat">@p.Category.Name</div>
                     }
-                    @* 2. Star Display Section *@
+                    
                     <p class="p-stars">
                         @for (int i = 1; i <= 5; i++)
                         {
@@ -111,7 +144,6 @@ else
                     }
                         
                     <div class="pag-foot">
-                        @* 3. Side-by-Side Price Container *@
                         <div class="price-container">
                             <span class="pag-price">@finalPrice.ToString("C")</span>
                             @if (discountPercent > 0)
@@ -143,47 +175,65 @@ else
         }
     </div>
 }
-@section Scripts {
 
+@section Scripts {
     <script src="~/js/products.js" asp-append-version="true"></script>
     <script src="~/js/Cart.js" asp-append-version="true"></script>
 
-    @* <script>
-        // Existing AJAX script remains the same...
-        document.querySelectorAll('form[data-ajax]').forEach(form => {
-            form.addEventListener('submit', async e => {
-                e.preventDefault();
-                const btn = form.querySelector('button[type="submit"]');
-                const original = btn.innerHTML;
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const searchInput = document.getElementById("searchInput");
+            const categoryFilter = document.getElementById("categoryFilter");
+            const priceSort = document.getElementById("priceSort");
+            const grid = document.getElementById("prodGrid");
 
-                btn.disabled = true;
-                btn.innerHTML = '<span>⏳</span> Adding…';
+            if (!grid) return;
 
-                try {
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: new FormData(form),
-                        headers: { 'Accept': 'application/json' }
+            function processFilters() {
+                const query = searchInput.value.toLowerCase().trim();
+                const targetCat = categoryFilter.value;
+                const cards = Array.from(grid.querySelectorAll(".pag-card"));
+
+                cards.forEach(card => {
+                    const productName = card.getAttribute("data-name") || "";
+                    const productCat = card.getAttribute("data-category") || "";
+                    
+                    const matchesSearch = productName.includes(query);
+                    const matchesCategory = targetCat === "" || productCat === targetCat;
+
+                    if (matchesSearch && matchesCategory) {
+                        card.style.display = "";
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
+
+                // Handle Dynamic Client Sorting
+                const sortMode = priceSort.value;
+                if (sortMode) {
+                    const structuralCards = Array.from(grid.querySelectorAll(".pag-card"));
+                    
+                    structuralCards.sort((rowA, rowB) => {
+                        if (sortMode.startsWith("price")) {
+                            const valA = parseFloat(rowA.getAttribute("data-price") || 0);
+                            const valB = parseFloat(rowB.getAttribute("data-price") || 0);
+                            return sortMode === "price-asc" ? valA - valB : valB - valA;
+                        } else if (sortMode === "name-asc") {
+                            const stringA = rowA.getAttribute("data-name") || "";
+                            const stringB = rowB.getAttribute("data-name") || "";
+                            return stringA.localeCompare(stringB);
+                        }
+                        return 0;
                     });
-                    const data = await response.json();
 
-                    if (data.success) {
-                        btn.innerHTML = '<span>✓</span> Added';
-                        // Feedback loop
-                        setTimeout(() => {
-                            btn.innerHTML = original;
-                            btn.disabled = false;
-                        }, 2000);
-                    } else { throw new Error(); }
-                } catch {
-                    btn.innerHTML = '<span>❌</span> Failed';
-                    setTimeout(() => {
-                        btn.innerHTML = original;
-                        btn.disabled = false;
-                    }, 2000);
+                    // Re-append items sequentially based on sort array layout
+                    structuralCards.forEach(card => grid.appendChild(card));
                 }
-            });
-        });
+            }
 
-    </script> *@
+            if (searchInput) searchInput.addEventListener("input", processFilters);
+            if (categoryFilter) categoryFilter.addEventListener("change", processFilters);
+            if (priceSort) priceSort.addEventListener("change", processFilters);
+        });
+    </script>
 }
