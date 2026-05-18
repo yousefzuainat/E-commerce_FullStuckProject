@@ -48,6 +48,7 @@ namespace ecommerce_system.Controllers
             await SyncSessionToDatabaseAsync();
 
             var total = SessionCartService.GetTotalQuantity(HttpContext);
+
             return Json(new { success = true, cartCount = total });
         }
 

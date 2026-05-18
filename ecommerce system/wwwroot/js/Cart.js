@@ -7,6 +7,8 @@ async function addToCart(btn) {
     const qtyInput = document.getElementById('pdQty');
     const quantity = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
 
+    // Save the original text to restore it later
+    const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = '✓';
 
@@ -17,21 +19,49 @@ async function addToCart(btn) {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
             },
-            // Send the real quantity here
             body: 'productId=' + encodeURIComponent(productId) + '&quantity=' + encodeURIComponent(quantity)
         });
+
         const data = await res.json();
+
         if (data.success) {
             document.querySelectorAll('.cart-n').forEach(el => {
                 el.textContent = data.cartCount;
                 el.classList.add('cart-n-active');
             });
-            showCartToast('Added ' + quantity + ' to cart!');
+
+            // SweetAlert2 Success Toast
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: `Added ${quantity} item(s) to cart!`,
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+        } else {
+            // Server returned success: false
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: data.message || 'Could not add item to cart.',
+                confirmButtonColor: '#3085d6'
+            });
         }
-    } catch (e) { }
+    } catch (e) {
+        // Network or parsing error
+        Swal.fire({
+            icon: 'error',
+            title: 'Connection Error',
+            text: 'Something went wrong. Please check your connection and try again.',
+            confirmButtonColor: '#3085d6'
+        });
+    }
 
     setTimeout(() => {
         btn.disabled = false;
+        btn.textContent = originalText; // Restores the button back to "Add to Cart"
     }, 1200);
 }
 
@@ -52,7 +82,6 @@ async function addToCart(btn) {
     btnMinus?.addEventListener('click', () => update(-1));
     btnPlus?.addEventListener('click', () => update(+1));
 
-    // Optional: prevent manual entry of 0 or negatives
     qtyInput.addEventListener('change', () => {
         let val = parseInt(qtyInput.value, 10) || 1;
         qtyInput.value = Math.max(1, val);
