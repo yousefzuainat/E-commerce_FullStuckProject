@@ -26,7 +26,7 @@ namespace ecommerce_system.Controllers
             
             var orders = await _context.orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Proudect)
+                .ThenInclude(oi => oi.Proudect)
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.Id) 
                 .ToListAsync();
@@ -74,7 +74,7 @@ namespace ecommerce_system.Controllers
 
             var order = await _context.orders
                 .Include(o => o.OrderItems!)
-                    .ThenInclude(oi => oi.Proudect) 
+                .ThenInclude(oi => oi.Proudect) 
                 .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null) return NotFound();

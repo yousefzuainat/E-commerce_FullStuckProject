@@ -44,7 +44,7 @@ namespace ecommerce_system.Controllers
             var order = await _context.orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Proudect)
+                .ThenInclude(oi => oi.Proudect)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (order == null) return NotFound();
