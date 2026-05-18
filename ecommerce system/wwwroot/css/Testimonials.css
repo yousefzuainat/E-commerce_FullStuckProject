@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    VOLTEX — Testimonials Section
    Append to: wwwroot/css/home.css
    ============================================================ */
@@ -203,7 +203,7 @@
     font-weight: 500;
 }
 
-/* ── Responsive ── */
+/* ── Responsive Grid (Legacy support) ── */
 @media (max-width: 1024px) {
     .testi-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -213,5 +213,123 @@
 @media (max-width: 640px) {
     .testi-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   PREMIUM TESTIMONIALS CAROUSEL SLIDER
+   ============================================================ */
+.testi-carousel-wrapper {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px; /* Space for the navigation arrows */
+}
+
+.testi-slider-container {
+    overflow: hidden;
+    width: 100%;
+}
+
+.testi-slider-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+/* Slide item: force flex basis so cards show 3 at a time */
+.testi-slider-track .testi-card {
+    flex: 0 0 calc((100% - 2 * 24px) / 3) !important;
+    box-sizing: border-box;
+}
+
+/* Glassmorphic Arrows */
+.testi-carousel-wrapper .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .testi-carousel-wrapper .carousel-btn {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.testi-carousel-wrapper .carousel-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 25px var(--accent);
+}
+
+[data-theme="light"] .testi-carousel-wrapper .carousel-btn:hover {
+    color: #fff;
+}
+
+.testi-carousel-wrapper .carousel-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    transition: fill 0.3s;
+}
+
+.testi-carousel-wrapper .prev-btn {
+    left: -15px;
+}
+
+.testi-carousel-wrapper .next-btn {
+    right: -15px;
+}
+
+/* Responsive configurations */
+@media (max-width: 1024px) {
+    .testi-slider-track .testi-card {
+        flex: 0 0 calc((100% - 24px) / 2) !important;
+    }
+    .testi-carousel-wrapper {
+        padding: 0 30px;
+    }
+    .testi-carousel-wrapper .prev-btn {
+        left: -10px;
+    }
+    .testi-carousel-wrapper .next-btn {
+        right: -10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .testi-slider-track .testi-card {
+        flex: 0 0 100% !important;
+    }
+    .testi-carousel-wrapper {
+        padding: 0 20px;
+    }
+    .testi-carousel-wrapper .carousel-btn {
+        width: 42px;
+        height: 42px;
+    }
+    .testi-carousel-wrapper .prev-btn {
+        left: -5px;
+    }
+    .testi-carousel-wrapper .next-btn {
+        right: -5px;
     }
 }
