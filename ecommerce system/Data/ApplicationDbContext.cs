@@ -7,13 +7,11 @@ namespace ecommerce_system.Data
 {
     public class ApplicationDbContext : IdentityDbContext<AppliactionUser>
     {
-        // 1. CONSTRUCTOR (Keep this to fix the parameterless constructor error)
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        // 2. DB SETS
         public DbSet<Proudect> proudects { get; set; }
         public DbSet<Category> categories { get; set; }
         public DbSet<order> orders { get; set; }
@@ -53,7 +51,6 @@ namespace ecommerce_system.Data
                 .Property(o => o.UnitPrice)
                 .HasColumnType("decimal(18,2)");
 
-            // Resolve the Discriminator conflict for Identity
             modelBuilder.Entity<IdentityUser>()
                 .HasDiscriminator<string>("Discriminator")
                 .HasValue("IdentityUser");
@@ -63,7 +60,6 @@ namespace ecommerce_system.Data
                 .HasValue("AppliactionUser");
             modelBuilder.Entity<order>().Ignore(o => o.CreatedAt);
             modelBuilder.Entity<OrderItem>().Ignore(oi => oi.CreatedAt);
-            // Fix for SQL Server versions (DateTime compatibility)
             var dateTimeOffsetConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTimeOffset, DateTime>(
                 v => v.DateTime,
                 v => new DateTimeOffset(v));

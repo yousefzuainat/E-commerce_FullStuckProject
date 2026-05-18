@@ -11,6 +11,8 @@ namespace ecommerce_system.Models
         [Required]
         public string ImageUrl { get; set; }
 
+        public bool IsMain { get; set; } = false;
+
         [ForeignKey("Proudect")]
         public int ProudectId { get; set; }
         public Proudect? Proudect { get; set; }

@@ -34,6 +34,9 @@ namespace ecommerce_system.ViewModel
         // IDs of existing images the user wants to delete
         public List<int>? ImagesToDelete { get; set; }
 
+        // ID of the image to set as main
+        public int? MainImageId { get; set; }
+
         [Display(Name = "Discount Percentage")]
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
         public decimal? DiscountPercent { get; set; }

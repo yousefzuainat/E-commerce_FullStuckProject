@@ -4,9 +4,11 @@
     Layout = "_AdminLayout";
     var activeDiscount = Model.Discounts?.FirstOrDefault(d => d.Active);
     var discountedPrice = activeDiscount != null ? Model.Price * (1 - activeDiscount.DiscountPercent / 100) : Model.Price;
+    var mainImage = Model.Images?.FirstOrDefault(i => i.IsMain)
+                  ?? Model.Images?.FirstOrDefault();
+    var mainImageUrl = mainImage?.ImageUrl ?? Model.Img;
 }
 
-<!-- Page Header -->
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
     <div>
         <a asp-area="Admin" asp-controller="ProductsAdmin" asp-action="Index" class="inline-flex items-center gap-1.5 text-gray-400 hover:text-white text-sm transition-colors mb-2">
@@ -28,17 +30,14 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Left: Images -->
     <div class="lg:col-span-1 space-y-4">
-        <!-- Main Image -->
-        <div class="admin-card rounded-2xl overflow-hidden aspect-square">
-            @if (Model.Images != null && Model.Images.Any())
+        <div class="admin-card rounded-2xl overflow-hidden aspect-square relative">
+            @if (!string.IsNullOrEmpty(mainImageUrl))
             {
-                <img id="main-image" src="@Model.Images.First().ImageUrl" alt="@Model.Name" class="w-full h-full object-cover" />
-            }
-            else if (!string.IsNullOrEmpty(Model.Img))
-            {
-                <img src="@Model.Img" alt="@Model.Name" class="w-full h-full object-cover" />
+                <img id="main-image" src="@mainImageUrl" alt="@Model.Name" class="w-full h-full object-cover" />
+                <span class="absolute top-3 left-3 bg-yellow-400 text-black text-[10px] font-black px-2.5 py-1 rounded-full uppercase flex items-center gap-1 shadow">
+                    <span class="material-symbols-outlined text-xs">star</span> Main
+                </span>
             }
             else
             {
@@ -49,24 +48,33 @@
             }
         </div>
 
-        <!-- Thumbnails -->
         @if (Model.Images != null && Model.Images.Count() > 1)
         {
             <div class="grid grid-cols-4 gap-2">
                 @foreach (var img in Model.Images)
                 {
-                    <button onclick="document.getElementById('main-image').src='@img.ImageUrl'"
-                            class="aspect-square rounded-xl overflow-hidden border-2 border-white/10 hover:border-primary transition-all">
+                    <button type="button"
+                            onclick="switchMain('@img.ImageUrl', this)"
+                            class="relative aspect-square rounded-xl overflow-hidden border-2 @(img.IsMain ? "border-yellow-400" : "border-white/10") hover:border-primary transition-all thumb-btn">
                         <img src="@img.ImageUrl" alt="" class="w-full h-full object-cover" />
+                        @if (img.IsMain)
+                        {
+                            <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-black" style="font-size:10px">star</span>
+                            </span>
+                        }
                     </button>
                 }
             </div>
         }
+
+        <div class="admin-card rounded-xl p-3 flex items-center justify-between">
+            <span class="text-xs text-gray-400 font-semibold uppercase tracking-widest">Total Images</span>
+            <span class="text-lg font-black text-white">@(Model.Images?.Count ?? 0)</span>
+        </div>
     </div>
 
-    <!-- Right: Details -->
     <div class="lg:col-span-2 space-y-6">
-        <!-- Product Info Card -->
         <div class="admin-card rounded-2xl p-6">
             <div class="flex items-start justify-between gap-4 mb-4">
                 <div>
@@ -98,7 +106,6 @@
             </div>
         </div>
 
-        <!-- Quick Stats -->
         <div class="grid grid-cols-3 gap-4">
             <div class="admin-card rounded-2xl p-4 text-center">
                 <p class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Product ID</p>
@@ -114,7 +121,31 @@
             </div>
         </div>
 
-        <!-- Discount Info -->
+        @if (Model.Images != null && Model.Images.Any())
+        {
+            <div class="admin-card rounded-2xl p-6">
+                <h3 class="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">photo_library</span>
+                    All Product Images
+                </h3>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    @foreach (var img in Model.Images)
+                    {
+                        <div class="relative aspect-square rounded-xl overflow-hidden border-2 @(img.IsMain ? "border-yellow-400" : "border-white/10")">
+                            <img src="@img.ImageUrl" alt="" class="w-full h-full object-cover" />
+                            @if (img.IsMain)
+                            {
+                                <span class="absolute top-1 left-1 bg-yellow-400 text-black text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined" style="font-size:10px">star</span> Main
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+                <p class="text-xs text-gray-600 mt-3">Go to <strong>Edit</strong> to change the main image or add/remove images.</p>
+            </div>
+        }
+
         @if (activeDiscount != null)
         {
             <div class="admin-card rounded-2xl p-5 border border-green-500/20 bg-green-500/5">
@@ -130,7 +161,6 @@
             </div>
         }
 
-        <!-- Reviews -->
         @if (Model.Reviews != null && Model.Reviews.Any())
         {
             <div class="admin-card rounded-2xl p-6">
@@ -147,3 +177,17 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function switchMain(imgUrl, btn) {
+            document.getElementById('main-image').src = imgUrl;
+            document.querySelectorAll('.thumb-btn').forEach(b => {
+                b.classList.remove('border-yellow-400');
+                b.classList.add('border-white/10');
+            });
+            btn.classList.remove('border-white/10');
+            btn.classList.add('border-yellow-400');
+        }
+    </script>
+}
