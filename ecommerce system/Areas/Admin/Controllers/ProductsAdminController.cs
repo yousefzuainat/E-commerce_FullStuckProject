@@ -118,13 +118,16 @@ namespace ecommerce_system.Areas.Admin.Controllers
                 _context.proudects.Add(product);
                 await _context.SaveChangesAsync();
 
+                bool isFirst = true;
                 foreach (var imgUrl in uploadedImages)
                 {
                     _context.productImages.Add(new ProductImage
                     {
                         ImageUrl = imgUrl,
-                        ProudectId = product.Id
+                        ProudectId = product.Id,
+                        IsMain = isFirst 
                     });
+                    isFirst = false;
                 }
 
                 if (model.DiscountPercent.HasValue && model.DiscountPercent.Value > 0)
@@ -199,7 +202,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
                     product.Price = model.Price;
                     product.CategoryId = model.CategoryId;
 
-                    var activeDiscount = product.Discounts?.FirstOrDefault(d => d.Active); // خد الخصم  الحالي للمنتج
+                    var activeDiscount = product.Discounts?.FirstOrDefault(d => d.Active);
 
                     bool needNewDiscount = false;
 
@@ -219,6 +222,7 @@ namespace ecommerce_system.Areas.Admin.Controllers
                         activeDiscount.Active = false;
                     }
 
+                    // حذف الصور المحددة
                     if (model.ImagesToDelete != null && model.ImagesToDelete.Count > 0)
                     {
                         var imagesToRemove = product.Images?
@@ -234,11 +238,37 @@ namespace ecommerce_system.Areas.Admin.Controllers
                             _context.productImages.Remove(img);
                         }
 
-                        if (!string.IsNullOrEmpty(product.Img) && imagesToRemove.Any(i => i.ImageUrl == product.Img))
+                        // إذا حُذفت الصورة الرئيسية، اجعل أول صورة متبقية هي الرئيسية
+                        if (imagesToRemove.Any(i => i.IsMain))
                         {
-                            product.Img = product.Images?
-                                .FirstOrDefault()?.ImageUrl;
+                            var firstRemaining = product.Images?.FirstOrDefault();
+                            if (firstRemaining != null)
+                            {
+                                firstRemaining.IsMain = true;
+                                product.Img = firstRemaining.ImageUrl;
+                            }
+                            else
+                            {
+                                product.Img = null;
+                            }
                         }
+                        else if (!string.IsNullOrEmpty(product.Img) && imagesToRemove.Any(i => i.ImageUrl == product.Img))
+                        {
+                            product.Img = product.Images?.FirstOrDefault()?.ImageUrl;
+                        }
+                    }
+
+                    // تغيير الصورة الرئيسية إذا اختار الأدمن صورة موجودة
+                    if (model.MainImageId.HasValue && model.MainImageId.Value > 0)
+                    {
+                        var allImages = product.Images?.ToList() ?? new List<ProductImage>();
+                        foreach (var img in allImages)
+                        {
+                            img.IsMain = (img.Id == model.MainImageId.Value);
+                        }
+                        var newMain = allImages.FirstOrDefault(i => i.Id == model.MainImageId.Value);
+                        if (newMain != null)
+                            product.Img = newMain.ImageUrl;
                     }
 
                     await _context.SaveChangesAsync();
@@ -257,22 +287,9 @@ namespace ecommerce_system.Areas.Admin.Controllers
 
                     if (model.Uploads != null && model.Uploads.Count > 0)
                     {
-                        var remainingOldImages = await _context.productImages
-                            .Where(pi => pi.ProudectId == product.Id)
-                            .ToListAsync();
-                        foreach (var oldImg in remainingOldImages)
-                        {
-                            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", oldImg.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-                            if (System.IO.File.Exists(oldPath))
-                                System.IO.File.Delete(oldPath);
-                        }
-                        if (remainingOldImages.Any())
-                        {
-                            _context.productImages.RemoveRange(remainingOldImages);
-                            await _context.SaveChangesAsync();
-                        }
-
                         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                        bool hasExistingMain = product.Images?.Any(i => i.IsMain) == true;
+                        bool isFirstUpload = !hasExistingMain;
                         string? firstNewImgUrl = null;
 
                         foreach (var file in model.Uploads)
@@ -302,21 +319,25 @@ namespace ecommerce_system.Areas.Admin.Controllers
                                 }
 
                                 var imgUrl = "/images/products/" + fileName;
+                                var isMain = isFirstUpload; // أول صورة مرفوعة جديدة تكون رئيسية إن لم تكن هناك رئيسية
 
                                 _context.productImages.Add(new ProductImage
                                 {
                                     ImageUrl = imgUrl,
-                                    ProudectId = product.Id
+                                    ProudectId = product.Id,
+                                    IsMain = isMain
                                 });
                                 await _context.SaveChangesAsync();
 
                                 if (firstNewImgUrl == null)
                                     firstNewImgUrl = imgUrl;
+
+                                isFirstUpload = false; // بعد الأولى، بقية الصور ليست رئيسية
                             }
                         }
 
-                        // Update main image to the first new image
-                        if (firstNewImgUrl != null)
+                        // إذا لم يكن هناك صورة رئيسية، اضبط أول صورة جديدة
+                        if (!hasExistingMain && firstNewImgUrl != null)
                         {
                             product.Img = firstNewImgUrl;
                             await _context.SaveChangesAsync();
