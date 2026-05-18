@@ -4,44 +4,91 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="auth-wrap">
-    <div class="auth-card">
-        <span class="auth-eye">Account</span>
-        <h1 class="auth-heading">Welcome back.</h1>
-        <p class="auth-sub">Sign in to your VOLTEX account to continue.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+}
 
-        <form id="account" method="post">
-            <div asp-validation-summary="ModelOnly" class="auth-error" role="alert"></div>
+<div class="auth-wrap animate-fade-in">
+    <div class="auth-split-card">
 
-            <div class="auth-field">
-                <label asp-for="Input.Email" class="auth-label">Email</label>
-                <input asp-for="Input.Email" class="auth-input" autocomplete="username"
-                       aria-required="true" placeholder="you@example.com" />
-                <span asp-validation-for="Input.Email" class="auth-field-err"></span>
+        @* ══════════════════════════════════════════════
+             LEFT SIDEBAR: VOLTEX BRAND & ABOUT STATS
+           ══════════════════════════════════════════════ *@
+        <div class="auth-brand-panel">
+            <div class="panel-header">
+                <span class="panel-logo">VOLTEX<span class="accent-dot">.</span></span>
+                <span class="panel-sys-code">// AUTH_001</span>
             </div>
 
-            <div class="auth-field">
-                <label asp-for="Input.Password" class="auth-label">Password</label>
-                <input asp-for="Input.Password" class="auth-input" autocomplete="current-password"
-                       aria-required="true" placeholder="••••••••" />
-                <span asp-validation-for="Input.Password" class="auth-field-err"></span>
+            <div class="panel-body-content">
+                <span class="panel-eyebrow"> Who Is</span>
+                <h1 class="panel-display-title">
+                   <span class="highlight-text">VOLTEX</span>
+                </h1>
+                <p class="panel-narrative">
+                    We started Voltex with one goal — bring professional-grade gear to every player, builder, and creator. No compromises. No noise. Just performance.
+                </p>
             </div>
 
-            <div class="auth-check-row">
-                <input type="checkbox" asp-for="Input.RememberMe" id="rememberMe" />
-                <label for="rememberMe">@Html.DisplayNameFor(m => m.Input.RememberMe)</label>
+            @* Live statistics from your About view components *@
+            <div class="panel-footer-matrix">
+                <div class="matrix-item">
+                    <span class="matrix-stat">500+</span>
+                    <span class="matrix-label">Products</span>
+                </div>
+                <div class="matrix-item">
+                    <span class="matrix-stat">98%</span>
+                    <span class="matrix-label">Satisfaction</span>
+                </div>
+                <div class="matrix-item">
+                    <span class="matrix-stat">40+</span>
+                    <span class="matrix-label">Partner Brands</span>
+                </div>
             </div>
+        </div>
 
-            <button id="login-submit" type="submit" class="auth-submit">Sign In</button>
+        @* ══════════════════════════════════════════════
+             RIGHT SIDE: YOUR ORIGINAL FORM CODE
+           ══════════════════════════════════════════════ *@
+        <div class="auth-card">
+            <span class="auth-eye">Account</span>
+            <h1 class="auth-heading">Welcome back.</h1>
+            <p class="auth-sub">Sign in to your VOLTEX account to continue.</p>
 
-            <div class="auth-links">
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link-primary">
-                    Don't have an account? Register
-                </a>
-                <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-            </div>
-        </form>
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-error" role="alert"></div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Email" class="auth-label">Email</label>
+                    <input asp-for="Input.Email" class="auth-input" autocomplete="username"
+                           aria-required="true" placeholder="you@example.com" />
+                    <span asp-validation-for="Input.Email" class="auth-field-err"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Password" class="auth-label">Password</label>
+                    <input asp-for="Input.Password" class="auth-input" autocomplete="current-password"
+                           aria-required="true" placeholder="••••••••" type="password" />
+                    <span asp-validation-for="Input.Password" class="auth-field-err"></span>
+                </div>
+
+                <div class="auth-check-row">
+                    <input type="checkbox" asp-for="Input.RememberMe" id="rememberMe" />
+                    <label for="rememberMe">@Html.DisplayNameFor(m => m.Input.RememberMe)</label>
+                </div>
+
+                <button id="login-submit" type="submit" class="auth-submit">Sign In</button>
+
+                <div class="auth-links">
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link-primary">
+                        Don't have an account? Register
+                    </a>
+                    <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 

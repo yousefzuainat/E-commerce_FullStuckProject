@@ -7,7 +7,6 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Testimonials.css" asp-append-version="true" />
-  
 }
 
 <div class="cart-page">
@@ -41,13 +40,15 @@
             <div class="cart-items-col" id="cartItemsCol">
                 @foreach (var item in Model.Items)
                 {
-                    <div class="cart-item" data-product-id="@item.ProductId">
+                    <div class="cart-item" data-product-id="@item.ProductId" style="display: grid; grid-template-columns: 88px 1fr auto auto 36px; align-items: center; gap: 24px;">
+                        
+                        @* 1. Thumbnail Column *@
                         <div class="cart-item-img">
                             @{
                                 var img = item.Img ?? "";
                                 if (img.StartsWith("/") || img.StartsWith("http"))
                                 {
-                                    <img src="@img" alt="@item.Name" />
+                                    <img src="@img" alt="@item.Name" style="width:100%; height:100%; object-fit:contain; padding:6px;" />
                                 }
                                 else
                                 {
@@ -56,35 +57,42 @@
                             }
                         </div>
 
-                        <div class="cart-item-info">
+                        @* 2. Description Details Column *@
+                        <div class="cart-item-info" style="display: flex; flex-direction: column; justify-content: center;">
                             <p class="cart-item-brand">@item.Brand</p>
-                            <p class="cart-item-name">@item.Name</p>
+                            <p class="cart-item-name" style="margin-bottom: 6px;">@item.Name</p>
 
                             <div class="cart-item-price-wrap">
                                 @if (item.HasDiscount)
                                 {
-                                    <span class="cart-item-original">$@item.Price.ToString("F2")</span>
-                                    <span class="cart-item-final" id="unit-price-@item.ProductId">
-                                        $@item.DiscountedPrice.ToString("F2") <small style="font-size:10px;opacity:.7">/ea</small>
+                                    <span class="cart-item-original" style="display:block; font-size:11px; text-decoration:line-through; opacity:0.6;">$@item.Price.ToString("F2")</span>
+                                    <span class="cart-item-final" id="unit-price-@item.ProductId" style="font-weight:700; color:var(--text);">
+                                        $@item.DiscountedPrice.ToString("F2") <small style="font-size:10px; opacity:.7">/ea</small>
                                     </span>
-                                    <span class="disc-badge">🏷 @((int)item.DiscountPercent)% OFF</span>
+                                    <span class="disc-badge" style="margin-top:4px;">🏷 @((int)item.DiscountPercent)% OFF</span>
                                 }
                                 else
                                 {
-                                    <span class="cart-item-price" id="unit-price-@item.ProductId">$@item.Price.ToString("F2")</span>
+                                    <span class="cart-item-price" id="unit-price-@item.ProductId" style="font-weight:700;">$@item.Price.ToString("F2")</span>
                                 }
                             </div>
                         </div>
 
-                        <div class="cart-item-controls">
-                            <div class="qty-ctrl">
+                        @* 3. Interactive Controls Column *@
+                        <div class="cart-item-controls" style="display: flex; align-items: center; justify-content: center;">
+                            <div class="qty-ctrl" style="display: flex; align-items: center;">
                                 <button class="qty-btn qty-minus" data-id="@item.ProductId" aria-label="Decrease">−</button>
                                 <span class="qty-val" id="qty-@item.ProductId">@item.Quantity</span>
-                                <button class="qty-btn qty-plus"  data-id="@item.ProductId" aria-label="Increase">+</button>
+                                <button class="qty-btn qty-plus" data-id="@item.ProductId" aria-label="Increase">+</button>
                             </div>
-                            <p class="cart-item-line" id="line-@item.ProductId">$@item.LineTotal.ToString("F2")</p>
                         </div>
 
+                        @* 4. Sum Line Total Column *@
+                        <div style="display: flex; align-items: center; justify-content: flex-end; min-width: 90px;">
+                            <p class="cart-item-line" id="line-@item.ProductId" style="margin:0; font-weight:800; font-size:16px;">$@item.LineTotal.ToString("F2")</p>
+                        </div>
+
+                        @* 5. Remove Target Column *@
                         <button class="cart-item-remove" data-id="@item.ProductId" aria-label="Remove item">✕</button>
                     </div>
                 }
@@ -146,96 +154,95 @@
 </div>
 
 @section Scripts {
-<script>
-    function showToast(msg, type = 'success') {
-        const t = document.createElement('div');
-        t.className = 'cart-toast cart-toast-' + type;
-        t.textContent = msg;
-        document.body.appendChild(t);
-        requestAnimationFrame(() => t.classList.add('show'));
-        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 2200);
-    }
-
-    function updateBadge(count) {
-        document.querySelectorAll('.cart-n').forEach(el => {
-            el.textContent = count;
-            el.classList.toggle('cart-n-active', count > 0);
-        });
-    }
-
-    function updateSummary(data) {
-        const sub  = document.getElementById('summarySubtotal');
-        const tot  = document.getElementById('summaryTotal');
-        const sav  = document.getElementById('summarySavings');
-        const savRow = document.getElementById('savingsRow');
-
-        if (sub)  sub.textContent  = '$' + data.subtotal;
-        if (tot)  tot.textContent  = '$' + data.total;
-
-        if (sav && savRow && data.savings !== undefined) {
-            const s = parseFloat(data.savings);
-            savRow.style.display = s > 0 ? '' : 'none';
-            sav.textContent = '-$' + s.toFixed(2);
+    <script>
+        function showToast(msg, type = 'success') {
+            const t = document.createElement('div');
+            t.className = 'cart-toast cart-toast-' + type;
+            t.textContent = msg;
+            document.body.appendChild(t);
+            requestAnimationFrame(() => t.classList.add('show'));
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 2200);
         }
-    }
 
-    // ── REMOVE ──
-    document.querySelectorAll('.cart-item-remove').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            const id  = this.dataset.id;
-            const row = this.closest('.cart-item');
-            row.classList.add('removing');
-            const res = await fetch('/Cart/Remove', {
+        function updateBadge(count) {
+            document.querySelectorAll('.cart-n').forEach(el => {
+                el.textContent = count;
+                el.classList.toggle('cart-n-active', count > 0);
+            });
+        }
+
+        function updateSummary(data) {
+            const sub  = document.getElementById('summarySubtotal');
+            const tot  = document.getElementById('summaryTotal');
+            const sav  = document.getElementById('summarySavings');
+            const savRow = document.getElementById('savingsRow');
+
+            if (sub)  sub.textContent  = '$' + data.subtotal;
+            if (tot)  tot.textContent  = '$' + data.total;
+
+            if (sav && savRow && data.savings !== undefined) {
+                const s = parseFloat(data.savings);
+                savRow.style.display = s > 0 ? '' : 'none';
+                sav.textContent = '-$' + s.toFixed(2);
+            }
+        }
+
+        // ── REMOVE ──
+        document.querySelectorAll('.cart-item-remove').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const id  = this.dataset.id;
+                const row = this.closest('.cart-item');
+                row.classList.add('removing');
+                const res = await fetch('/Cart/Remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': getToken() },
+                    body: 'productId=' + id
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setTimeout(() => {
+                        row.remove();
+                        updateBadge(data.cartCount);
+                        updateSummary(data);
+                        if (data.isEmpty) location.reload();
+                    }, 300);
+                    showToast('Item removed from cart');
+                }
+            });
+        });
+
+        // ── QUANTITY ──
+        async function changeQty(productId, delta) {
+            const qtyEl   = document.getElementById('qty-' + productId);
+            const current = parseInt(qtyEl.textContent);
+            const newQty  = current + delta;
+            if (newQty < 1) return;
+
+            const res = await fetch('/Cart/Update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': getToken() },
-                body: 'productId=' + id
+                body: 'productId=' + productId + '&quantity=' + newQty
             });
             const data = await res.json();
             if (data.success) {
-                setTimeout(() => {
-                    row.remove();
-                    updateBadge(data.cartCount);
-                    updateSummary(data);
-                    if (data.isEmpty) location.reload();
-                }, 300);
-                showToast('Item removed from cart');
+                qtyEl.textContent = newQty;
+                const lineEl = document.getElementById('line-' + productId);
+                if (lineEl) lineEl.textContent = '$' + data.lineTotal;
+                updateBadge(data.cartCount);
+                updateSummary(data);
             }
-        });
-    });
-
-    // ── QUANTITY ──
-    async function changeQty(productId, delta) {
-        const qtyEl   = document.getElementById('qty-' + productId);
-        const current = parseInt(qtyEl.textContent);
-        const newQty  = current + delta;
-        if (newQty < 1) return;
-
-        const res = await fetch('/Cart/Update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': getToken() },
-            body: 'productId=' + productId + '&quantity=' + newQty
-        });
-        const data = await res.json();
-        if (data.success) {
-            qtyEl.textContent = newQty;
-            // Update line total
-            const lineEl = document.getElementById('line-' + productId);
-            if (lineEl) lineEl.textContent = '$' + data.lineTotal;
-            updateBadge(data.cartCount);
-            updateSummary(data);
         }
-    }
 
-    document.querySelectorAll('.qty-minus').forEach(btn => {
-        btn.addEventListener('click', () => changeQty(btn.dataset.id, -1));
-    });
-    document.querySelectorAll('.qty-plus').forEach(btn => {
-        btn.addEventListener('click', () => changeQty(btn.dataset.id, +1));
-    });
+        document.querySelectorAll('.qty-minus').forEach(btn => {
+            btn.addEventListener('click', () => changeQty(btn.dataset.id, -1));
+        });
+        document.querySelectorAll('.qty-plus').forEach(btn => {
+            btn.addEventListener('click', () => changeQty(btn.dataset.id, +1));
+        });
 
-    function getToken() {
-        return document.querySelector('input[name="__RequestVerificationToken"]')?.value
-            || document.querySelector('meta[name="csrf-token"]')?.content || '';
-    }
-</script>
+        function getToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                || document.querySelector('meta[name="csrf-token"]')?.content || '';
+        }
+    </script>
 }
